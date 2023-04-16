@@ -25,6 +25,7 @@ import org.bukkit.generator.ChunkGenerator;
  * <p>
  * You can specify the distance between areas, and the base Y level, which is the Y level at which the area will be pasted.
  * <p>
+ *
  * @author Illusion
  */
 @Builder
@@ -52,13 +53,14 @@ public class SingleWorldGrid implements CosmosGrid {
         Point point = generatePoint(index);
 
         // paste the area at the point
-        return area.paste(new Location(Bukkit.getWorld(worldId), point.getX() * distanceBetweenAreas, baseYLevel, point.getY() * distanceBetweenAreas)).thenApply(pastedArea -> {
-            // Creates a proxy that will remove the index from the used indexes when the area is unloaded
-            ProxyPastedArea proxy = new ProxyPastedArea(pastedArea);
-            proxy.setPreUnloadAction(() -> usedIndexes.remove(index));
+        return area.paste(new Location(Bukkit.getWorld(worldId), point.getX() * distanceBetweenAreas, baseYLevel, point.getY() * distanceBetweenAreas))
+            .thenApply(pastedArea -> {
+                // Creates a proxy that will remove the index from the used indexes when the area is unloaded
+                ProxyPastedArea proxy = new ProxyPastedArea(pastedArea);
+                proxy.setPreUnloadAction(() -> usedIndexes.remove(index));
 
-            return proxy;
-        });
+                return proxy;
+            });
     }
 
     @Override
@@ -68,7 +70,7 @@ public class SingleWorldGrid implements CosmosGrid {
 
         List<CompletableFuture<Void>> futures = new ArrayList<>();
 
-        if(world != null) {
+        if (world != null) {
             String name = world.getName();
             Bukkit.unloadWorld(world, false);
 
@@ -76,8 +78,9 @@ public class SingleWorldGrid implements CosmosGrid {
                 File worldFolder = new File(Bukkit.getWorldContainer(), name);
                 File regionFolder = new File(worldFolder, "region");
 
-                for(File file : regionFolder.listFiles())
+                for (File file : regionFolder.listFiles()) {
                     file.delete();
+                }
             }).thenRun(() -> {
                 WorldCreator creator = new WorldCreator(name);
                 creator.generator(chunkGenerator);
@@ -91,6 +94,7 @@ public class SingleWorldGrid implements CosmosGrid {
 
     /**
      * Calculates the next Point to use, based on an index (which follows a mathematical pattern).
+     *
      * @param index the current index
      * @return the target point
      */
@@ -131,13 +135,15 @@ public class SingleWorldGrid implements CosmosGrid {
 
     /**
      * Calculates the next index to use. This method will iterate through all indexes until it finds one that is not used.
+     *
      * @return the next index to use
      */
     private int calculateNextIndex() {
         // iterate through all indexes until we find one that is not used
-        for(int index = 0; index < Integer.MAX_VALUE; index++) {
-            if(!usedIndexes.contains(index))
+        for (int index = 0; index < Integer.MAX_VALUE; index++) {
+            if (!usedIndexes.contains(index)) {
                 return index;
+            }
         }
 
         // if we reach this point, we have no more indexes to use (which should never happen, who would keep 4 billion areas in a single world?)

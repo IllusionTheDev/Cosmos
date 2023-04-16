@@ -12,19 +12,18 @@ import org.bukkit.Location;
 public class ProxyTemplatedArea implements TemplatedArea {
 
     private final TemplatedArea underlying;
+    @Setter
+    private Consumer<Location> prePasteAction;
 
     public ProxyTemplatedArea(TemplatedArea underlying) {
         this.underlying = underlying;
     }
 
-    @Setter
-    private Consumer<Location> prePasteAction;
-
-
     @Override
     public CompletableFuture<PastedArea> paste(Location location) {
-        if(prePasteAction != null)
+        if (prePasteAction != null) {
             prePasteAction.accept(location);
+        }
 
         return underlying.paste(location);
     }

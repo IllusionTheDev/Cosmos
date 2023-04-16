@@ -1,5 +1,8 @@
 package me.illusion.cosmos.utilities.geometry;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import lombok.Data;
 import lombok.Getter;
 import org.bukkit.Color;
@@ -8,10 +11,6 @@ import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.util.BlockVector;
 import org.bukkit.util.Vector;
-
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
 
 /**
  * The cuboid class is used to represent a 3D cuboid with decimal precision.
@@ -95,14 +94,14 @@ public class Cuboid implements Iterable<BlockVector>, Cloneable {
 
     public boolean contains(Vector vector) {
         return vector.getX() >= minX && vector.getX() <= maxX
-                && vector.getY() >= minY && vector.getY() <= maxY
-                && vector.getZ() >= minZ && vector.getZ() <= maxZ;
+            && vector.getY() >= minY && vector.getY() <= maxY
+            && vector.getZ() >= minZ && vector.getZ() <= maxZ;
     }
 
     public boolean contains(double x, double y, double z) {
         return x >= minX && x <= maxX
-                && y >= minY && y <= maxY
-                && z >= minZ && z <= maxZ;
+            && y >= minY && y <= maxY
+            && z >= minZ && z <= maxZ;
     }
 
     /**
@@ -159,22 +158,21 @@ public class Cuboid implements Iterable<BlockVector>, Cloneable {
     public boolean intersectsCuboid(Cuboid other) {
         // copied from https://bukkit.org/threads/checking-if-two-cuboids-intersect.291432/, thanks to @Syd
         if (!intersectsDimension(other.getMinX(), other.getMaxX(), this.getMinX(),
-                this.getMaxX())) {
+            this.getMaxX())) {
             return false;
         }
 
         if (!intersectsDimension(other.getMinY(), other.getMaxY(), this.getMinY(),
-                this.getMaxY())) {
+            this.getMaxY())) {
             return false;
         }
 
         return intersectsDimension(other.getMinZ(), other.getMaxZ(), this.getMinZ(),
-                this.getMaxZ());
+            this.getMaxZ());
     }
 
     /**
-     * Creates a "Block" cuboid, which is a cuboid that has the min and max values floored and
-     * ceiled respectively.
+     * Creates a "Block" cuboid, which is a cuboid that has the min and max values floored and ceiled respectively.
      *
      * @return the block cuboid
      */
@@ -183,13 +181,13 @@ public class Cuboid implements Iterable<BlockVector>, Cloneable {
         // has the min and max values floored and ceiled respectively.
 
         return new Cuboid(
-                (int) Math.floor(minX),
-                (int) Math.floor(minY),
-                (int) Math.floor(minZ),
+            (int) Math.floor(minX),
+            (int) Math.floor(minY),
+            (int) Math.floor(minZ),
 
-                (int) Math.ceil(maxX),
-                (int) Math.ceil(maxY),
-                (int) Math.ceil(maxZ)
+            (int) Math.ceil(maxX),
+            (int) Math.ceil(maxY),
+            (int) Math.ceil(maxZ)
         );
     }
 

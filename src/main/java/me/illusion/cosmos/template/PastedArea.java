@@ -13,14 +13,16 @@ import org.bukkit.Location;
 public interface PastedArea extends TemplatedArea {
 
     /**
-     * Unloads the area, and returns a future which will be completed when the area is unloaded.
-     * The future may be completed immediately, and the area will be unloaded in the main thread (WorldEdit).
+     * Unloads the area, and returns a future which will be completed when the area is unloaded. The future may be completed immediately, and the area will be
+     * unloaded in the main thread (WorldEdit).
+     *
      * @return A future which will be completed when the area is unloaded
      */
     CompletableFuture<Void> unload();
 
     /**
      * Obtains the location of where the area was pasted.
+     *
      * @return The location of the area
      */
     Location getPasteLocation();

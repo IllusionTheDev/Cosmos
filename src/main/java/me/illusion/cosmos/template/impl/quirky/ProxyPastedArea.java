@@ -8,39 +8,37 @@ import me.illusion.cosmos.utilities.geometry.Cuboid;
 import org.bukkit.Location;
 
 /**
- * This is a proxy for a pasted area, which allows you to run code before and after the area is unloaded.
- * This is meant for internal use, for things like detecting unloads to unregister areas from a grid.
+ * This is a proxy for a pasted area, which allows you to run code before and after the area is unloaded. This is meant for internal use, for things like
+ * detecting unloads to unregister areas from a grid.
  */
 public class ProxyPastedArea implements PastedArea {
 
     private final PastedArea underlying;
+    @Setter
+    private Runnable preUnloadAction;
+    @Setter
+    private Runnable postUnloadAction;
+    @Setter
+    private Runnable prePasteAction;
+    @Setter
+    private Runnable postPasteAction;
 
     public ProxyPastedArea(PastedArea underlying) {
         this.underlying = underlying;
     }
 
-    @Setter
-    private Runnable preUnloadAction;
-
-    @Setter
-    private Runnable postUnloadAction;
-
-    @Setter
-    private Runnable prePasteAction;
-
-    @Setter
-    private Runnable postPasteAction;
-
     @Override
     public CompletableFuture<Void> unload() {
-        if(preUnloadAction != null)
+        if (preUnloadAction != null) {
             preUnloadAction.run();
+        }
 
         CompletableFuture<Void> future = underlying.unload();
 
         future.thenRun(() -> {
-            if(postUnloadAction != null)
+            if (postUnloadAction != null) {
                 postUnloadAction.run();
+            }
         });
 
         return future;
@@ -53,14 +51,16 @@ public class ProxyPastedArea implements PastedArea {
 
     @Override
     public CompletableFuture<PastedArea> paste(Location location) {
-        if(prePasteAction != null)
+        if (prePasteAction != null) {
             prePasteAction.run();
+        }
 
         CompletableFuture<PastedArea> future = underlying.paste(location);
 
         future.thenRun(() -> {
-            if(postPasteAction != null)
+            if (postPasteAction != null) {
                 postPasteAction.run();
+            }
         });
 
         return future;

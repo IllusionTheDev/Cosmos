@@ -34,10 +34,10 @@ public class WorldEditSerializer implements CosmosSerializer {
         Clipboard clipboard = ((SchematicTemplatedArea) area).getClipboard();
 
         return CompletableFuture.supplyAsync(() -> {
-            try(ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
+            try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
                 ClipboardFormat format = BuiltInClipboardFormat.SPONGE_V3_SCHEMATIC; // We could also use the format of the clipboard, but we don't know it
 
-                try(ClipboardWriter writer = format.getWriter(stream)) {
+                try (ClipboardWriter writer = format.getWriter(stream)) {
                     writer.write(clipboard);
                 }
 
@@ -51,15 +51,15 @@ public class WorldEditSerializer implements CosmosSerializer {
     @Override
     public CompletableFuture<TemplatedArea> deserialize(byte[] data) {
         return CompletableFuture.supplyAsync(() -> {
-            try(InputStream stream = new ByteArrayInputStream(data)) {
+            try (InputStream stream = new ByteArrayInputStream(data)) {
                 ClipboardFormat format = ClipboardFormats.findByInputStream(() -> stream);
 
-                if(format == null) {
+                if (format == null) {
                     // We could not find a format, so we assume it's a sponge schematic
                     format = BuiltInClipboardFormat.SPONGE_V3_SCHEMATIC;
                 }
 
-                try(ClipboardReader reader = format.getReader(stream)) {
+                try (ClipboardReader reader = format.getReader(stream)) {
                     return new SchematicTemplatedArea(this, reader.read());
                 }
 
@@ -81,7 +81,7 @@ public class WorldEditSerializer implements CosmosSerializer {
 
         BlockArrayClipboard clipboard = new BlockArrayClipboard(cuboidRegion);
 
-        try(EditSession session = WorldEdit.getInstance().newEditSession(worldEditWorld)) {
+        try (EditSession session = WorldEdit.getInstance().newEditSession(worldEditWorld)) {
             clipboard.setOrigin(BlockVector3.at(anchor.getX(), anchor.getY(), anchor.getZ()));
 
             ForwardExtentCopy forwardExtentCopy = new ForwardExtentCopy(

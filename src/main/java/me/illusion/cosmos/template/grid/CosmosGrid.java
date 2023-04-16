@@ -7,12 +7,14 @@ import me.illusion.cosmos.template.TemplatedArea;
 /**
  * A grid is an object responsible for calculating the location of a pasted area.
  * <p>
+ *
  * @author Illusion
  */
 public interface CosmosGrid {
 
     /**
      * Calculates the location of the area, and pastes it.
+     *
      * @param area The area to paste
      * @return A future of a Pasted Area, which can be used to get the location of the area, and to undo the paste.
      */
@@ -20,6 +22,7 @@ public interface CosmosGrid {
 
     /**
      * Calculates the location of a future area, and eventually pastes it.
+     *
      * @param areaFuture The future of the area to paste
      * @return A future of a Pasted Area, which can be used to get the location of the area, and to undo the paste.
      */
@@ -29,6 +32,7 @@ public interface CosmosGrid {
 
     /**
      * Unloads all pasted areas.
+     *
      * @return A future which will be completed when all areas are unloaded.
      */
     CompletableFuture<Void> unloadAll();

@@ -22,6 +22,7 @@ import org.bukkit.Material;
 /**
  * A Schematic Templated Area is a templated area which is based on a WorldEdit clipboard.
  * <p>
+ *
  * @author Illusion
  */
 public class SchematicTemplatedArea implements TemplatedArea {

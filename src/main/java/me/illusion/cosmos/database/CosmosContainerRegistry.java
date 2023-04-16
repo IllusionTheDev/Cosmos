@@ -22,6 +22,7 @@ public class CosmosContainerRegistry {
 
     /**
      * Registers a container.
+     *
      * @param container The container to register
      */
     public void registerContainer(CosmosDataContainer container) {
@@ -30,6 +31,7 @@ public class CosmosContainerRegistry {
 
     /**
      * Obtains a container by name.
+     *
      * @param name The name of the container
      * @return The container, or null if it does not exist
      */
@@ -39,6 +41,7 @@ public class CosmosContainerRegistry {
 
     /**
      * Obtains all registered containers, as an immutable map.
+     *
      * @return An immutable map of all registered containers
      */
     public ImmutableMap<String, CosmosDataContainer> getContainers() {
@@ -47,6 +50,7 @@ public class CosmosContainerRegistry {
 
     /**
      * Obtains all registered containers, as an immutable collection.
+     *
      * @return An immutable collection of all registered containers
      */
     public ImmutableCollection<CosmosDataContainer> getContainersAsCollection() {

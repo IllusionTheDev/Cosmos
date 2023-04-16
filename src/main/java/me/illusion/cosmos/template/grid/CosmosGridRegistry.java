@@ -21,8 +21,9 @@ public class CosmosGridRegistry {
     public CompletableFuture<Void> unloadAll() {
         List<CompletableFuture<?>> futures = new ArrayList<>();
 
-        for(CosmosGrid grid : grids)
+        for (CosmosGrid grid : grids) {
             futures.add(grid.unloadAll());
+        }
 
         return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
     }
