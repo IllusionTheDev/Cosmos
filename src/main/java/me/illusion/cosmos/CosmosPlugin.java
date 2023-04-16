@@ -32,7 +32,7 @@ public final class CosmosPlugin extends JavaPlugin {
 
         registerDefaults();
 
-        // TODO: Remote sources, wiping pooled worlds onDisable, local sources, testing
+        // TODO: Remote sources, testing
     }
 
     @Override
