@@ -58,12 +58,22 @@ public class WorldPerAreaGrid implements CosmosGrid {
         }));
     }
 
+    /**
+     * Sets the internal state of the world as UNUSED, and attempts to unload any worlds that might not be in use.
+     * @param worldId the world ID to unload
+     */
     private void unloadWorld(UUID worldId) {
         getOrCreateWorld(worldId).setState(PooledWorldState.UNUSED);
 
         attemptUnloadExtraWorlds();
     }
 
+    /**
+     * Attempts to unload any worlds that are not in use.
+     * A world is "in use" if its internal state is IN_USE, or if it fits within the maxActiveWorlds limit.
+     * The order in which worlds are unloaded is not guaranteed.
+     * This method is called automatically when a world is unloaded.
+     */
     public void attemptUnloadExtraWorlds() {
         int activeWorlds = 0;
 
@@ -97,6 +107,13 @@ public class WorldPerAreaGrid implements CosmosGrid {
         attemptDeleteExtraWorlds();
     }
 
+    /**
+     * Attempts to delete any worlds that are unloaded and may not be re-loaded.
+     * A world is considered "re-loadable" if its internal state is UNLOADED, or if it fits within the maxUnloadedWorlds limit.
+     * The order in which worlds are deleted is not guaranteed.
+     * This method is called automatically when a world is unloaded.
+     * The internal world files are deleted asynchronously.
+     */
     public void attemptDeleteExtraWorlds() {
         int unloadedWorlds = 0;
 
@@ -131,7 +148,11 @@ public class WorldPerAreaGrid implements CosmosGrid {
         }
     }
 
-
+    /**
+     * Creates a new world, or re-uses an existing one.
+     * It favors re-using worlds that are already loaded, but if none are available, it will attempt to load an unloaded world, or create a new one.
+     * @return the world ID of the world that was created or re-used
+     */
     private UUID createWorld() {
         // Let's see if we have any unused or unloaded worlds in our pool;
         List<Map.Entry<UUID, PooledWorld>> unusedWorlds = new ArrayList<>();
@@ -178,6 +199,11 @@ public class WorldPerAreaGrid implements CosmosGrid {
         return created.getUID();
     }
 
+    /**
+     * Gets a world from the internal registry, or creates a new one if it doesn't exist.
+     * @param worldId the world ID
+     * @return the world
+     */
     private PooledWorld getOrCreateWorld(UUID worldId) {
         World world = Bukkit.getWorld(worldId);
 
