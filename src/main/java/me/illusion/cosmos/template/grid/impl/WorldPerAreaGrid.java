@@ -50,12 +50,28 @@ public class WorldPerAreaGrid implements CosmosGrid {
         return area.paste(new Location(Bukkit.getWorld(worldId), spawnLocation.getBlockX(), spawnLocation.getBlockY(), spawnLocation.getBlockZ())).thenApply((pastedArea -> {
             ProxyPastedArea proxy = new ProxyPastedArea(pastedArea);
 
-            proxy.setPostUnloadAction(() -> {
-                unloadWorld(pastedArea.getPasteLocation().getWorld().getUID());
-            });
+            proxy.setPostUnloadAction(() -> unloadWorld(pastedArea.getPasteLocation().getWorld().getUID()));
 
             return proxy;
         }));
+    }
+
+    @Override
+    public CompletableFuture<Void> unloadAll() {
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
+
+        for(Map.Entry<UUID, PooledWorld> entry : worldPool.entrySet()) {
+            PooledWorld world = entry.getValue();
+
+            if(world.getState() == PooledWorldState.IN_USE || world.getState() == PooledWorldState.UNUSED) {
+                Bukkit.unloadWorld(world.getWorldName(), false);
+                getOrCreateWorld(entry.getKey()).setState(PooledWorldState.UNLOADED);
+
+                futures.add(CompletableFuture.runAsync(() -> new File(Bukkit.getWorldContainer(), world.getWorldName()).deleteOnExit()));
+            }
+        }
+
+        return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
     }
 
     /**
@@ -140,9 +156,7 @@ public class WorldPerAreaGrid implements CosmosGrid {
         }
 
         for(Map.Entry<UUID, PooledWorld> entry : List.copyOf(worldPool.entrySet())) {
-            CompletableFuture.runAsync(() -> {
-                new File(Bukkit.getWorldContainer(), entry.getValue().getWorldName()).delete();
-            });
+            CompletableFuture.runAsync(() -> new File(Bukkit.getWorldContainer(), entry.getValue().getWorldName()).delete());
 
             worldPool.remove(entry.getKey());
         }

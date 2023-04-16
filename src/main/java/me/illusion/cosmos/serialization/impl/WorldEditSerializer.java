@@ -27,11 +27,11 @@ import me.illusion.cosmos.template.impl.SchematicTemplatedArea;
 import me.illusion.cosmos.utilities.geometry.Cuboid;
 import org.bukkit.Location;
 
-public class WorldEditSerializer implements CosmosSerializer<SchematicTemplatedArea> {
+public class WorldEditSerializer implements CosmosSerializer {
 
     @Override
-    public CompletableFuture<byte[]> serialize(SchematicTemplatedArea area) {
-        Clipboard clipboard = area.getClipboard();
+    public CompletableFuture<byte[]> serialize(TemplatedArea area) {
+        Clipboard clipboard = ((SchematicTemplatedArea) area).getClipboard();
 
         return CompletableFuture.supplyAsync(() -> {
             try(ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
@@ -60,7 +60,7 @@ public class WorldEditSerializer implements CosmosSerializer<SchematicTemplatedA
                 }
 
                 try(ClipboardReader reader = format.getReader(stream)) {
-                    return new SchematicTemplatedArea(reader.read());
+                    return new SchematicTemplatedArea(this, reader.read());
                 }
 
             } catch (IOException e) {
@@ -81,7 +81,7 @@ public class WorldEditSerializer implements CosmosSerializer<SchematicTemplatedA
 
         BlockArrayClipboard clipboard = new BlockArrayClipboard(cuboidRegion);
 
-        try(EditSession session = WorldEdit.getInstance().getEditSessionFactory().getEditSession(worldEditWorld, -1)) {
+        try(EditSession session = WorldEdit.getInstance().newEditSession(worldEditWorld)) {
             clipboard.setOrigin(BlockVector3.at(anchor.getX(), anchor.getY(), anchor.getZ()));
 
             ForwardExtentCopy forwardExtentCopy = new ForwardExtentCopy(
@@ -99,7 +99,7 @@ public class WorldEditSerializer implements CosmosSerializer<SchematicTemplatedA
             throw new RuntimeException(e);
         }
 
-        return CompletableFuture.completedFuture(new SchematicTemplatedArea(clipboard));
+        return CompletableFuture.completedFuture(new SchematicTemplatedArea(this, clipboard));
     }
 
     @Override

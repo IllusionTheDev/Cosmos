@@ -1,6 +1,9 @@
 package me.illusion.cosmos.template.grid.impl;
 
 import com.google.common.collect.Sets;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -13,6 +16,9 @@ import me.illusion.cosmos.template.impl.quirky.ProxyPastedArea;
 import me.illusion.cosmos.utilities.geometry.Point;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
+import org.bukkit.WorldCreator;
+import org.bukkit.generator.ChunkGenerator;
 
 /**
  * A single world grid is a grid which pastes areas in a single world, in a spiral pattern.
@@ -27,6 +33,7 @@ public class SingleWorldGrid implements CosmosGrid {
     private final Set<Integer> usedIndexes = Sets.newConcurrentHashSet();
 
     private final UUID worldId;
+    private final ChunkGenerator chunkGenerator;
 
     @Default
     private final int distanceBetweenAreas = 1000;
@@ -52,6 +59,34 @@ public class SingleWorldGrid implements CosmosGrid {
 
             return proxy;
         });
+    }
+
+    @Override
+    public CompletableFuture<Void> unloadAll() {
+        usedIndexes.clear();
+        World world = Bukkit.getWorld(worldId);
+
+        List<CompletableFuture<Void>> futures = new ArrayList<>();
+
+        if(world != null) {
+            String name = world.getName();
+            Bukkit.unloadWorld(world, false);
+
+            futures.add(CompletableFuture.runAsync(() -> {
+                File worldFolder = new File(Bukkit.getWorldContainer(), name);
+                File regionFolder = new File(worldFolder, "region");
+
+                for(File file : regionFolder.listFiles())
+                    file.delete();
+            }).thenRun(() -> {
+                WorldCreator creator = new WorldCreator(name);
+                creator.generator(chunkGenerator);
+
+                Bukkit.createWorld(creator);
+            }));
+        }
+
+        return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
     }
 
     /**

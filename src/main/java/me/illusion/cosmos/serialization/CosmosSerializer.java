@@ -1,6 +1,5 @@
 package me.illusion.cosmos.serialization;
 
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import me.illusion.cosmos.template.TemplatedArea;
 import me.illusion.cosmos.utilities.geometry.Cuboid;
@@ -11,16 +10,15 @@ import org.bukkit.Location;
  * An example of a serializer is the WorldEdit serializer, which serializes areas to WorldEdit's Schematic format.
  * <p>
  * @author Illusion
- * @param <T> The type of area to serialize
  */
-public interface CosmosSerializer<T extends TemplatedArea> {
+public interface CosmosSerializer {
 
     /**
      * Serializes an area to a byte array, which can be stored in a database.
      * @param area The area to serialize
      * @return A future of the serialized data
      */
-    CompletableFuture<byte[]> serialize(T area);
+    CompletableFuture<byte[]> serialize(TemplatedArea area);
 
     /**
      * Deserializes an area from a byte array. Make sure to use the same serializer as the one used to serialize the area, or else it will not work.
@@ -38,8 +36,8 @@ public interface CosmosSerializer<T extends TemplatedArea> {
     CompletableFuture<TemplatedArea> createArea(Cuboid bounds, Location anchor);
 
     /**
-     * Creates a new area from a cuboid and an anchor location. (The anchor location is the location of the area's origin)
-     * @return
+     * Obtains the name of the serializer.
+     * @return The name of the serializer
      */
     String getName();
 

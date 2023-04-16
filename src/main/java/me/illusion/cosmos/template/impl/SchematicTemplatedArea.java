@@ -12,6 +12,7 @@ import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockState;
 import java.util.concurrent.CompletableFuture;
+import me.illusion.cosmos.serialization.CosmosSerializer;
 import me.illusion.cosmos.template.PastedArea;
 import me.illusion.cosmos.template.TemplatedArea;
 import me.illusion.cosmos.utilities.geometry.Cuboid;
@@ -25,9 +26,11 @@ import org.bukkit.Material;
  */
 public class SchematicTemplatedArea implements TemplatedArea {
 
+    private final CosmosSerializer serializer;
     private final Clipboard clipboard;
 
-    public SchematicTemplatedArea(Clipboard clipboard) {
+    public SchematicTemplatedArea(CosmosSerializer serializer, Clipboard clipboard) {
+        this.serializer = serializer;
         this.clipboard = clipboard;
     }
 
@@ -35,7 +38,7 @@ public class SchematicTemplatedArea implements TemplatedArea {
     public CompletableFuture<PastedArea> paste(Location location) {
         World worldEditWorld = new BukkitWorld(location.getWorld());
 
-        try (EditSession session = WorldEdit.getInstance().getEditSessionFactory().getEditSession(worldEditWorld, -1)) {
+        try (EditSession session = WorldEdit.getInstance().newEditSession(worldEditWorld)) {
             new ClipboardHolder(clipboard)
                 .createPaste(session)
                 .to(BlockVector3.at(location.getX(), location.getY(), location.getZ()))
@@ -57,6 +60,11 @@ public class SchematicTemplatedArea implements TemplatedArea {
         double maxZ = clipboard.getMaximumPoint().getZ();
 
         return new Cuboid(minX, minY, minZ, maxX, maxY, maxZ);
+    }
+
+    @Override
+    public CosmosSerializer getSerializer() {
+        return serializer;
     }
 
     public Clipboard getClipboard() {
@@ -87,7 +95,7 @@ public class SchematicTemplatedArea implements TemplatedArea {
 
             BlockState air = BukkitAdapter.adapt(Material.AIR.createBlockData());
 
-            try (EditSession session = WorldEdit.getInstance().getEditSessionFactory().getEditSession(worldEditWorld, -1)) {
+            try (EditSession session = WorldEdit.getInstance().newEditSession(worldEditWorld)) {
                 session.setBlocks(cuboidRegion, air);
                 session.commit();
             } catch (MaxChangedBlocksException e) {
@@ -110,6 +118,11 @@ public class SchematicTemplatedArea implements TemplatedArea {
         @Override
         public Cuboid getDimensions() {
             return SchematicTemplatedArea.this.getDimensions();
+        }
+
+        @Override
+        public CosmosSerializer getSerializer() {
+            return SchematicTemplatedArea.this.getSerializer();
         }
     }
 }

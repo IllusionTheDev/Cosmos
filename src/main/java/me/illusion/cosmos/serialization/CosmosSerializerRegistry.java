@@ -13,7 +13,7 @@ import me.illusion.cosmos.serialization.impl.WorldEditSerializer;
  */
 public class CosmosSerializerRegistry {
 
-    private final Map<String, CosmosSerializer<?>> serializers = new ConcurrentHashMap<>();
+    private final Map<String, CosmosSerializer> serializers = new ConcurrentHashMap<>();
 
     /**
      * Registers the default serializers. It is recommended
@@ -28,7 +28,7 @@ public class CosmosSerializerRegistry {
      * Registers a serializer.
      * @param serializer The serializer to register
      */
-    public void register(CosmosSerializer<?> serializer) {
+    public void register(CosmosSerializer serializer) {
         serializers.put(serializer.getName(), serializer);
     }
 
@@ -37,7 +37,7 @@ public class CosmosSerializerRegistry {
      * @param name The name of the serializer
      * @return The serializer, or null if not found
      */
-    public CosmosSerializer<?> get(String name) {
+    public CosmosSerializer get(String name) {
         return serializers.get(name);
     }
 
@@ -45,7 +45,7 @@ public class CosmosSerializerRegistry {
      * Obtains an immutable map of all the registered serializers.
      * @return The map of serializers
      */
-    public ImmutableMap<String, CosmosSerializer<?>> getSerializers() {
+    public ImmutableMap<String, CosmosSerializer> getSerializers() {
         return ImmutableMap.copyOf(serializers);
     }
 

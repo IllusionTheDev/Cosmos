@@ -27,4 +27,10 @@ public interface CosmosGrid {
         return areaFuture.thenCompose(this::paste);
     }
 
+    /**
+     * Unloads all pasted areas.
+     * @return A future which will be completed when all areas are unloaded.
+     */
+    CompletableFuture<Void> unloadAll();
+
 }

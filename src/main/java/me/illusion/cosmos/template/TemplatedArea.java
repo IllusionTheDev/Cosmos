@@ -1,6 +1,7 @@
 package me.illusion.cosmos.template;
 
 import java.util.concurrent.CompletableFuture;
+import me.illusion.cosmos.serialization.CosmosSerializer;
 import me.illusion.cosmos.utilities.geometry.Cuboid;
 import org.bukkit.Location;
 
@@ -25,5 +26,11 @@ public interface TemplatedArea {
      * @return The dimensions of the area
      */
     Cuboid getDimensions();
+
+    /**
+     * Obtains the serializer used to create this area.
+     * @return The serializer used to create this area
+     */
+    CosmosSerializer getSerializer();
 
 }

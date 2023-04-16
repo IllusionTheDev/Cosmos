@@ -2,6 +2,7 @@ package me.illusion.cosmos.template.impl.quirky;
 
 import java.util.concurrent.CompletableFuture;
 import lombok.Setter;
+import me.illusion.cosmos.serialization.CosmosSerializer;
 import me.illusion.cosmos.template.PastedArea;
 import me.illusion.cosmos.utilities.geometry.Cuboid;
 import org.bukkit.Location;
@@ -68,5 +69,10 @@ public class ProxyPastedArea implements PastedArea {
     @Override
     public Cuboid getDimensions() {
         return underlying.getDimensions();
+    }
+
+    @Override
+    public CosmosSerializer getSerializer() {
+        return underlying.getSerializer();
     }
 }

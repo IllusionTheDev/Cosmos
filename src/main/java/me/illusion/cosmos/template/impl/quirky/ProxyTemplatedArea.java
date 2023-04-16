@@ -3,6 +3,7 @@ package me.illusion.cosmos.template.impl.quirky;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 import lombok.Setter;
+import me.illusion.cosmos.serialization.CosmosSerializer;
 import me.illusion.cosmos.template.PastedArea;
 import me.illusion.cosmos.template.TemplatedArea;
 import me.illusion.cosmos.utilities.geometry.Cuboid;
@@ -31,5 +32,10 @@ public class ProxyTemplatedArea implements TemplatedArea {
     @Override
     public Cuboid getDimensions() {
         return underlying.getDimensions();
+    }
+
+    @Override
+    public CosmosSerializer getSerializer() {
+        return underlying.getSerializer();
     }
 }
