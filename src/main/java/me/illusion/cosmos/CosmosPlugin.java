@@ -20,6 +20,9 @@ public final class CosmosPlugin extends JavaPlugin {
         // Plugin shutdown logic
     }
 
+    /**
+     * Registers any default data
+     */
     public void registerDefaults() {
         serializerRegistry.registerDefaultSerializers();
     }

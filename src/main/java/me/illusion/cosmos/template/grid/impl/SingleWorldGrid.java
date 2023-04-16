@@ -9,10 +9,18 @@ import lombok.Builder.Default;
 import me.illusion.cosmos.template.PastedArea;
 import me.illusion.cosmos.template.TemplatedArea;
 import me.illusion.cosmos.template.grid.CosmosGrid;
+import me.illusion.cosmos.template.impl.quirky.ProxyPastedArea;
 import me.illusion.cosmos.utilities.geometry.Point;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
+/**
+ * A single world grid is a grid which pastes areas in a single world, in a spiral pattern.
+ * <p>
+ * You can specify the distance between areas, and the base Y level, which is the Y level at which the area will be pasted.
+ * <p>
+ * @author Illusion
+ */
 @Builder
 public class SingleWorldGrid implements CosmosGrid {
 
@@ -31,14 +39,26 @@ public class SingleWorldGrid implements CosmosGrid {
         // calculate the next index to use
         int index = calculateNextIndex();
 
+        usedIndexes.add(index);
+
         // generate the point for the index
         Point point = generatePoint(index);
 
         // paste the area at the point
-        return area.paste(new Location(Bukkit.getWorld(worldId), point.getX() * distanceBetweenAreas, baseYLevel, point.getY() * distanceBetweenAreas));
+        return area.paste(new Location(Bukkit.getWorld(worldId), point.getX() * distanceBetweenAreas, baseYLevel, point.getY() * distanceBetweenAreas)).thenApply(pastedArea -> {
+            // Creates a proxy that will remove the index from the used indexes when the area is unloaded
+            ProxyPastedArea proxy = new ProxyPastedArea(pastedArea);
+            proxy.setPreUnloadAction(() -> usedIndexes.remove(index));
+
+            return proxy;
+        });
     }
 
-
+    /**
+     * Calculates the next Point to use, based on an index (which follows a mathematical pattern).
+     * @param index the current index
+     * @return the target point
+     */
     private Point generatePoint(int index) {
         int x;
         int y;
@@ -71,11 +91,13 @@ public class SingleWorldGrid implements CosmosGrid {
             y = centerY - (posInSquare - 3 * (squareSize - 1));
         }
 
-        // apply the offset to the x coordinate
-
         return new Point(x, y);
     }
 
+    /**
+     * Calculates the next index to use. This method will iterate through all indexes until it finds one that is not used.
+     * @return the next index to use
+     */
     private int calculateNextIndex() {
         // iterate through all indexes until we find one that is not used
         for(int index = 0; index < Integer.MAX_VALUE; index++) {
@@ -83,7 +105,7 @@ public class SingleWorldGrid implements CosmosGrid {
                 return index;
         }
 
-        // if we reach this point, we have no more indexes to use
+        // if we reach this point, we have no more indexes to use (which should never happen, who would keep 4 billion areas in a single world?)
         throw new IllegalStateException("No more indexes to use!");
     }
 }

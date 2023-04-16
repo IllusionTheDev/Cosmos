@@ -1,10 +1,13 @@
 package me.illusion.cosmos.world;
 
 import java.util.Random;
-import org.bukkit.WorldCreator;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.generator.WorldInfo;
 
+/**
+ * This class is responsible for generating a void world,
+ * which is used for pasting areas into.
+ */
 public class VoidGenerator extends ChunkGenerator {
 
     @Override

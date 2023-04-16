@@ -18,6 +18,11 @@ import me.illusion.cosmos.utilities.geometry.Cuboid;
 import org.bukkit.Location;
 import org.bukkit.Material;
 
+/**
+ * A Schematic Templated Area is a templated area which is based on a WorldEdit clipboard.
+ * <p>
+ * @author Illusion
+ */
 public class SchematicTemplatedArea implements TemplatedArea {
 
     private final Clipboard clipboard;
@@ -58,6 +63,9 @@ public class SchematicTemplatedArea implements TemplatedArea {
         return clipboard;
     }
 
+    /**
+     * A schematic pasted area is an area that has already been pasted, and can be unloaded.
+     */
     private class SchematicPastedArea implements PastedArea {
 
         private final Location pasteLocation;

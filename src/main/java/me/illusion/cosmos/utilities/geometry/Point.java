@@ -3,6 +3,9 @@ package me.illusion.cosmos.utilities.geometry;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+/**
+ * Represents a point in 2D space
+ */
 @Data
 @AllArgsConstructor
 public class Point {
