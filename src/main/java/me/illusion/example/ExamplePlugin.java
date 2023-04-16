@@ -66,6 +66,11 @@ public class ExamplePlugin extends JavaPlugin {
         cosmosPlugin.getPasteCache().get("arena-" + one.getName() + "-" + two.getName()).unload();
     }
 
+    public void deleteArenaTemplate(String name) {
+        templateContainer.deleteTemplate(name);
+        cosmosPlugin.getTemplateCache().unregister(name);
+    }
+
     public void removeAllArenas() {
         grid.unloadAll();
     }
