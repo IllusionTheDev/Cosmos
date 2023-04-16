@@ -1,0 +1,4 @@
+name: Cosmos
+version: '${version}'
+main: me.illusion.cosmos.CosmosPlugin
+api-version: 1.19
