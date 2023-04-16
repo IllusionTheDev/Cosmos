@@ -1,5 +1,6 @@
 package me.illusion.cosmos.template.grid.impl;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,9 @@ public class WorldPerAreaGrid implements CosmosGrid {
 
     @Default
     private int maxActiveWorlds = 25;
+
+    @Default
+    private int maxUnloadedWorlds = 25; // We'll delete worlds after this
 
     @Default
     private ChunkGenerator chunkGenerator = new VoidGenerator();
@@ -89,6 +93,42 @@ public class WorldPerAreaGrid implements CosmosGrid {
             Bukkit.unloadWorld(entry.getValue().getWorldName(), false);
             getOrCreateWorld(entry.getKey()).setState(PooledWorldState.UNLOADED);
         }
+
+        attemptDeleteExtraWorlds();
+    }
+
+    public void attemptDeleteExtraWorlds() {
+        int unloadedWorlds = 0;
+
+        for(PooledWorld world : worldPool.values()) {
+            if(world.getState() == PooledWorldState.UNLOADED)
+                unloadedWorlds++;
+        }
+
+        int worldsToDelete = unloadedWorlds - maxUnloadedWorlds;
+
+        if(worldsToDelete <= 0)
+            return;
+
+        List<Map.Entry<UUID, PooledWorld>> worldsToDeleteList = new ArrayList<>();
+
+        for(Map.Entry<UUID, PooledWorld> entry : worldPool.entrySet()) {
+            PooledWorld world = entry.getValue();
+
+            if(world.getState() == PooledWorldState.UNLOADED)
+                worldsToDeleteList.add(entry);
+
+            if(worldsToDeleteList.size() >= worldsToDelete)
+                break;
+        }
+
+        for(Map.Entry<UUID, PooledWorld> entry : List.copyOf(worldPool.entrySet())) {
+            CompletableFuture.runAsync(() -> {
+                new File(Bukkit.getWorldContainer(), entry.getValue().getWorldName()).delete();
+            });
+
+            worldPool.remove(entry.getKey());
+        }
     }
 
 
@@ -134,9 +174,8 @@ public class WorldPerAreaGrid implements CosmosGrid {
             throw new IllegalStateException("Failed to create world for area paste");
 
         created.setSpawnLocation(spawnLocation.getBlockX(), spawnLocation.getBlockY(), spawnLocation.getBlockZ());
-        UUID worldId = created.getUID();
 
-        return worldId;
+        return created.getUID();
     }
 
     private PooledWorld getOrCreateWorld(UUID worldId) {
