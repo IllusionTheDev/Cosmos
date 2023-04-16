@@ -20,12 +20,11 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import me.illusion.cosmos.serialization.CosmosSerializer;
+import me.illusion.cosmos.template.TemplatedArea;
 import me.illusion.cosmos.template.impl.SchematicTemplatedArea;
 import me.illusion.cosmos.utilities.geometry.Cuboid;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 public class WorldEditSerializer implements CosmosSerializer<SchematicTemplatedArea> {
@@ -50,7 +49,7 @@ public class WorldEditSerializer implements CosmosSerializer<SchematicTemplatedA
     }
 
     @Override
-    public CompletableFuture<SchematicTemplatedArea> deserialize(byte[] data) {
+    public CompletableFuture<TemplatedArea> deserialize(byte[] data) {
         return CompletableFuture.supplyAsync(() -> {
             try(InputStream stream = new ByteArrayInputStream(data)) {
                 ClipboardFormat format = ClipboardFormats.findByInputStream(() -> stream);
@@ -71,8 +70,8 @@ public class WorldEditSerializer implements CosmosSerializer<SchematicTemplatedA
     }
 
     @Override
-    public CompletableFuture<SchematicTemplatedArea> createArea(UUID worldId, Cuboid dimensions, Location anchor) {
-        World worldEditWorld = new BukkitWorld(Bukkit.getWorld(worldId));
+    public CompletableFuture<TemplatedArea> createArea(Cuboid dimensions, Location anchor) {
+        World worldEditWorld = new BukkitWorld(anchor.getWorld());
 
         CuboidRegion cuboidRegion = new CuboidRegion(
             worldEditWorld,

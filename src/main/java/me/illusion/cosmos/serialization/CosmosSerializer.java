@@ -9,9 +9,9 @@ import org.bukkit.Location;
 public interface CosmosSerializer<T extends TemplatedArea> {
 
     CompletableFuture<byte[]> serialize(T area);
-    CompletableFuture<T> deserialize(byte[] data);
+    CompletableFuture<TemplatedArea> deserialize(byte[] data);
 
-    CompletableFuture<T> createArea(UUID worldId, Cuboid bounds, Location anchor);
+    CompletableFuture<TemplatedArea> createArea(Cuboid bounds, Location anchor);
 
     String getName();
 

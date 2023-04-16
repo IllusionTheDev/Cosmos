@@ -8,4 +8,8 @@ public interface CosmosGrid {
 
     CompletableFuture<PastedArea> paste(TemplatedArea area);
 
+    default CompletableFuture<PastedArea> paste(CompletableFuture<TemplatedArea> areaFuture) {
+        return areaFuture.thenCompose(this::paste);
+    }
+
 }
