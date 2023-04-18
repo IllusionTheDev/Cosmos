@@ -62,7 +62,7 @@ public class WorldPerAreaGrid implements CosmosGrid {
     }
 
     @Override
-    public CompletableFuture<Void> unloadAll() {
+    public CompletableFuture<Void> unloadAll() { // FIXME: This is not deleting worlds, maybe because the files are still in use?
         if(worldPool.isEmpty()) {
             return CompletableFuture.completedFuture(null);
         }
