@@ -9,7 +9,7 @@
 
 #### This project consists of a World Template Management System
 
-This project is not ready for production yet.
+This project is in ALPHA, which means that there is some core functionality. Do not use this in a production server (yet).
 
 ------------
 
