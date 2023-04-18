@@ -1,1 +1,2 @@
 rootProject.name = 'Cosmos'
+include 'Cosmos-Plugin', 'CosmosExamplePlugin'

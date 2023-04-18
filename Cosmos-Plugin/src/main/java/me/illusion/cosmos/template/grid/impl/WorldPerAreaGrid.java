@@ -43,6 +43,10 @@ public class WorldPerAreaGrid implements CosmosGrid {
 
     @Override
     public CompletableFuture<PastedArea> paste(TemplatedArea area) {
+        if(area == null) {
+            throw new IllegalArgumentException("Area cannot be null");
+        }
+
         UUID worldId = createWorld();
 
         getOrCreateWorld(worldId).setState(PooledWorldState.IN_USE);
@@ -59,6 +63,10 @@ public class WorldPerAreaGrid implements CosmosGrid {
 
     @Override
     public CompletableFuture<Void> unloadAll() {
+        if(worldPool.isEmpty()) {
+            return CompletableFuture.completedFuture(null);
+        }
+
         List<CompletableFuture<Void>> futures = new ArrayList<>();
 
         for (Map.Entry<UUID, PooledWorld> entry : worldPool.entrySet()) {
@@ -68,7 +76,7 @@ public class WorldPerAreaGrid implements CosmosGrid {
                 Bukkit.unloadWorld(world.getWorldName(), false);
                 getOrCreateWorld(entry.getKey()).setState(PooledWorldState.UNLOADED);
 
-                futures.add(CompletableFuture.runAsync(() -> new File(Bukkit.getWorldContainer(), world.getWorldName()).deleteOnExit()));
+                futures.add(CompletableFuture.runAsync(() -> new File(Bukkit.getWorldContainer(), world.getWorldName()).delete()));
             }
         }
 

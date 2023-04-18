@@ -38,10 +38,14 @@ public final class CosmosPlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+        System.out.println("Unloading all grids");
         gridRegistry.unloadAll().join();
 
+        System.out.println("Flushing all containers");
         for (CosmosDataContainer container : containerRegistry.getContainersAsCollection()) {
+            System.out.println("Flushing " + container.getName());
             container.flush().join();
+            System.out.println("Flushed " + container.getName());
         }
     }
 

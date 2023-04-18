@@ -3,9 +3,12 @@ package me.illusion.cosmos.template.impl;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
+import com.sk89q.worldedit.function.operation.Operation;
+import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.session.ClipboardHolder;
@@ -37,14 +40,20 @@ public class SchematicTemplatedArea implements TemplatedArea {
 
     @Override
     public CompletableFuture<PastedArea> paste(Location location) {
+        System.out.println("Pasting at " + location);
+
         World worldEditWorld = new BukkitWorld(location.getWorld());
 
         try (EditSession session = WorldEdit.getInstance().newEditSession(worldEditWorld)) {
-            new ClipboardHolder(clipboard)
+            Operation operation = new ClipboardHolder(clipboard)
                 .createPaste(session)
                 .to(BlockVector3.at(location.getX(), location.getY(), location.getZ()))
                 .ignoreAirBlocks(false)
                 .build();
+
+            Operations.complete(operation);
+        } catch (WorldEditException e) {
+            return CompletableFuture.failedFuture(e);
         }
 
         return CompletableFuture.completedFuture(new SchematicPastedArea(location));
@@ -85,6 +94,8 @@ public class SchematicTemplatedArea implements TemplatedArea {
 
         @Override
         public CompletableFuture<Void> unload() {
+            System.out.println("Unloading at " + pasteLocation);
+
             World worldEditWorld = new BukkitWorld(pasteLocation.getWorld());
 
             Cuboid dimensions = getDimensions();

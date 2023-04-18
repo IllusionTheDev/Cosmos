@@ -51,6 +51,7 @@ public class FileDataContainer implements CosmosDataContainer {
             File templateFolder = new File(worldContainer, name);
 
             if (!templateFolder.exists()) {
+                System.out.println("Template folder " + name + " does not exist");
                 future.complete(null);
                 return;
             }
@@ -59,6 +60,7 @@ public class FileDataContainer implements CosmosDataContainer {
             File metadataFile = new File(templateFolder, "metadata.yml");
 
             if (!dataFile.exists() || !metadataFile.exists()) {
+                System.out.println("Template folder " + name + " is missing files");
                 future.complete(null);
                 return;
             }
@@ -74,14 +76,26 @@ public class FileDataContainer implements CosmosDataContainer {
                 return;
             }
 
+            System.out.println("Loading template " + name + " with serializer " + serializer);
             byte[] dataContents = readFully(dataFile);
 
             // merge these futures without joining
             cosmosSerializer.deserialize(dataContents).thenAccept(future::complete);
+        }).exceptionally((e) -> {
+            e.printStackTrace();
+            future.completeExceptionally(e);
+            return null;
         });
 
         task.thenRun(() -> runningTasks.remove(task));
-        future.thenRun(() -> runningTasks.remove(future));
+        future.thenRun(() -> {
+            runningTasks.remove(future);
+            System.out.println("Completed template " + name);
+        }).exceptionally((e) -> {
+            e.printStackTrace();
+            return null;
+        });
+
         runningTasks.add(task);
         runningTasks.add(future);
 
@@ -109,6 +123,9 @@ public class FileDataContainer implements CosmosDataContainer {
 
             // write contents to dataFile
             writeFully(dataFile, contents);
+        }).exceptionally((e) -> {
+            e.printStackTrace();
+            return null;
         });
 
         task.thenRun(() -> runningTasks.remove(task));
@@ -137,6 +154,9 @@ public class FileDataContainer implements CosmosDataContainer {
             metadataFile.delete();
 
             templateFolder.delete();
+        }).exceptionally((e) -> {
+            e.printStackTrace();
+            return null;
         });
 
         task.thenRun(() -> runningTasks.remove(task));

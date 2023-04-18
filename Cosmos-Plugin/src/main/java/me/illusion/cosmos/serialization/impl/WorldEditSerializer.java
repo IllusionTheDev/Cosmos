@@ -6,7 +6,6 @@ import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.bukkit.BukkitWorld;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.extent.clipboard.Clipboard;
-import com.sk89q.worldedit.extent.clipboard.io.BuiltInClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormat;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardFormats;
 import com.sk89q.worldedit.extent.clipboard.io.ClipboardReader;
@@ -35,7 +34,7 @@ public class WorldEditSerializer implements CosmosSerializer {
 
         return CompletableFuture.supplyAsync(() -> {
             try (ByteArrayOutputStream stream = new ByteArrayOutputStream()) {
-                ClipboardFormat format = BuiltInClipboardFormat.SPONGE_V3_SCHEMATIC; // We could also use the format of the clipboard, but we don't know it
+                ClipboardFormat format = ClipboardFormats.findByAlias("sponge"); // We could also use the format of the clipboard, but we don't know it
 
                 try (ClipboardWriter writer = format.getWriter(stream)) {
                     writer.write(clipboard);
@@ -52,20 +51,18 @@ public class WorldEditSerializer implements CosmosSerializer {
     public CompletableFuture<TemplatedArea> deserialize(byte[] data) {
         return CompletableFuture.supplyAsync(() -> {
             try (InputStream stream = new ByteArrayInputStream(data)) {
-                ClipboardFormat format = ClipboardFormats.findByInputStream(() -> stream);
-
-                if (format == null) {
-                    // We could not find a format, so we assume it's a sponge schematic
-                    format = BuiltInClipboardFormat.SPONGE_V3_SCHEMATIC;
-                }
+                ClipboardFormat format = ClipboardFormats.findByAlias("sponge");
 
                 try (ClipboardReader reader = format.getReader(stream)) {
-                    return new SchematicTemplatedArea(this, reader.read());
+                    return (TemplatedArea) new SchematicTemplatedArea(this, reader.read());
                 }
 
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+        }).exceptionally(e -> {
+            e.printStackTrace();
+            return null;
         });
     }
 
