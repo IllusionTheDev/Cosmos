@@ -95,15 +95,17 @@ public class SchematicTemplatedArea implements TemplatedArea {
         @Override
         public CompletableFuture<Void> unload() {
             System.out.println("Unloading at " + pasteLocation);
-
+            
             World worldEditWorld = new BukkitWorld(pasteLocation.getWorld());
 
             Cuboid dimensions = getDimensions();
             CuboidRegion cuboidRegion = new CuboidRegion(
                 worldEditWorld,
-                BlockVector3.at(dimensions.getMinX(), dimensions.getMinY(), dimensions.getMinZ()),
-                BlockVector3.at(dimensions.getMaxX(), dimensions.getMaxY(), dimensions.getMaxZ())
+                BlockVector3.at(pasteLocation.getX() - dimensions.getWidth() / 2, pasteLocation.getY() - dimensions.getHeight() / 2, pasteLocation.getZ() - dimensions.getLength() / 2),
+                BlockVector3.at(pasteLocation.getX() + dimensions.getWidth() / 2, pasteLocation.getY() + dimensions.getHeight() / 2, pasteLocation.getZ() + dimensions.getLength() / 2)
             );
+
+
 
             BlockState air = BukkitAdapter.adapt(Material.AIR.createBlockData());
 
