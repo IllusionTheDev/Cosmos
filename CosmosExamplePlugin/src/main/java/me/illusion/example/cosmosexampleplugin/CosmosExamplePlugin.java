@@ -91,7 +91,7 @@ public final class CosmosExamplePlugin extends JavaPlugin {
         grid.paste(template).thenAccept(arena -> {
             Location center = arena.getPasteLocation();
 
-            one.teleport(center.clone().add(-10, 0, 0));
+            one.teleport(center.clone().add(-10, 0, 0)); // some spawn location
 
             cosmosPlugin.getPasteCache().register("arena-" + one.getName(), arena);
         });
