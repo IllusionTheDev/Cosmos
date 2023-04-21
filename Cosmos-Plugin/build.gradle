@@ -60,3 +60,16 @@ processResources {
         expand props
     }
 }
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+                groupId = 'com.github.IllusionTheDev' //your git id
+                artifactId = 'Cosmos' //your-repository
+                version = 'master-SNAPSHOT' // As same as the Tag
+            }
+        }
+    }
+}
