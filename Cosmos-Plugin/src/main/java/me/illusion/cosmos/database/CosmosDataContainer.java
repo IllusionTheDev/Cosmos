@@ -2,6 +2,7 @@ package me.illusion.cosmos.database;
 
 import java.util.concurrent.CompletableFuture;
 import me.illusion.cosmos.template.TemplatedArea;
+import org.bukkit.configuration.ConfigurationSection;
 
 /**
  * A cosmos data container is a repository for storing and retrieving areas.
@@ -49,5 +50,14 @@ public interface CosmosDataContainer {
      * @return The name of the container
      */
     String getName();
+
+    /**
+     * Enables the data container given the specified databases file
+     * Returns a future which resolves to true if the container was enabled successfully, or false if it was not
+     */
+    default CompletableFuture<Boolean> enable(ConfigurationSection section) {
+        // Some containers may not need to be enabled, such as the file container
+        return CompletableFuture.completedFuture(null);
+    }
 
 }

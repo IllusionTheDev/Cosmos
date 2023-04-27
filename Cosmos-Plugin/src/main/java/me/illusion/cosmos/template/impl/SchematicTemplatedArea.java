@@ -15,10 +15,12 @@ import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockState;
 import java.util.concurrent.CompletableFuture;
+import me.illusion.cosmos.event.CosmosPasteAreaEvent;
 import me.illusion.cosmos.serialization.CosmosSerializer;
 import me.illusion.cosmos.template.PastedArea;
 import me.illusion.cosmos.template.TemplatedArea;
 import me.illusion.cosmos.utilities.geometry.Cuboid;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 
@@ -90,6 +92,7 @@ public class SchematicTemplatedArea implements TemplatedArea {
 
         public SchematicPastedArea(Location pasteLocation) {
             this.pasteLocation = pasteLocation;
+            Bukkit.getPluginManager().callEvent(new CosmosPasteAreaEvent(this));
         }
 
         @Override

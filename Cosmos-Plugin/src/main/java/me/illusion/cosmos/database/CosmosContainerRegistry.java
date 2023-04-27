@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import me.illusion.cosmos.CosmosPlugin;
 import me.illusion.cosmos.database.impl.FileDataContainer;
+import me.illusion.cosmos.database.impl.MySQLDataContainer;
 
 /**
  * A registry for all data containers.
@@ -13,7 +14,6 @@ import me.illusion.cosmos.database.impl.FileDataContainer;
 public class CosmosContainerRegistry {
 
     private final Map<String, CosmosDataContainer> containers = new ConcurrentHashMap<>();
-
     private final CosmosPlugin cosmosPlugin;
 
     public CosmosContainerRegistry(CosmosPlugin plugin) {
@@ -62,6 +62,7 @@ public class CosmosContainerRegistry {
      */
     public void registerDefaults() {
         registerContainer(new FileDataContainer(cosmosPlugin));
+        registerContainer(new MySQLDataContainer(cosmosPlugin));
     }
 
 }
