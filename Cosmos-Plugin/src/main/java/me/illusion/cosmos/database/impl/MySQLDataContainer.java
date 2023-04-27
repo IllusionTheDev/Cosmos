@@ -78,8 +78,7 @@ public class MySQLDataContainer implements CosmosDataContainer {
         CompletableFuture<Void> queryFuture = templatesTable.executeQuery(
             SAVE_TEMPLATE.formatted(tableName),
             name, area.getSerializer().getName(), area.getSerializer().serialize(area)
-        ).thenRun(() -> {
-        }); // map to future<void>
+        ).thenRun(() -> {}); // map to future<void>
 
         queryFuture.thenRun(() -> runningFutures.remove(queryFuture));
         runningFutures.add(queryFuture);
@@ -96,6 +95,9 @@ public class MySQLDataContainer implements CosmosDataContainer {
         }); // map to future<void>
 
         queryFuture.thenRun(() -> runningFutures.remove(queryFuture));
+        runningFutures.add(queryFuture);
+
+        return queryFuture;
     }
 
     @Override
