@@ -35,7 +35,7 @@ public final class CosmosPlugin extends JavaPlugin {
 
         registerDefaults();
 
-        // TODO: Remote source enabling, testing
+        // TODO: testing
     }
 
     @Override

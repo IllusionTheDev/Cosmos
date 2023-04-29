@@ -73,6 +73,12 @@ public class WorldPerAreaGrid implements CosmosGrid {
             PooledWorld world = entry.getValue();
 
             if (world.getState() == PooledWorldState.IN_USE || world.getState() == PooledWorldState.UNUSED) {
+                World bukkitWorld = Bukkit.getWorld(world.getWorldName());
+
+                if(bukkitWorld != null) {
+                    bukkitWorld.setAutoSave(false); // We don't want to save the world when we unload it
+                }
+
                 Bukkit.unloadWorld(world.getWorldName(), false);
                 getOrCreateWorld(entry.getKey()).setState(PooledWorldState.UNLOADED);
 
@@ -219,6 +225,7 @@ public class WorldPerAreaGrid implements CosmosGrid {
         WorldCreator creator = new WorldCreator(randomId.toString());
         creator.generator(chunkGenerator);
         creator.generateStructures(false);
+
         World created = creator.createWorld();
 
         if (created == null) {
