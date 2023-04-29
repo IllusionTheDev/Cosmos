@@ -10,6 +10,7 @@ import me.illusion.cosmos.CosmosPlugin;
 import me.illusion.cosmos.database.impl.FileDataContainer;
 import me.illusion.cosmos.database.impl.MongoDataContainer;
 import me.illusion.cosmos.database.impl.MySQLDataContainer;
+import me.illusion.cosmos.database.impl.SQLiteDataContainer;
 import me.illusion.cosmos.file.CosmosDatabasesFile;
 import org.bukkit.configuration.ConfigurationSection;
 
@@ -71,6 +72,7 @@ public class CosmosContainerRegistry {
     public void registerDefaults() {
         registerContainer(new FileDataContainer(cosmosPlugin));
         registerContainer(new MySQLDataContainer(cosmosPlugin));
+        registerContainer(new SQLiteDataContainer(cosmosPlugin));
         registerContainer(new MongoDataContainer(cosmosPlugin));
     }
 
