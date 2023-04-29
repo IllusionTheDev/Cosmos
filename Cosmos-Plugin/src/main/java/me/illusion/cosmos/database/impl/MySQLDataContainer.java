@@ -148,4 +148,9 @@ public class MySQLDataContainer implements CosmosDataContainer {
             return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
         });
     }
+
+    @Override
+    public boolean requiresCredentials() {
+        return true;
+    }
 }

@@ -4,6 +4,7 @@ import lombok.Getter;
 import me.illusion.cosmos.cache.CosmosCache;
 import me.illusion.cosmos.database.CosmosContainerRegistry;
 import me.illusion.cosmos.database.CosmosDataContainer;
+import me.illusion.cosmos.file.CosmosDatabasesFile;
 import me.illusion.cosmos.serialization.CosmosSerializerRegistry;
 import me.illusion.cosmos.template.PastedArea;
 import me.illusion.cosmos.template.TemplatedArea;
@@ -16,6 +17,7 @@ public final class CosmosPlugin extends JavaPlugin {
     private CosmosSerializerRegistry serializerRegistry;
     private CosmosGridRegistry gridRegistry;
     private CosmosContainerRegistry containerRegistry;
+    private CosmosDatabasesFile databasesFile;
 
     private CosmosCache<PastedArea> pasteCache;
     private CosmosCache<TemplatedArea> templateCache;
@@ -23,6 +25,7 @@ public final class CosmosPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         // Plugin startup logic
+        databasesFile = new CosmosDatabasesFile(this);
         serializerRegistry = new CosmosSerializerRegistry();
         gridRegistry = new CosmosGridRegistry();
         containerRegistry = new CosmosContainerRegistry(this);
@@ -32,7 +35,7 @@ public final class CosmosPlugin extends JavaPlugin {
 
         registerDefaults();
 
-        // TODO: Remote sources, testing
+        // TODO: Remote source enabling, testing
     }
 
     @Override

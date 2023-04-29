@@ -106,7 +106,11 @@ public class SQLTable {
                 builder = new StringBuilder();
 
                 for (Object value : data.values()) {
-                    builder.append(value).append(", ");
+                    if(value instanceof Number) {
+                        builder.append(value).append(", ");
+                    } else {
+                        builder.append("'").append(value).append("', ");
+                    }
                 }
 
                 String values = builder.substring(0, builder.length() - 2);

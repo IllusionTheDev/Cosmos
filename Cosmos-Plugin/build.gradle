@@ -34,6 +34,9 @@ dependencies {
 
     // worldedit
     implementation('com.sk89q.worldedit:worldedit-bukkit:7.2.14-SNAPSHOT')
+
+    // mongo
+    implementation('org.mongodb:mongodb-driver-sync:4.3.3')
 }
 
 def targetJavaVersion = 17

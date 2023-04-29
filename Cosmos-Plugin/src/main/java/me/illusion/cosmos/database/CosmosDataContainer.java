@@ -60,4 +60,6 @@ public interface CosmosDataContainer {
         return CompletableFuture.completedFuture(null);
     }
 
+    boolean requiresCredentials();
+
 }

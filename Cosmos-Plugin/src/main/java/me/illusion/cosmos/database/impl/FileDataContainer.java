@@ -199,4 +199,9 @@ public class FileDataContainer implements CosmosDataContainer {
             throw new RuntimeException(ex);
         }
     }
+
+    @Override
+    public boolean requiresCredentials() {
+        return false;
+    }
 }
