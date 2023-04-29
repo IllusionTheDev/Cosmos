@@ -10,9 +10,7 @@ import me.illusion.cosmos.template.TemplatedArea;
 import me.illusion.cosmos.utilities.sql.ColumnData;
 import me.illusion.cosmos.utilities.sql.ColumnType;
 import me.illusion.cosmos.utilities.sql.SQLTable;
-import me.illusion.cosmos.utilities.sql.connection.MySQLConnectionProvider;
 import me.illusion.cosmos.utilities.sql.connection.SQLConnectionProvider;
-import me.illusion.cosmos.utilities.sql.connection.SQLiteConnectionProvider;
 import org.bukkit.configuration.ConfigurationSection;
 
 public abstract class SQLDataContainer implements CosmosDataContainer {
@@ -28,12 +26,10 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
     private static final String DELETE_TEMPLATE = "DELETE FROM %s WHERE template_id = ?";
 
     private final List<CompletableFuture<?>> runningFutures = new ArrayList<>();
-
+    private final CosmosPlugin plugin;
     private String tableName;
     private SQLTable templatesTable;
     private SQLConnectionProvider provider = null;
-
-    private final CosmosPlugin plugin;
 
     public SQLDataContainer(CosmosPlugin plugin) {
         this.plugin = plugin;
@@ -80,7 +76,8 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
         CompletableFuture<Void> queryFuture = templatesTable.executeQuery(
             SAVE_TEMPLATE.formatted(tableName),
             name, area.getSerializer().getName(), area.getSerializer().serialize(area)
-        ).thenRun(() -> {}); // map to future<void>
+        ).thenRun(() -> {
+        }); // map to future<void>
 
         queryFuture.thenRun(() -> runningFutures.remove(queryFuture));
         runningFutures.add(queryFuture);

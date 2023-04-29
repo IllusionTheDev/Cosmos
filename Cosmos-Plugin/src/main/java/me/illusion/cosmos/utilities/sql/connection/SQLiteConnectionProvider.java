@@ -16,7 +16,7 @@ public class SQLiteConnectionProvider implements SQLConnectionProvider {
     public SQLiteConnectionProvider(File file) {
         this.file = file;
 
-        if(!file.exists()) {
+        if (!file.exists()) {
             file.getParentFile().mkdirs();
             try {
                 file.createNewFile();
@@ -30,13 +30,13 @@ public class SQLiteConnectionProvider implements SQLConnectionProvider {
     public CompletableFuture<Connection> getConnection() {
         Connection current = connection.get();
 
-        if(current == null) {
+        if (current == null) {
             return createConnection();
         }
 
         // if the current is not valid, create a new one
         return validateConnection(current).thenCompose(valid -> {
-            if(valid) {
+            if (valid) {
                 return CompletableFuture.completedFuture(current);
             }
 
@@ -59,6 +59,7 @@ public class SQLiteConnectionProvider implements SQLConnectionProvider {
             return false;
         });
     }
+
     private CompletableFuture<Connection> createConnection() {
         return CompletableFuture.supplyAsync(() -> {
             try {

@@ -8,6 +8,7 @@ import me.illusion.cosmos.template.TemplatedArea;
 
 /**
  * No clue why someone would want to use this, but here it is.
+ *
  * @author Illusion
  */
 public class MemoryDataContainer implements CosmosDataContainer {

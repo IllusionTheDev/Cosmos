@@ -52,8 +52,8 @@ public interface CosmosDataContainer {
     String getName();
 
     /**
-     * Enables the data container given the specified databases file
-     * Returns a future which resolves to true if the container was enabled successfully, or false if it was not
+     * Enables the data container given the specified databases file Returns a future which resolves to true if the container was enabled successfully, or false
+     * if it was not
      */
     default CompletableFuture<Boolean> enable(ConfigurationSection section) {
         // Some containers may not need to be enabled, such as the file container

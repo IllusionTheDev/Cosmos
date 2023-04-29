@@ -4,7 +4,6 @@ import me.illusion.cosmos.CosmosPlugin;
 import me.illusion.cosmos.database.base.SQLDataContainer;
 import me.illusion.cosmos.utilities.sql.connection.MySQLConnectionProvider;
 import me.illusion.cosmos.utilities.sql.connection.SQLConnectionProvider;
-import me.illusion.cosmos.utilities.sql.connection.SQLiteConnectionProvider;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class MySQLDataContainer extends SQLDataContainer {

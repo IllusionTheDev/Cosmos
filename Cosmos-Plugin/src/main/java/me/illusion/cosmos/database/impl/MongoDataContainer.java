@@ -16,12 +16,10 @@ import org.bukkit.configuration.ConfigurationSection;
 
 public class MongoDataContainer implements CosmosDataContainer {
 
+    private final List<CompletableFuture<?>> futures = new ArrayList<>();
     private MongoClient mongoClient;
     private MongoCollection<Document> templatesCollection;
-
     private CosmosPlugin plugin;
-
-    private final List<CompletableFuture<?>> futures = new ArrayList<>();
 
     public MongoDataContainer(CosmosPlugin plugin) {
         this.plugin = plugin;

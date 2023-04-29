@@ -6,6 +6,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * A simple cache implementation, that uses a String identifier to store and retrieve values.
+ *
  * @param <T> The type of the value
  */
 public class CosmosCache<T> {
@@ -14,8 +15,9 @@ public class CosmosCache<T> {
 
     /**
      * Registers a value to the cache.
+     *
      * @param identifier The identifier to register the value under
-     * @param value The value to register
+     * @param value      The value to register
      */
     public void register(String identifier, T value) {
         cache.put(identifier, value);
@@ -23,7 +25,8 @@ public class CosmosCache<T> {
 
     /**
      * Registers a value to the cache, using a future.
-     * @param identifier The identifier to register the value under
+     *
+     * @param identifier  The identifier to register the value under
      * @param valueFuture The future which will complete with the value
      */
     public void register(String identifier, CompletableFuture<T> valueFuture) {
@@ -40,6 +43,7 @@ public class CosmosCache<T> {
 
     /**
      * Gets a value from the cache.
+     *
      * @param identifier The identifier to get the value from
      * @return The value, or null if it does not exist
      */
@@ -49,6 +53,7 @@ public class CosmosCache<T> {
 
     /**
      * Unregisters a value from the cache.
+     *
      * @param identifier The identifier to unregister the value from
      */
     public void unregister(String identifier) {

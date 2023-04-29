@@ -1,6 +1,5 @@
 package me.illusion.cosmos.utilities.text;
 
-import java.lang.ref.Reference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -86,8 +85,9 @@ public class Placeholder<T> {
 
 
     public String replace(String text, T object) {
-        if (text == null)
+        if (text == null) {
             return null;
+        }
 
         if (!placeholder.startsWith(openChar + "")) {
             placeholder = openChar + placeholder;

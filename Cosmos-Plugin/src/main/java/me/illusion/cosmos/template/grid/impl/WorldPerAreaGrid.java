@@ -43,7 +43,7 @@ public class WorldPerAreaGrid implements CosmosGrid {
 
     @Override
     public CompletableFuture<PastedArea> paste(TemplatedArea area) {
-        if(area == null) {
+        if (area == null) {
             throw new IllegalArgumentException("Area cannot be null");
         }
 
@@ -63,7 +63,7 @@ public class WorldPerAreaGrid implements CosmosGrid {
 
     @Override
     public CompletableFuture<Void> unloadAll() { // FIXME: This is not deleting worlds, maybe because the files are still in use?
-        if(worldPool.isEmpty()) {
+        if (worldPool.isEmpty()) {
             return CompletableFuture.completedFuture(null);
         }
 
@@ -75,7 +75,7 @@ public class WorldPerAreaGrid implements CosmosGrid {
             if (world.getState() == PooledWorldState.IN_USE || world.getState() == PooledWorldState.UNUSED) {
                 World bukkitWorld = Bukkit.getWorld(world.getWorldName());
 
-                if(bukkitWorld != null) {
+                if (bukkitWorld != null) {
                     bukkitWorld.setAutoSave(false); // We don't want to save the world when we unload it
                 }
 

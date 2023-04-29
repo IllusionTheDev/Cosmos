@@ -7,6 +7,7 @@ import me.illusion.cosmos.utilities.sql.SQLTable;
 public interface SQLConnectionProvider {
 
     CompletableFuture<Connection> getConnection();
+
     SQLTable getOrCreateTable(String name);
 
 

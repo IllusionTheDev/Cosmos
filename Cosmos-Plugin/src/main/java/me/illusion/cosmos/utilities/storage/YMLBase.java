@@ -14,9 +14,9 @@ public class YMLBase {
     private final boolean existsOnSource;
     private final JavaPlugin plugin;
     @Getter
-    private FileConfiguration configuration;
-    @Getter
     protected File file;
+    @Getter
+    private FileConfiguration configuration;
 
     public YMLBase(JavaPlugin plugin, String name) {
         this(plugin, new File(plugin.getDataFolder(), name), true);
@@ -45,7 +45,7 @@ public class YMLBase {
             file.getParentFile().mkdirs();
             if (existsOnSource) {
                 plugin.saveResource(file.getAbsolutePath()
-                        .replace(plugin.getDataFolder().getAbsolutePath() + File.separator, ""), false);
+                    .replace(plugin.getDataFolder().getAbsolutePath() + File.separator, ""), false);
             } else {
                 try {
                     file.createNewFile();
@@ -65,17 +65,17 @@ public class YMLBase {
     }
 
     public void writeUnsetValues() {
-        if(!existsOnSource) {
+        if (!existsOnSource) {
             return;
         }
 
         String inputName = file.getAbsolutePath().replace(plugin.getDataFolder().getAbsolutePath() + File.separator, "");
 
-        try(InputStreamReader reader = new InputStreamReader(plugin.getResource(inputName))) {
+        try (InputStreamReader reader = new InputStreamReader(plugin.getResource(inputName))) {
             YamlConfiguration source = YamlConfiguration.loadConfiguration(reader);
 
-            for(String key : source.getKeys(true)) {
-                if(!configuration.contains(key)) {
+            for (String key : source.getKeys(true)) {
+                if (!configuration.contains(key)) {
                     configuration.addDefault(key, source.get(key));
                 }
             }

@@ -6,8 +6,7 @@ import me.illusion.cosmos.utilities.geometry.Cuboid;
 import org.bukkit.Location;
 
 /**
- * A templated area is a "blueprint" of a map, which can be pasted at any given location. To create a templated area, use a
- * {@link CosmosSerializer}.
+ * A templated area is a "blueprint" of a map, which can be pasted at any given location. To create a templated area, use a {@link CosmosSerializer}.
  * <p>
  *
  * @author Illusion

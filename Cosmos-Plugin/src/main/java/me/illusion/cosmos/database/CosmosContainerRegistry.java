@@ -80,6 +80,7 @@ public class CosmosContainerRegistry {
 
     /**
      * Initializes the default container.
+     *
      * @return A completable future that will complete when the container is initialized
      */
     public CompletableFuture<CosmosDataContainer> initializeDefaultContainer() {
@@ -95,9 +96,10 @@ public class CosmosContainerRegistry {
     }
 
     /**
-     * Attempts to initialize a container, and if it fails, it will attempt to initialize the fallback container.
-     * A fallback container is a container that is specified in the databases.yml file, and is used when the default container fails to initialize.
-     * If no fallback container is specified, the default container (file) will be used.
+     * Attempts to initialize a container, and if it fails, it will attempt to initialize the fallback container. A fallback container is a container that is
+     * specified in the databases.yml file, and is used when the default container fails to initialize. If no fallback container is specified, the default
+     * container (file) will be used.
+     *
      * @param id The id of the container to initialize
      * @return A completable future that will complete when the container is initialized
      */
@@ -115,7 +117,7 @@ public class CosmosContainerRegistry {
         }
 
         return container.enable(section).thenCompose((success) -> {
-            if(!success) {
+            if (!success) {
                 cosmosPlugin.getLogger().warning("Failed to initialize container " + id + ". Attempting to initialize fallback container.");
                 String fallbackId = section == null ? defaultContainerId : section.getString("fallback", defaultContainerId);
                 return attemptInitializeContainer(fallbackId);
@@ -128,6 +130,7 @@ public class CosmosContainerRegistry {
 
     /**
      * Obtains the default container.
+     *
      * @return The default container
      */
     public CosmosDataContainer getDefaultContainer() {

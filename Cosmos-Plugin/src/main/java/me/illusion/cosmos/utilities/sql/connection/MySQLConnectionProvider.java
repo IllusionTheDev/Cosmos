@@ -1,13 +1,13 @@
 package me.illusion.cosmos.utilities.sql.connection;
 
-import me.illusion.cosmos.utilities.sql.SQLTable;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
+import me.illusion.cosmos.utilities.sql.SQLTable;
 import org.bukkit.configuration.ConfigurationSection;
 
-public class MySQLConnectionProvider implements SQLConnectionProvider{
+public class MySQLConnectionProvider implements SQLConnectionProvider {
 
     private final String host;
     private final int port;
@@ -42,13 +42,13 @@ public class MySQLConnectionProvider implements SQLConnectionProvider{
     public CompletableFuture<Connection> getConnection() {
         Connection current = connection.get();
 
-        if(current == null) {
+        if (current == null) {
             return createConnection();
         }
 
         // if the current is not valid, create a new one
         return validateConnection(current).thenCompose(valid -> {
-            if(valid) {
+            if (valid) {
                 return CompletableFuture.completedFuture(current);
             }
 
@@ -67,6 +67,7 @@ public class MySQLConnectionProvider implements SQLConnectionProvider{
             return false;
         });
     }
+
     private CompletableFuture<Connection> createConnection() {
         return CompletableFuture.supplyAsync(() -> {
             try {

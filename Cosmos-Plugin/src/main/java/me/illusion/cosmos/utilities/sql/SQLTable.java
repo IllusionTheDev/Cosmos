@@ -1,11 +1,11 @@
 package me.illusion.cosmos.utilities.sql;
 
-import me.illusion.cosmos.utilities.sql.connection.SQLConnectionProvider;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import me.illusion.cosmos.utilities.sql.connection.SQLConnectionProvider;
 
 public class SQLTable {
 
@@ -24,8 +24,9 @@ public class SQLTable {
         return provider.getConnection().thenAccept(connection -> {
             try {
                 // if the column already exists, don't add it
-                if (connection.getMetaData().getColumns(null, null, name, data.getName()).next())
+                if (connection.getMetaData().getColumns(null, null, name, data.getName()).next()) {
                     return;
+                }
 
                 Object value = data.getData();
 
@@ -34,11 +35,12 @@ public class SQLTable {
 
                 boolean primary = data.isPrimary();
 
-                if(primary) {
+                if (primary) {
                     valueString += " PRIMARY KEY";
                 }
 
-                connection.createStatement().executeUpdate("ALTER TABLE " + this.name + " ADD COLUMN " + data.getName() + " " + data.getType().name() + valueString);
+                connection.createStatement()
+                    .executeUpdate("ALTER TABLE " + this.name + " ADD COLUMN " + data.getName() + " " + data.getType().name() + valueString);
                 // mariadb is giving me a headache
             } catch (Exception e) {
                 e.printStackTrace();
@@ -106,7 +108,7 @@ public class SQLTable {
                 builder = new StringBuilder();
 
                 for (Object value : data.values()) {
-                    if(value instanceof Number) {
+                    if (value instanceof Number) {
                         builder.append(value).append(", ");
                     } else {
                         builder.append("'").append(value).append("', ");
@@ -131,8 +133,9 @@ public class SQLTable {
                     statement.setObject(index + 1, args[index]);
                 }
 
-                if(query.contains("SELECT"))
+                if (query.contains("SELECT")) {
                     return statement.executeQuery();
+                }
 
                 statement.executeUpdate();
             } catch (Exception e) {
