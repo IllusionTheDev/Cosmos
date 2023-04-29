@@ -10,6 +10,8 @@ import me.illusion.cosmos.template.grid.CosmosGrid;
 import me.illusion.cosmos.template.grid.impl.WorldPerAreaGrid;
 import me.illusion.cosmos.utilities.geometry.Cuboid;
 import me.illusion.cosmos.utilities.hook.WorldEditUtils;
+import me.illusion.example.cosmosexampleplugin.command.SetTemplateCommand;
+import me.illusion.example.cosmosexampleplugin.listener.PlayerJoinListener;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -30,6 +32,9 @@ public final class CosmosExamplePlugin extends JavaPlugin {
         cosmosPlugin = (CosmosPlugin) Bukkit.getPluginManager().getPlugin("Cosmos");
 
         initCosmos();
+
+        getCommand("settemplate").setExecutor(new SetTemplateCommand(this));
+        Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(this), this);
     }
 
     private void initCosmos() {

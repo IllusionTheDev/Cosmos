@@ -6,7 +6,4 @@ api-version: 1.19
 depend:
   - Cosmos
 commands:
-  createarena:
-  pastearena:
-  removearena:
-  removeall:
+  settemplate:

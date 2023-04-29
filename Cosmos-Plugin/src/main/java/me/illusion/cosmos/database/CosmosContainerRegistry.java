@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import lombok.Setter;
 import me.illusion.cosmos.CosmosPlugin;
 import me.illusion.cosmos.database.impl.FileDataContainer;
+import me.illusion.cosmos.database.impl.MemoryDataContainer;
 import me.illusion.cosmos.database.impl.MongoDataContainer;
 import me.illusion.cosmos.database.impl.MySQLDataContainer;
 import me.illusion.cosmos.database.impl.SQLiteDataContainer;
@@ -70,6 +71,7 @@ public class CosmosContainerRegistry {
      * Registers all default containers.
      */
     public void registerDefaults() {
+        registerContainer(new MemoryDataContainer()); // I wouldn't use this but whatever
         registerContainer(new FileDataContainer(cosmosPlugin));
         registerContainer(new MySQLDataContainer(cosmosPlugin));
         registerContainer(new SQLiteDataContainer(cosmosPlugin));
