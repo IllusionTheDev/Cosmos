@@ -19,7 +19,8 @@ public class MongoDataContainer implements CosmosDataContainer {
     private final List<CompletableFuture<?>> futures = new ArrayList<>();
     private MongoClient mongoClient;
     private MongoCollection<Document> templatesCollection;
-    private CosmosPlugin plugin;
+
+    private final CosmosPlugin plugin;
 
     public MongoDataContainer(CosmosPlugin plugin) {
         this.plugin = plugin;
@@ -34,8 +35,8 @@ public class MongoDataContainer implements CosmosDataContainer {
             String username = section.getString("username");
             String password = section.getString("password");
 
-            String database = section.getString("database");
-            String collectionName = section.getString("collection");
+            String database = section.getString("database", "cosmos");
+            String collectionName = section.getString("collection", "cosmos_templates");
 
             mongoClient = MongoClients.create(
                 new ConnectionString("mongodb://" + username + ":" + password + "@" + ip + ":" + port + "/?authSource=" + authsource));

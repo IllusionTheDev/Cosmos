@@ -1,11 +1,10 @@
 package me.illusion.cosmos.database.impl;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -172,23 +171,11 @@ public class FileDataContainer implements CosmosDataContainer {
 
     private byte[] readFully(File file) {
         // Read the file's full contents
-        byte[] data = new byte[(int) file.length()];
-
-        try (InputStream in = new FileInputStream(file)) {
-            int read = 0;
-            while (read < data.length) {
-                int r = in.read(data, read, data.length - read);
-                if (r == -1) {
-                    break;
-                }
-
-                read += r;
-            }
-        } catch (IOException ex) {
-            return null;
+        try {
+            return Files.readAllBytes(file.toPath());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
-
-        return data;
     }
 
     private void writeFully(File file, byte[] data) {
