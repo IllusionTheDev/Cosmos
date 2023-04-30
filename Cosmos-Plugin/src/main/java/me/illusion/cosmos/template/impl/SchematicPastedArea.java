@@ -13,6 +13,7 @@ import java.util.concurrent.CompletableFuture;
 import me.illusion.cosmos.event.CosmosPasteAreaEvent;
 import me.illusion.cosmos.event.CosmosUnloadAreaEvent;
 import me.illusion.cosmos.template.PastedArea;
+import me.illusion.cosmos.utilities.concurrency.MainThreadExecutor;
 import me.illusion.cosmos.utilities.geometry.Cuboid;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -34,6 +35,10 @@ public class SchematicPastedArea extends SchematicTemplatedArea implements Paste
 
     @Override
     public CompletableFuture<Void> unload() {
+        if (!Bukkit.isPrimaryThread()) {
+            return CompletableFuture.runAsync(this::unload, MainThreadExecutor.INSTANCE);
+        }
+
         System.out.println("Unloading at " + pasteLocation);
 
         World worldEditWorld = new BukkitWorld(pasteLocation.getWorld());

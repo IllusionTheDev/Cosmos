@@ -10,6 +10,7 @@ import me.illusion.cosmos.serialization.CosmosSerializerRegistry;
 import me.illusion.cosmos.template.PastedArea;
 import me.illusion.cosmos.template.TemplatedArea;
 import me.illusion.cosmos.template.grid.CosmosGridRegistry;
+import me.illusion.cosmos.utilities.concurrency.MainThreadExecutor;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -27,6 +28,8 @@ public final class CosmosPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         // Plugin startup logic
+        MainThreadExecutor.init(this);
+
         databasesFile = new CosmosDatabasesFile(this);
         serializerRegistry = new CosmosSerializerRegistry();
         gridRegistry = new CosmosGridRegistry();
