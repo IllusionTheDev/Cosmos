@@ -44,6 +44,6 @@ public class PlayerJoinListener implements Listener {
         UUID sessionId = event.getPlayer().getUniqueId();
 
         // Unload the session after 30 minutes of inactivity, this should be enough time for the player to rejoin in case of a crash.
-        examplePlugin.getSessionHolder().unloadAutomaticallyIn(new Time(30, TimeUnit.MINUTES), sessionId, true);
+        examplePlugin.getSessionHolder().unloadAutomaticallyIn(new Time(30, TimeUnit.SECONDS), sessionId, true);
     }
 }

@@ -105,6 +105,7 @@ public class CosmosSessionHolder {
         CosmosSession existingSession = sessions.get(sessionId);
 
         if (existingSession != null) {
+            System.out.println("Session " + sessionId + " already exists");
             return CompletableFuture.completedFuture(existingSession);
         }
 
@@ -182,6 +183,16 @@ public class CosmosSessionHolder {
      */
     public CompletableFuture<Boolean> unloadAutomaticallyIn(Time time, UUID sessionId, boolean save) {
         System.out.println("Requested unload in " + time);
+
+        CosmosSession session = sessions.get(sessionId);
+
+        if (session == null) {
+            System.out.println("Session " + sessionId + " is null");
+            return CompletableFuture.completedFuture(false);
+        }
+
+        session.save(saveContainer);
+
         long epoch = Instant.now().getEpochSecond() + time.as(TimeUnit.SECONDS);
 
         CompletableFuture<Boolean> future = new CompletableFuture<>();
