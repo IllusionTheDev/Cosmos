@@ -61,7 +61,9 @@ public class CosmosSessionHolder {
             return CompletableFuture.completedFuture(existingSession);
         }
 
+        System.out.println("Creating session " + sessionId.toString());
         return grid.paste(template).thenApply((pastedArea) -> {
+            System.out.println("Created session " + sessionId);
             CosmosSession session = new CosmosSession(sessionId, pastedArea);
             sessions.put(sessionId, session);
             return session;
@@ -115,6 +117,9 @@ public class CosmosSessionHolder {
             }
 
             return createSession(sessionId, templatedArea);
+        }).exceptionally((e) -> {
+            e.printStackTrace();
+            return null;
         });
     }
 
@@ -222,10 +227,10 @@ public class CosmosSessionHolder {
      * @param sessionId The UUID of the session
      */
     public void cancelUnload(UUID sessionId) {
-        System.out.println("Cancelling unload request - " + sessionId);
         UnloadTask task = unloadTasks.remove(sessionId);
 
         if (task != null) {
+            System.out.println("Cancelling unload request - " + sessionId);
             task.cancel();
         }
     }
