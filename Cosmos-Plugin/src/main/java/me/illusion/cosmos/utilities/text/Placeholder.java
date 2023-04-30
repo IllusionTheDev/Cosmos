@@ -23,6 +23,10 @@ import org.bukkit.entity.Player;
  * cacheValue: if true, the value will be cached once and never updated
  * cachedValue: the cached value
  */
+/**
+ * Represents a placeholder.
+ * @param <T> The type of object to replace the placeholder with
+ */
 public class Placeholder<T> {
 
     private final Function<T, String> replacement;
@@ -37,16 +41,34 @@ public class Placeholder<T> {
     private char openChar = '%';
     private char closeChar = '%';
 
+    /**
+     * Creates a new placeholder with a replacement function.
+     *
+     * @param placeholder The placeholder to replace
+     * @param replacement The function to replace the placeholder with
+     */
     public Placeholder(String placeholder, Function<T, String> replacement) {
         this.placeholder = placeholder;
         this.replacement = replacement;
     }
 
+    /**
+     * Creates a new placeholder with a replacement value.
+     *
+     * @param placeholder The placeholder to replace
+     * @param replacement The value to replace the placeholder with
+     */
     public Placeholder(String placeholder, String replacement) {
         this(placeholder, (object) -> replacement);
         this.cachedValue = replacement;
     }
 
+    /**
+     * Creates a new placeholder with a replacement future. The placeholder will be replaced with "Loading..." until the future completes.
+     *
+     * @param placeholder The placeholder to replace
+     * @param replacement The future to replace the placeholder with
+     */
     public Placeholder(String placeholder, CompletableFuture<String> replacement) {
         AtomicReference<String> ref = new AtomicReference<>("Loading...");
 
@@ -56,10 +78,22 @@ public class Placeholder<T> {
         this.replacement = (object) -> ref.get();
     }
 
+    /**
+     * Creates a new placeholder with a replacement supplier.
+     *
+     * @param placeholder The placeholder to replace
+     * @param replacement The supplier to replace the placeholder with
+     */
     public Placeholder(String placeholder, Supplier<String> replacement) {
         this(placeholder, (object) -> replacement.get());
     }
 
+    /**
+     * Converts a map of replacements to a list of placeholders.
+     *
+     * @param map The map of placeholders
+     * @return The list of placeholders
+     */
     public static List<Placeholder<Player>> asPlaceholderList(Map<String, Object> map) {
         List<Placeholder<Player>> list = new ArrayList<>();
 
@@ -83,17 +117,23 @@ public class Placeholder<T> {
         return list;
     }
 
-
+    /**
+     * Replaces the placeholder in the text with the replacement.
+     *
+     * @param text   The text to replace the placeholder in
+     * @param object The object to replace the placeholder with
+     * @return The text with the placeholder replaced
+     */
     public String replace(String text, T object) {
         if (text == null) {
             return null;
         }
 
-        if (!placeholder.startsWith(openChar + "")) {
+        if (!placeholder.startsWith(String.valueOf(openChar))) {
             placeholder = openChar + placeholder;
         }
 
-        if (!placeholder.endsWith(closeChar + "")) {
+        if (!placeholder.endsWith(String.valueOf(closeChar))) {
             placeholder = placeholder + closeChar;
         }
 
@@ -118,10 +158,21 @@ public class Placeholder<T> {
         return text.replace(placeholder, value);
     }
 
+    /**
+     * Obtains the replacement for the placeholder.
+     *
+     * @param object The object to replace the placeholder with
+     * @return The replacement
+     */
     private String replace(T object) {
         return replacement.apply(object);
     }
 
+    /**
+     * Attempts to cache the value.
+     *
+     * @param value The value to cache
+     */
     private void tryCache(String value) {
         if (cacheValue) {
             cachedValue = value;
@@ -131,13 +182,5 @@ public class Placeholder<T> {
     @Override
     public int hashCode() {
         return placeholder.hashCode();
-    }
-
-    public void setOpenChar(char openChar) {
-        this.openChar = openChar;
-    }
-
-    public void setCloseChar(char closeChar) {
-        this.closeChar = closeChar;
     }
 }

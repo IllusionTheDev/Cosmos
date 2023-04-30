@@ -2,6 +2,9 @@ package me.illusion.cosmos.utilities.time;
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Represents a time value.
+ */
 public class Time {
 
     private final int time;
@@ -12,10 +15,21 @@ public class Time {
         this.unit = unit;
     }
 
+    /**
+     * Converts the time to the specified unit.
+     *
+     * @param unit The unit to convert to
+     * @return The converted time
+     */
     public long as(TimeUnit unit) {
         return unit.convert(time, this.unit);
     }
 
+    /**
+     * Converts the time to ticks.
+     *
+     * @return The converted time
+     */
     public long asTicks() {
         return as(TimeUnit.MILLISECONDS) / 50;
     }

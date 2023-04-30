@@ -7,6 +7,12 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import me.illusion.cosmos.utilities.sql.connection.SQLConnectionProvider;
 
+/**
+ * Represents a table in a SQL database. Make sure to add columns before using the table.
+ *
+ * @author Illusion
+ * @see SQLColumn
+ */
 public class SQLTable {
 
     private final String name;
@@ -18,6 +24,12 @@ public class SQLTable {
         this.provider = provider;
     }
 
+    /**
+     * Adds a column to the table.
+     *
+     * @param data The data of the column
+     * @return A completable future that completes when the column is added
+     */
     public CompletableFuture<Void> addColumn(ColumnData data) {
         columns.put(name, new SQLColumn(this, data));
 
@@ -48,6 +60,12 @@ public class SQLTable {
         });
     }
 
+    /**
+     * Removes a column from the table.
+     *
+     * @param name The name of the column to remove
+     * @return A completable future that completes when the column is removed
+     */
     public CompletableFuture<Void> removeColumn(String name) {
         columns.remove(name);
 
@@ -60,10 +78,21 @@ public class SQLTable {
         });
     }
 
+    /**
+     * Obtains a column wrapper
+     *
+     * @param name The name of the column
+     * @return The column wrapper
+     */
     public SQLColumn getColumn(String name) {
         return columns.get(name);
     }
 
+    /**
+     * Creates the table if it doesn't exist.
+     *
+     * @return A completable future that completes when the table is created
+     */
     public CompletableFuture<Void> createTable() {
         return provider.getConnection().thenAccept(connection -> {
             try {
@@ -74,16 +103,11 @@ public class SQLTable {
         });
     }
 
-    public CompletableFuture<Void> createTable(String elements) {
-        return provider.getConnection().thenAccept(connection -> {
-            try {
-                connection.createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS " + name + "(" + elements + ")");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        });
-    }
-
+    /**
+     * Deletes the table.
+     *
+     * @return A completable future that completes when the table is deleted
+     */
     public CompletableFuture<Void> deleteTable() {
         return provider.getConnection().thenAccept(connection -> {
             try {
@@ -94,6 +118,12 @@ public class SQLTable {
         });
     }
 
+    /**
+     * Inserts a map of data into the table, where the key is the column name and the value is the data.
+     *
+     * @param data The data to insert
+     * @return A completable future that completes when the data is inserted
+     */
     public CompletableFuture<Void> insert(Map<String, Object> data) {
         return provider.getConnection().thenAccept(connection -> {
             try {
@@ -124,6 +154,13 @@ public class SQLTable {
         });
     }
 
+    /**
+     * Deletes data from the table.
+     *
+     * @param query The query to execute
+     * @param args  The arguments to replace in the query
+     * @return A completable future that completes when the data is deleted
+     */
     public CompletableFuture<ResultSet> executeQuery(String query, Object... args) {
         return provider.getConnection().thenApply(connection -> {
             try {
@@ -145,6 +182,13 @@ public class SQLTable {
         });
     }
 
+    /**
+     * Fetches data from the table.
+     *
+     * @param query The query to execute
+     * @param args  The arguments to replace in the query
+     * @return A completable future that completes when the data is fetched
+     */
     public CompletableFuture<Map<String, Object>> fetch(String query, Object... args) {
         return executeQuery(query, args).thenApply(results -> {
             try {

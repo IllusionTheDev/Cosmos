@@ -93,15 +93,12 @@ public class Cuboid implements Iterable<BlockVector>, Cloneable {
     }
 
     public boolean contains(Vector vector) {
-        return vector.getX() >= minX && vector.getX() <= maxX
-            && vector.getY() >= minY && vector.getY() <= maxY
-            && vector.getZ() >= minZ && vector.getZ() <= maxZ;
+        return vector.getX() >= minX && vector.getX() <= maxX && vector.getY() >= minY && vector.getY() <= maxY && vector.getZ() >= minZ
+            && vector.getZ() <= maxZ;
     }
 
     public boolean contains(double x, double y, double z) {
-        return x >= minX && x <= maxX
-            && y >= minY && y <= maxY
-            && z >= minZ && z <= maxZ;
+        return x >= minX && x <= maxX && y >= minY && y <= maxY && z >= minZ && z <= maxZ;
     }
 
     /**
@@ -157,18 +154,15 @@ public class Cuboid implements Iterable<BlockVector>, Cloneable {
      */
     public boolean intersectsCuboid(Cuboid other) {
         // copied from https://bukkit.org/threads/checking-if-two-cuboids-intersect.291432/, thanks to @Syd
-        if (!intersectsDimension(other.getMinX(), other.getMaxX(), this.getMinX(),
-            this.getMaxX())) {
+        if (!intersectsDimension(other.getMinX(), other.getMaxX(), this.getMinX(), this.getMaxX())) {
             return false;
         }
 
-        if (!intersectsDimension(other.getMinY(), other.getMaxY(), this.getMinY(),
-            this.getMaxY())) {
+        if (!intersectsDimension(other.getMinY(), other.getMaxY(), this.getMinY(), this.getMaxY())) {
             return false;
         }
 
-        return intersectsDimension(other.getMinZ(), other.getMaxZ(), this.getMinZ(),
-            this.getMaxZ());
+        return intersectsDimension(other.getMinZ(), other.getMaxZ(), this.getMinZ(), this.getMaxZ());
     }
 
     /**
@@ -180,15 +174,9 @@ public class Cuboid implements Iterable<BlockVector>, Cloneable {
         // The difference between this instance and the block cuboid is that the block cuboid
         // has the min and max values floored and ceiled respectively.
 
-        return new Cuboid(
-            (int) Math.floor(minX),
-            (int) Math.floor(minY),
-            (int) Math.floor(minZ),
+        return new Cuboid((int) Math.floor(minX), (int) Math.floor(minY), (int) Math.floor(minZ),
 
-            (int) Math.ceil(maxX),
-            (int) Math.ceil(maxY),
-            (int) Math.ceil(maxZ)
-        );
+            (int) Math.ceil(maxX), (int) Math.ceil(maxY), (int) Math.ceil(maxZ));
     }
 
     /**

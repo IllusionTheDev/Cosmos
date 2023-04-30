@@ -1,5 +1,8 @@
 package me.illusion.cosmos.utilities.sql;
 
+/**
+ * Represents a column type in a SQL table.
+ */
 public enum ColumnType {
     VARCHAR,
     INT,

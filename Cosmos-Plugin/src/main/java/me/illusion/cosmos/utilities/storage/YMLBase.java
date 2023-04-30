@@ -9,6 +9,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
+/**
+ * This class is responsible for handling the loading and saving of YAML files.
+ */
 public class YMLBase {
 
     private final boolean existsOnSource;
@@ -18,10 +21,23 @@ public class YMLBase {
     @Getter
     private FileConfiguration configuration;
 
+    /**
+     * Creates a new YMLBase instance with the specified name. It is assumed that the file is embedded in the plugin jar.
+     *
+     * @param plugin The plugin instance
+     * @param name   The name of the file
+     */
     public YMLBase(JavaPlugin plugin, String name) {
         this(plugin, new File(plugin.getDataFolder(), name), true);
     }
 
+    /**
+     * Creates a new YMLBase instance with the specified file.
+     *
+     * @param plugin         The plugin instance
+     * @param file           The file
+     * @param existsOnSource Whether or not the file is embedded in the plugin jar
+     */
     public YMLBase(JavaPlugin plugin, File file, boolean existsOnSource) {
         this.plugin = plugin;
         this.file = file;
@@ -30,6 +46,9 @@ public class YMLBase {
         this.configuration = loadConfiguration();
     }
 
+    /**
+     * Saves the configuration to the file.
+     */
     public void save() {
         try {
             configuration.save(file);
@@ -38,6 +57,11 @@ public class YMLBase {
         }
     }
 
+    /**
+     * Loads the configuration from the file.
+     *
+     * @return The configuration
+     */
     private FileConfiguration loadConfiguration() {
         FileConfiguration cfg = new YamlConfiguration();
 
@@ -64,6 +88,9 @@ public class YMLBase {
         return cfg;
     }
 
+    /**
+     * Writes all the values from the source file to the configuration if they do not exist.
+     */
     public void writeUnsetValues() {
         if (!existsOnSource) {
             return;
@@ -85,6 +112,9 @@ public class YMLBase {
 
     }
 
+    /**
+     * Reloads the configuration from the file.
+     */
     public void reload() {
         configuration = loadConfiguration();
     }

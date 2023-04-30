@@ -7,6 +7,11 @@ import java.util.concurrent.atomic.AtomicReference;
 import me.illusion.cosmos.utilities.sql.SQLTable;
 import org.bukkit.configuration.ConfigurationSection;
 
+/**
+ * Represents a connection provider for MySQL.
+ *
+ * @see SQLConnectionProvider
+ */
 public class MySQLConnectionProvider implements SQLConnectionProvider {
 
     private final String host;

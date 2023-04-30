@@ -8,6 +8,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 import me.illusion.cosmos.utilities.sql.SQLTable;
 
+/**
+ * Represents a connection provider for SQLite.
+ *
+ * @see SQLConnectionProvider
+ */
 public class SQLiteConnectionProvider implements SQLConnectionProvider {
 
     private final File file;

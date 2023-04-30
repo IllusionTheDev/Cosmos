@@ -1,5 +1,11 @@
 package me.illusion.cosmos.utilities.sql;
 
+import lombok.Data;
+
+/**
+ * Represents a column in a SQL table.
+ */
+@Data
 public class SQLColumn {
 
     private final ColumnData data;
