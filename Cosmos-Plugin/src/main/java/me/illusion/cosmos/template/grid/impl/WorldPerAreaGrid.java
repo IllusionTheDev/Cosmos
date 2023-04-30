@@ -15,6 +15,7 @@ import lombok.Setter;
 import me.illusion.cosmos.template.PastedArea;
 import me.illusion.cosmos.template.TemplatedArea;
 import me.illusion.cosmos.template.grid.CosmosGrid;
+import me.illusion.cosmos.utilities.concurrency.MainThreadExecutor;
 import me.illusion.cosmos.world.VoidGenerator;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -48,6 +49,13 @@ public class WorldPerAreaGrid implements CosmosGrid {
     public CompletableFuture<PastedArea> paste(TemplatedArea area) {
         if (area == null) {
             throw new IllegalArgumentException("Area cannot be null");
+        }
+
+        // sanity check
+        if (!Bukkit.isPrimaryThread()) {
+            CompletableFuture<PastedArea> future = new CompletableFuture<>();
+            CompletableFuture.runAsync(() -> paste(area).thenAccept(future::complete), MainThreadExecutor.INSTANCE);
+            return future;
         }
 
         UUID worldId = createWorld();
