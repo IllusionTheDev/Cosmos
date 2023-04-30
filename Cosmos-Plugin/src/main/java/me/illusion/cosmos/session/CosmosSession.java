@@ -28,6 +28,7 @@ public class CosmosSession {
      * @return A future which will complete when the session is unloaded
      */
     public CompletableFuture<Void> unload() {
+        System.out.println("Unloading session " + uuid.toString());
         return pastedArea.unload();
     }
 
@@ -38,6 +39,7 @@ public class CosmosSession {
      * @return A future which will complete when the session is saved
      */
     public CompletableFuture<Void> save(CosmosDataContainer container) {
+        System.out.println("Saving session " + uuid.toString());
         return container.saveTemplate(uuid.toString(), pastedArea);
     }
 

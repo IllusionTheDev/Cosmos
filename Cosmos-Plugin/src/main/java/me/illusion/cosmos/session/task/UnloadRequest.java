@@ -1,5 +1,6 @@
 package me.illusion.cosmos.session.task;
 
+import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -11,12 +12,30 @@ import java.util.concurrent.CompletableFuture;
  */
 public class UnloadRequest {
 
+    private final UUID sessionId;
     private final long epoch;
     private final CompletableFuture<Boolean> future;
 
-    public UnloadRequest(long epoch, CompletableFuture<Boolean> future) {
+    /**
+     * Creates an unload request with the specified session ID, epoch and future.
+     *
+     * @param sessionId The session ID
+     * @param epoch     The epoch
+     * @param future    The future
+     */
+    public UnloadRequest(UUID sessionId, long epoch, CompletableFuture<Boolean> future) {
+        this.sessionId = sessionId;
         this.epoch = epoch;
         this.future = future;
+    }
+
+    /**
+     * Gets the session ID.
+     *
+     * @return The session ID
+     */
+    public UUID getSessionId() {
+        return sessionId;
     }
 
     /**

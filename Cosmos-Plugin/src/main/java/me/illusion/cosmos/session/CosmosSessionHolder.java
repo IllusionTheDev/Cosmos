@@ -121,23 +121,28 @@ public class CosmosSessionHolder {
      * Unloads a session from memory.
      *
      * @param sessionId The UUID of the session
-     * @param save      Whether or not to save the session to the database
+     * @param save      Whether to save the session to the database
      * @return A future which will complete when the session is unloaded
      */
     public CompletableFuture<Void> unloadSession(UUID sessionId, boolean save) {
         CosmosSession session = sessions.get(sessionId);
+        System.out.println("Unloading session " + sessionId);
 
         if (session == null) {
+            System.out.println("Session " + sessionId + " is null");
             return CompletableFuture.completedFuture(null);
         }
 
+        System.out.println("Cancelling scheduled unloads for session " + sessionId);
         cancelUnload(sessionId);
 
         if (save) {
+            System.out.println("Saving session " + sessionId);
             // We unload after everything is saved to prevent any issues with servers stopping while data is being unloaded (if it stops, unloadAll will keep running)
             return session.save(saveContainer).thenCompose((v) -> session.unload()).thenRun(() -> sessions.remove(sessionId));
         }
 
+        System.out.println("Completing session unload for session " + sessionId);
         return session.unload().thenRun(() -> sessions.remove(sessionId));
     }
 
@@ -176,21 +181,27 @@ public class CosmosSessionHolder {
      * @return A future which will complete when the session is unloaded, returns true if the session was unloaded, false if it was loaded
      */
     public CompletableFuture<Boolean> unloadAutomaticallyIn(Time time, UUID sessionId, boolean save) {
+        System.out.println("Requested unload in " + time);
         long epoch = Instant.now().getEpochSecond() + time.as(TimeUnit.SECONDS);
 
         CompletableFuture<Boolean> future = new CompletableFuture<>();
-        UnloadTask task = new UnloadTask(plugin, new UnloadRequest(epoch, future));
+
+        UnloadRequest request = new UnloadRequest(sessionId, epoch, future);
+        UnloadTask task = new UnloadTask(plugin, request);
 
         future = future.thenCompose(success -> {
             unloadTasks.remove(sessionId);
 
-            if(success) {
+            if (success) {
+                System.out.println("Unloading session request finished - " + sessionId);
                 return unloadSession(sessionId, save).thenApply(v -> true);
             }
 
+            System.out.println("Unloading session request cancelled - " + sessionId);
             return CompletableFuture.completedFuture(false);
         });
 
+        System.out.println("Scheduling unload request - " + sessionId);
         unloadTasks.put(sessionId, task);
         return future;
     }
@@ -200,6 +211,7 @@ public class CosmosSessionHolder {
      * @param sessionId The UUID of the session
      */
     public void cancelUnload(UUID sessionId) {
+        System.out.println("Cancelling unload request - " + sessionId);
         UnloadTask task = unloadTasks.remove(sessionId);
 
         if (task != null) {

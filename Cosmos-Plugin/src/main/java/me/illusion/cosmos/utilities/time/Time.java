@@ -34,4 +34,8 @@ public class Time {
         return as(TimeUnit.MILLISECONDS) / 50;
     }
 
+    @Override
+    public String toString() {
+        return time + " " + unit.name().toLowerCase();
+    }
 }

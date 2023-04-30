@@ -1,0 +1,24 @@
+default: mysql
+
+mysql:
+  fallback: file
+
+  host: localhost
+  port: 3306
+  database: cosmos
+  username: root
+  password: ''
+
+  table: cosmos
+
+mongodb:
+  fallback: mysql
+
+  ip: localhost
+  port: 27017
+  auth-source: admin
+  username: root
+  password: ''
+
+  database: cosmos
+  collection: cosmos_templates

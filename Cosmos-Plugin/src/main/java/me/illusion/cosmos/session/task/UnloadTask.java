@@ -37,8 +37,10 @@ public class UnloadTask implements Runnable {
 
         if (delayTicks < 5) {
             // 0.25 seconds is okay
+            System.out.println("Time's up! Unloading session " + request.getSessionId());
             request.complete();
         } else {
+            System.out.println("Recursing unload task for " + request.getSessionId() + " with delay " + delayTicks);
             Bukkit.getScheduler().runTaskLater(plugin, this, delayTicks / 2); // Re-run the task in half the remaining time, so we can self-correct
         }
     }
