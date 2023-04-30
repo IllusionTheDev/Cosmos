@@ -14,7 +14,9 @@ import java.util.concurrent.CompletableFuture;
 import me.illusion.cosmos.serialization.CosmosSerializer;
 import me.illusion.cosmos.template.PastedArea;
 import me.illusion.cosmos.template.TemplatedArea;
+import me.illusion.cosmos.utilities.concurrency.MainThreadExecutor;
 import me.illusion.cosmos.utilities.geometry.Cuboid;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 /**
@@ -35,6 +37,13 @@ public class SchematicTemplatedArea implements TemplatedArea {
 
     @Override
     public CompletableFuture<PastedArea> paste(Location location) {
+        if (!Bukkit.isPrimaryThread()) {
+            CompletableFuture<PastedArea> future = new CompletableFuture<>();
+            CompletableFuture.runAsync(() -> paste(location).thenAccept(future::complete),
+                MainThreadExecutor.INSTANCE); // paste sync and then complete the future
+            return future;
+        }
+
         System.out.println("Pasting at " + location);
 
         World worldEditWorld = new BukkitWorld(location.getWorld());
