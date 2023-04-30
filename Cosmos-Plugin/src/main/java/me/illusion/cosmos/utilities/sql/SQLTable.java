@@ -2,7 +2,9 @@ package me.illusion.cosmos.utilities.sql;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import me.illusion.cosmos.utilities.sql.connection.SQLConnectionProvider;
@@ -189,18 +191,23 @@ public class SQLTable {
      * @param args  The arguments to replace in the query
      * @return A completable future that completes when the data is fetched
      */
-    public CompletableFuture<Map<String, Object>> fetch(String query, Object... args) {
+    public CompletableFuture<List<Map<String, Object>>> fetch(String query, Object... args) {
         return executeQuery(query, args).thenApply(results -> {
             try {
-                Map<String, Object> data = new HashMap<>();
+
+                List<Map<String, Object>> data = new ArrayList<>();
 
                 // No clue if all the tables are in the query
                 int columnCount = results.getMetaData().getColumnCount();
 
                 while (results.next()) {
+                    Map<String, Object> map = new HashMap<>();
+
                     for (int index = 1; index <= columnCount; index++) {
-                        data.put(results.getMetaData().getColumnName(index), results.getObject(index));
+                        map.put(results.getMetaData().getColumnName(index), results.getObject(index));
                     }
+
+                    data.add(map);
                 }
 
                 results.close();

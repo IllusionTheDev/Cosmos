@@ -24,6 +24,8 @@ repositories {
         url = 'https://maven.enginehub.org/repo/'
     }
 
+    maven { url "https://repo.rapture.pw/repository/maven-snapshots/" }
+
 }
 
 dependencies {
@@ -37,6 +39,9 @@ dependencies {
 
     // mongo
     implementation('org.mongodb:mongodb-driver-sync:4.3.3')
+
+    // SlimeWorldManager
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
 }
 
 def targetJavaVersion = 17

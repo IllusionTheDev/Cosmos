@@ -121,6 +121,66 @@ public class MongoDataContainer implements CosmosDataContainer {
     }
 
     @Override
+    public CompletableFuture<byte[]> fetchBinaryTemplate(String name) {
+        CompletableFuture<byte[]> future = new CompletableFuture<>();
+        futures.add(future);
+        future.thenRun(() -> futures.remove(future));
+
+        CompletableFuture<Void> fetch = CompletableFuture.runAsync(() -> {
+            Document document = templatesCollection.find(new Document("name", name)).first();
+            if (document == null) {
+                future.complete(null);
+                return;
+            }
+
+            byte[] data = document.get("data", byte[].class);
+            future.complete(data);
+        });
+
+        futures.add(fetch);
+        fetch.thenRun(() -> futures.remove(fetch));
+
+        return future;
+    }
+
+    @Override
+    public CompletableFuture<Void> saveBinaryTemplate(String name, byte[] data) {
+        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+            Document document = new Document("name", name)
+                .append("data", data);
+
+            templatesCollection.insertOne(document);
+        });
+
+        futures.add(future);
+        future.thenRun(() -> futures.remove(future));
+
+        return future;
+    }
+
+    @Override
+    public CompletableFuture<List<String>> fetchTemplateNames() {
+        CompletableFuture<List<String>> future = new CompletableFuture<>();
+        futures.add(future);
+        future.thenRun(() -> futures.remove(future));
+
+        CompletableFuture<Void> fetch = CompletableFuture.runAsync(() -> {
+            List<String> names = new ArrayList<>();
+
+            for (Document document : templatesCollection.find()) {
+                names.add(document.getString("name"));
+            }
+
+            future.complete(names);
+        });
+
+        futures.add(fetch);
+        fetch.thenRun(() -> futures.remove(fetch));
+
+        return future;
+    }
+
+    @Override
     public boolean requiresCredentials() {
         return true;
     }

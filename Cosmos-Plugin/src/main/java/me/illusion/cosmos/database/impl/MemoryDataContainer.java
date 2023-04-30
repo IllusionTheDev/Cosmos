@@ -1,5 +1,6 @@
 package me.illusion.cosmos.database.impl;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -14,6 +15,7 @@ import me.illusion.cosmos.template.TemplatedArea;
 public class MemoryDataContainer implements CosmosDataContainer {
 
     private final Map<String, TemplatedArea> templates = new ConcurrentHashMap<>();
+    private final Map<String, byte[]> binaryTemplates = new ConcurrentHashMap<>();
 
     @Override
     public CompletableFuture<TemplatedArea> fetchTemplate(String name) {
@@ -40,6 +42,22 @@ public class MemoryDataContainer implements CosmosDataContainer {
     @Override
     public String getName() {
         return "memory";
+    }
+
+    @Override
+    public CompletableFuture<byte[]> fetchBinaryTemplate(String name) {
+        return CompletableFuture.completedFuture(binaryTemplates.get(name));
+    }
+
+    @Override
+    public CompletableFuture<Void> saveBinaryTemplate(String name, byte[] data) {
+        binaryTemplates.put(name, data);
+        return CompletableFuture.completedFuture(null);
+    }
+
+    @Override
+    public CompletableFuture<List<String>> fetchTemplateNames() {
+        return CompletableFuture.completedFuture(List.copyOf(templates.keySet()));
     }
 
     @Override

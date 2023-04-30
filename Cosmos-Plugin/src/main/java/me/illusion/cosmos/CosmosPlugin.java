@@ -5,10 +5,12 @@ import me.illusion.cosmos.cache.CosmosCache;
 import me.illusion.cosmos.database.CosmosContainerRegistry;
 import me.illusion.cosmos.database.CosmosDataContainer;
 import me.illusion.cosmos.file.CosmosDatabasesFile;
+import me.illusion.cosmos.hook.SlimeCompatibility;
 import me.illusion.cosmos.serialization.CosmosSerializerRegistry;
 import me.illusion.cosmos.template.PastedArea;
 import me.illusion.cosmos.template.TemplatedArea;
 import me.illusion.cosmos.template.grid.CosmosGridRegistry;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 @Getter
@@ -58,5 +60,9 @@ public final class CosmosPlugin extends JavaPlugin {
     public void registerDefaults() {
         serializerRegistry.registerDefaultSerializers();
         containerRegistry.registerDefaults();
+
+        if (Bukkit.getPluginManager().isPluginEnabled("SlimeWorldManager")) {
+            SlimeCompatibility.init(this);
+        }
     }
 }

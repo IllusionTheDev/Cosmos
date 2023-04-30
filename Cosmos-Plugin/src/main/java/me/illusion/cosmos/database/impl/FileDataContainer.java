@@ -43,6 +43,88 @@ public class FileDataContainer implements CosmosDataContainer {
     }
 
     @Override
+    public CompletableFuture<byte[]> fetchBinaryTemplate(String name) {
+        CompletableFuture<byte[]> future = new CompletableFuture<>();
+        runningTasks.add(future);
+        future.thenRun(() -> runningTasks.remove(future));
+
+        CompletableFuture<Void> task = CompletableFuture.runAsync(() -> {
+            File templateFolder = new File(worldContainer, name);
+
+            if (!templateFolder.exists()) {
+                System.out.println("Template folder " + name + " does not exist");
+                future.complete(null);
+                return;
+            }
+
+            File dataFile = new File(templateFolder, "data.cosmosb");
+
+            if (!dataFile.exists()) {
+                System.out.println("Template folder " + name + " is missing files");
+                future.complete(null);
+                return;
+            }
+
+            try {
+                byte[] data = Files.readAllBytes(dataFile.toPath());
+                future.complete(data);
+            } catch (IOException e) {
+                e.printStackTrace();
+                future.completeExceptionally(e);
+            }
+        }).exceptionally((e) -> {
+            e.printStackTrace();
+            future.completeExceptionally(e);
+            return null;
+        }).thenRun(() -> runningTasks.remove(future));
+
+        return future;
+    }
+
+    @Override
+    public CompletableFuture<Void> saveBinaryTemplate(String name, byte[] data) {
+        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> {
+            File templateFolder = new File(worldContainer, name);
+
+            createFolder(templateFolder);
+
+            File dataFile = new File(templateFolder, "data.cosmosb");
+
+            try {
+                Files.write(dataFile.toPath(), data);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }).exceptionally((e) -> {
+            e.printStackTrace();
+            return null;
+        });
+
+        runningTasks.add(future);
+        future.thenRun(() -> runningTasks.remove(future));
+
+        return future;
+    }
+
+    @Override
+    public CompletableFuture<List<String>> fetchTemplateNames() {
+        return CompletableFuture.supplyAsync(() -> {
+            List<String> names = new ArrayList<>();
+
+            for (File file : worldContainer.listFiles()) {
+                if (file.isDirectory()) {
+                    names.add(file.getName());
+                }
+            }
+
+            return names;
+        }).exceptionally((e) -> {
+            e.printStackTrace();
+            return null;
+        });
+    }
+
+    @Override
     public CompletableFuture<TemplatedArea> fetchTemplate(String name) {
         CompletableFuture<TemplatedArea> future = new CompletableFuture<>();
 

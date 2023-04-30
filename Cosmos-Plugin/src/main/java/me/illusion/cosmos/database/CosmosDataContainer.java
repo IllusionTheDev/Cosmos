@@ -1,5 +1,6 @@
 package me.illusion.cosmos.database;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import me.illusion.cosmos.template.TemplatedArea;
 import org.bukkit.configuration.ConfigurationSection;
@@ -50,6 +51,30 @@ public interface CosmosDataContainer {
      * @return The name of the container
      */
     String getName();
+
+    /**
+     * Fetches a binary template from the container. Meant to be used with projects like SlimeWorldManager.
+     *
+     * @param name The name of the template
+     * @return A future which will be completed with the template, or null if it does not exist
+     */
+    CompletableFuture<byte[]> fetchBinaryTemplate(String name);
+
+    /**
+     * Saves a binary template to the container. Meant to be used with projects like SlimeWorldManager.
+     *
+     * @param name The name of the template
+     * @param data The data to save
+     * @return A future which will be completed when the save is done
+     */
+    CompletableFuture<Void> saveBinaryTemplate(String name, byte[] data);
+
+    /**
+     * Fetches a list of template names from the container.
+     *
+     * @return A future which will be completed with the list of template names
+     */
+    CompletableFuture<List<String>> fetchTemplateNames();
 
     /**
      * Enables the data container given the specified databases file Returns a future which resolves to true if the container was enabled successfully, or false

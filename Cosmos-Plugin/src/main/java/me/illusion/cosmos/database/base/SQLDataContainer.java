@@ -2,6 +2,7 @@ package me.illusion.cosmos.database.base;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import me.illusion.cosmos.CosmosPlugin;
 import me.illusion.cosmos.database.CosmosDataContainer;
@@ -24,6 +25,7 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
     private static final String FETCH_TEMPLATE = "SELECT * FROM %s WHERE template_id = ?";
     private static final String SAVE_TEMPLATE = "INSERT INTO %s (template_id, template_serializer, template_data) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE template_serializer=VALUES(template_serializer), template_data=VALUES(template_data)";
     private static final String DELETE_TEMPLATE = "DELETE FROM %s WHERE template_id = ?";
+    private static final String FETCH_ALL = "SELECT * FROM %s";
 
     private final List<CompletableFuture<?>> runningFutures = new ArrayList<>();
     private final CosmosPlugin plugin;
@@ -45,8 +47,8 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
                 return;
             }
 
-            String serializer = (String) results.get("template_serializer");
-            byte[] data = (byte[]) results.get("template_data");
+            String serializer = (String) results.get(0).get("template_serializer");
+            byte[] data = (byte[]) results.get(0).get("template_data");
 
             CosmosSerializer cosmosSerializer = plugin.getSerializerRegistry().get(serializer);
 
@@ -144,6 +146,72 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
             futures.add(templatesTable.createTable());
             return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
         });
+    }
+
+    @Override
+    public CompletableFuture<Void> saveBinaryTemplate(String name, byte[] data) {
+        CompletableFuture<Void> queryFuture = templatesTable.executeQuery(
+            SAVE_TEMPLATE.formatted(tableName),
+            name, "binary", data
+        ).thenRun(() -> {
+        }); // map to future<void>
+
+        queryFuture.thenRun(() -> runningFutures.remove(queryFuture));
+        runningFutures.add(queryFuture);
+
+        return queryFuture;
+    }
+
+    @Override
+    public CompletableFuture<byte[]> fetchBinaryTemplate(String name) {
+        CompletableFuture<byte[]> future = new CompletableFuture<>();
+
+        CompletableFuture<Void> queryFuture = templatesTable.fetch(FETCH_TEMPLATE.formatted(tableName), name).thenAccept(results -> {
+            if (results == null || results.isEmpty()) {
+                future.complete(null);
+                return;
+            }
+
+            byte[] data = (byte[]) results.get(0).get("template_data");
+
+            future.complete(data);
+        });
+
+        queryFuture.thenRun(() -> runningFutures.remove(queryFuture));
+        runningFutures.add(queryFuture);
+
+        future.thenRun(() -> runningFutures.remove(future));
+        runningFutures.add(future);
+
+        return future;
+    }
+
+    @Override
+    public CompletableFuture<List<String>> fetchTemplateNames() {
+        CompletableFuture<List<String>> future = new CompletableFuture<>();
+
+        CompletableFuture<Void> queryFuture = templatesTable.fetch(FETCH_ALL.formatted(tableName)).thenAccept(results -> {
+            if (results == null || results.isEmpty()) {
+                future.complete(null);
+                return;
+            }
+
+            List<String> names = new ArrayList<>();
+
+            for (Map<String, Object> result : results) {
+                names.add((String) result.get("template_id"));
+            }
+
+            future.complete(names);
+        });
+
+        queryFuture.thenRun(() -> runningFutures.remove(queryFuture));
+        runningFutures.add(queryFuture);
+
+        future.thenRun(() -> runningFutures.remove(future));
+        runningFutures.add(future);
+
+        return future;
     }
 
     @Override
