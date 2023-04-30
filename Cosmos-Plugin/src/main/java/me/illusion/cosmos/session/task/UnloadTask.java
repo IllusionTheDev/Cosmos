@@ -4,7 +4,13 @@ import java.time.Instant;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
-public class UnloadTask implements Runnable{
+/**
+ * A task that will unload a session after a specified amount of time. This task is self-correcting, meaning that if the server is lagging, it will correct
+ * itself by using recursion.
+ *
+ * @author Illusion
+ */
+public class UnloadTask implements Runnable {
 
     private final JavaPlugin plugin;
     private final UnloadRequest request;
@@ -29,7 +35,7 @@ public class UnloadTask implements Runnable{
 
         long delayTicks = delay * 20;
 
-        if(delayTicks < 5) {
+        if (delayTicks < 5) {
             // 0.25 seconds is okay
             request.complete();
         } else {
@@ -37,8 +43,11 @@ public class UnloadTask implements Runnable{
         }
     }
 
+    /**
+     * Cancels the unload task.
+     */
     public void cancel() {
-        if(!request.getFuture().isDone()) {
+        if (!request.getFuture().isDone()) {
             request.cancel();
         }
     }
