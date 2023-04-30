@@ -1,7 +1,9 @@
 package me.illusion.example.cosmosexampleplugin.listener;
 
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import me.illusion.cosmos.template.TemplatedArea;
+import me.illusion.cosmos.utilities.time.Time;
 import me.illusion.example.cosmosexampleplugin.CosmosExamplePlugin;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -29,6 +31,8 @@ public class PlayerJoinListener implements Listener {
         Player player = event.getPlayer();
         UUID sessionId = player.getUniqueId(); // Since this is a sample plugin, we'll just make the island id the player's uuid
 
+        // Let's attempt to load or create a session. Given we automatically unload sessions after 30 minutes, if the session is still valid it'll be instantly loaded.
+        // Attempting to load or create a session with an automatic unload in the background will cause the unload to be cancelled, and the session to be considered active.
         examplePlugin.getSessionHolder().loadOrCreateSession(sessionId, template).thenAccept((session) -> {
             // We'll teleport the player to the island's spawn point
             player.teleport(session.getPastedArea().getPasteLocation());
@@ -39,6 +43,7 @@ public class PlayerJoinListener implements Listener {
     private void onQuit(PlayerQuitEvent event) {
         UUID sessionId = event.getPlayer().getUniqueId();
 
-        examplePlugin.getSessionHolder().unloadSession(sessionId, true); // When the player leaves, we'll unload their island
+        // Unload the session after 30 minutes of inactivity, this should be enough time for the player to rejoin in case of a crash.
+        examplePlugin.getSessionHolder().unloadAutomaticallyIn(new Time(30, TimeUnit.MINUTES), sessionId, true);
     }
 }
