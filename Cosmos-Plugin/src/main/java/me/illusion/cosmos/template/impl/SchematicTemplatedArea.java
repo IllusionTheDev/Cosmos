@@ -16,6 +16,7 @@ import com.sk89q.worldedit.world.World;
 import com.sk89q.worldedit.world.block.BlockState;
 import java.util.concurrent.CompletableFuture;
 import me.illusion.cosmos.event.CosmosPasteAreaEvent;
+import me.illusion.cosmos.event.CosmosUnloadAreaEvent;
 import me.illusion.cosmos.serialization.CosmosSerializer;
 import me.illusion.cosmos.template.PastedArea;
 import me.illusion.cosmos.template.TemplatedArea;
@@ -119,6 +120,7 @@ public class SchematicTemplatedArea implements TemplatedArea {
                 throw new RuntimeException(e);
             }
 
+            Bukkit.getPluginManager().callEvent(new CosmosUnloadAreaEvent(this));
             return CompletableFuture.completedFuture(null);
         }
 

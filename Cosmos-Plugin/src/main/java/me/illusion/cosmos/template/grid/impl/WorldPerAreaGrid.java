@@ -15,7 +15,6 @@ import lombok.Setter;
 import me.illusion.cosmos.template.PastedArea;
 import me.illusion.cosmos.template.TemplatedArea;
 import me.illusion.cosmos.template.grid.CosmosGrid;
-import me.illusion.cosmos.template.impl.quirky.ProxyPastedArea;
 import me.illusion.cosmos.world.VoidGenerator;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -55,14 +54,7 @@ public class WorldPerAreaGrid implements CosmosGrid {
 
         getOrCreateWorld(worldId).setState(PooledWorldState.IN_USE);
 
-        return area.paste(new Location(Bukkit.getWorld(worldId), spawnLocation.getBlockX(), spawnLocation.getBlockY(), spawnLocation.getBlockZ()))
-            .thenApply((pastedArea -> {
-                ProxyPastedArea proxy = new ProxyPastedArea(pastedArea);
-
-                proxy.setPostUnloadAction(() -> unloadWorld(pastedArea.getPasteLocation().getWorld().getUID()));
-
-                return proxy;
-            }));
+        return area.paste(new Location(Bukkit.getWorld(worldId), spawnLocation.getBlockX(), spawnLocation.getBlockY(), spawnLocation.getBlockZ()));
     }
 
     @Override
@@ -91,6 +83,21 @@ public class WorldPerAreaGrid implements CosmosGrid {
         }
 
         return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+    }
+
+    @Override
+    public void registerUnload(PastedArea area) {
+        if (area == null) {
+            throw new IllegalArgumentException("Area cannot be null");
+        }
+
+        UUID worldId = area.getPasteLocation().getWorld().getUID();
+
+        if (!worldPool.containsKey(worldId)) { // There is no guarantee that the area was pasted by this grid, so we need to check if the world is in the pool
+            return;
+        }
+
+        unloadWorld(worldId);
     }
 
     /**

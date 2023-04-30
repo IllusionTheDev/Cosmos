@@ -37,4 +37,11 @@ public interface CosmosGrid {
      */
     CompletableFuture<Void> unloadAll();
 
+    /**
+     * Called when an area is unloaded. There is no guarantee that the area was pasted by this grid.
+     *
+     * @param area The area which was unloaded
+     */
+    void registerUnload(PastedArea area);
+
 }

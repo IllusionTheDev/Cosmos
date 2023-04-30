@@ -5,10 +5,12 @@ import me.illusion.cosmos.cache.CosmosCache;
 import me.illusion.cosmos.database.CosmosContainerRegistry;
 import me.illusion.cosmos.database.CosmosDataContainer;
 import me.illusion.cosmos.file.CosmosDatabasesFile;
+import me.illusion.cosmos.listener.CosmosUnloadAreaListener;
 import me.illusion.cosmos.serialization.CosmosSerializerRegistry;
 import me.illusion.cosmos.template.PastedArea;
 import me.illusion.cosmos.template.TemplatedArea;
 import me.illusion.cosmos.template.grid.CosmosGridRegistry;
+import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 @Getter
@@ -34,6 +36,7 @@ public final class CosmosPlugin extends JavaPlugin {
         pasteCache = new CosmosCache<>();
 
         registerDefaults();
+        registerListeners();
 
         // TODO: testing
     }
@@ -58,5 +61,12 @@ public final class CosmosPlugin extends JavaPlugin {
     public void registerDefaults() {
         serializerRegistry.registerDefaultSerializers();
         containerRegistry.registerDefaults();
+    }
+
+    /**
+     * Registers any listeners
+     */
+    public void registerListeners() {
+        Bukkit.getPluginManager().registerEvents(new CosmosUnloadAreaListener(this), this);
     }
 }

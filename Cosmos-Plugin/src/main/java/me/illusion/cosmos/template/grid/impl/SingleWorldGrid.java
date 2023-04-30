@@ -4,15 +4,16 @@ import com.google.common.collect.Sets;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import lombok.Builder;
 import lombok.Builder.Default;
 import me.illusion.cosmos.template.PastedArea;
 import me.illusion.cosmos.template.TemplatedArea;
 import me.illusion.cosmos.template.grid.CosmosGrid;
-import me.illusion.cosmos.template.impl.quirky.ProxyPastedArea;
 import me.illusion.cosmos.utilities.geometry.Point;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -32,6 +33,7 @@ import org.bukkit.generator.ChunkGenerator;
 public class SingleWorldGrid implements CosmosGrid {
 
     private final Set<Integer> usedIndexes = Sets.newConcurrentHashSet();
+    private final Map<PastedArea, Integer> pasteIndexes = new ConcurrentHashMap<>();
 
     private final UUID worldId;
     private final ChunkGenerator chunkGenerator;
@@ -55,11 +57,8 @@ public class SingleWorldGrid implements CosmosGrid {
         // paste the area at the point
         return area.paste(new Location(Bukkit.getWorld(worldId), point.getX() * distanceBetweenAreas, baseYLevel, point.getY() * distanceBetweenAreas))
             .thenApply(pastedArea -> {
-                // Creates a proxy that will remove the index from the used indexes when the area is unloaded
-                ProxyPastedArea proxy = new ProxyPastedArea(pastedArea);
-                proxy.setPreUnloadAction(() -> usedIndexes.remove(index));
-
-                return proxy;
+                pasteIndexes.put(pastedArea, index);
+                return pastedArea;
             });
     }
 
@@ -90,6 +89,17 @@ public class SingleWorldGrid implements CosmosGrid {
         }
 
         return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+    }
+
+    @Override
+    public void registerUnload(PastedArea area) {
+        Integer boxedIndex = pasteIndexes.remove(area);
+
+        if (boxedIndex == null) {
+            return;
+        }
+
+        usedIndexes.remove(boxedIndex);
     }
 
     /**

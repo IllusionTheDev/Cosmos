@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import me.illusion.cosmos.template.PastedArea;
 
 public class CosmosGridRegistry {
 
@@ -26,6 +27,12 @@ public class CosmosGridRegistry {
         }
 
         return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+    }
+
+    public void handleUnload(PastedArea area) {
+        for (CosmosGrid grid : grids) {
+            grid.registerUnload(area);
+        }
     }
 
 }
