@@ -92,6 +92,15 @@ public class Cuboid implements Iterable<BlockVector>, Cloneable {
         this.maxZ = max.getZ();
     }
 
+    public Cuboid(Cuboid other, Location center) {
+        this.minX = center.getX() - other.getWidth() / 2;
+        this.minY = center.getY() - other.getHeight() / 2;
+        this.minZ = center.getZ() - other.getLength() / 2;
+        this.maxX = center.getX() + other.getWidth() / 2;
+        this.maxY = center.getY() + other.getHeight() / 2;
+        this.maxZ = center.getZ() + other.getLength() / 2;
+    }
+
     public boolean contains(Vector vector) {
         return vector.getX() >= minX && vector.getX() <= maxX && vector.getY() >= minY && vector.getY() <= maxY && vector.getZ() >= minZ
             && vector.getZ() <= maxZ;

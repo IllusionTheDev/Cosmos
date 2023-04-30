@@ -1,6 +1,7 @@
 package me.illusion.cosmos.template;
 
 import java.util.concurrent.CompletableFuture;
+import me.illusion.cosmos.utilities.geometry.Cuboid;
 import org.bukkit.Location;
 
 /**
@@ -26,5 +27,16 @@ public interface PastedArea extends TemplatedArea {
      * @return The location of the area
      */
     Location getPasteLocation();
+
+    /**
+     * Checks if the area contains the specified location.
+     *
+     * @param location The location to check
+     * @return Whether the area contains the location
+     */
+    default boolean containsLocation(Location location) {
+        Cuboid areaCuboid = new Cuboid(getDimensions(), location);
+        return areaCuboid.contains(location);
+    }
 
 }

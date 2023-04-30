@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.Getter;
 import me.illusion.cosmos.database.CosmosDataContainer;
 import me.illusion.cosmos.template.PastedArea;
+import org.bukkit.Location;
 
 
 /**
@@ -38,6 +39,16 @@ public class CosmosSession {
      */
     public CompletableFuture<Void> save(CosmosDataContainer container) {
         return container.saveTemplate(uuid.toString(), pastedArea);
+    }
+
+    /**
+     * Checks if the session contains the specified location.
+     *
+     * @param location The location to check
+     * @return Whether the session contains the location
+     */
+    public boolean containsLocation(Location location) {
+        return pastedArea.containsLocation(location);
     }
 
 }

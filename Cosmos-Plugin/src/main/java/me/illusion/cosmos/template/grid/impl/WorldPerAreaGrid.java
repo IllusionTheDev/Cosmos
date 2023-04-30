@@ -24,6 +24,10 @@ import org.bukkit.WorldCreator;
 import org.bukkit.generator.ChunkGenerator;
 import org.bukkit.util.Vector;
 
+/**
+ * A world per area grid is a grid which pastes areas in a new world for each area. Worlds are pooled, and are reused when possible. You can fine tune the
+ * amount of worlds that are kept in memory, and the amount of worlds that are kept on disk.
+ */
 @Builder
 public class WorldPerAreaGrid implements CosmosGrid {
 

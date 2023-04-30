@@ -14,6 +14,7 @@ import me.illusion.cosmos.session.task.UnloadTask;
 import me.illusion.cosmos.template.TemplatedArea;
 import me.illusion.cosmos.template.grid.CosmosGrid;
 import me.illusion.cosmos.utilities.time.Time;
+import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -201,8 +202,24 @@ public class CosmosSessionHolder {
     public void cancelUnload(UUID sessionId) {
         UnloadTask task = unloadTasks.remove(sessionId);
 
-        if(task != null) {
+        if (task != null) {
             task.cancel();
         }
+    }
+
+    /**
+     * Gets the session at a location.
+     *
+     * @param location The location
+     * @return The session, or null if it does not exist
+     */
+    public CosmosSession getSessionAt(Location location) {
+        for (CosmosSession session : sessions.values()) {
+            if (session.containsLocation(location)) {
+                return session;
+            }
+        }
+
+        return null;
     }
 }
