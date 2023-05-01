@@ -2,6 +2,7 @@ package me.illusion.cosmos;
 
 import lombok.Getter;
 import me.illusion.cosmos.cache.CosmosCache;
+import me.illusion.cosmos.command.CosmosImportCommand;
 import me.illusion.cosmos.database.CosmosContainerRegistry;
 import me.illusion.cosmos.database.CosmosDataContainer;
 import me.illusion.cosmos.file.CosmosDatabasesFile;
@@ -10,7 +11,9 @@ import me.illusion.cosmos.serialization.CosmosSerializerRegistry;
 import me.illusion.cosmos.template.PastedArea;
 import me.illusion.cosmos.template.TemplatedArea;
 import me.illusion.cosmos.template.grid.CosmosGridRegistry;
+import me.illusion.cosmos.utilities.command.impl.CommandManager;
 import me.illusion.cosmos.utilities.concurrency.MainThreadExecutor;
+import me.illusion.cosmos.utilities.storage.MessagesFile;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -25,6 +28,9 @@ public final class CosmosPlugin extends JavaPlugin {
     private CosmosCache<PastedArea> pasteCache;
     private CosmosCache<TemplatedArea> templateCache;
 
+    private CommandManager commandManager;
+    private MessagesFile messages;
+
     @Override
     public void onEnable() {
         // Plugin startup logic
@@ -38,8 +44,12 @@ public final class CosmosPlugin extends JavaPlugin {
         templateCache = new CosmosCache<>();
         pasteCache = new CosmosCache<>();
 
+        messages = new MessagesFile(this);
+        commandManager = new CommandManager(this, messages);
+
         registerDefaults();
         registerListeners();
+        registerCommands();
 
         // TODO: testing
     }
@@ -71,5 +81,12 @@ public final class CosmosPlugin extends JavaPlugin {
      */
     public void registerListeners() {
         Bukkit.getPluginManager().registerEvents(new CosmosUnloadAreaListener(this), this);
+    }
+
+    /**
+     * Registers any commands
+     */
+    public void registerCommands() {
+        commandManager.register(new CosmosImportCommand(this));
     }
 }

@@ -45,5 +45,9 @@ public class TextUtils {
     public static boolean containsIllegalCharacters(String input) {
         return illegalCharactersPattern.matcher(input).find();
     }
+
+    public static String removeFileExtension(String fileName) {
+        return fileName.substring(0, fileName.lastIndexOf('.'));
+    }
 }
 

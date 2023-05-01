@@ -17,8 +17,10 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.world.World;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.concurrent.CompletableFuture;
 import me.illusion.cosmos.serialization.CosmosSerializer;
 import me.illusion.cosmos.template.TemplatedArea;
@@ -97,6 +99,23 @@ public class WorldEditSerializer implements CosmosSerializer {
         }
 
         return CompletableFuture.completedFuture(new SchematicTemplatedArea(this, clipboard));
+    }
+
+    @Override
+    public CompletableFuture<TemplatedArea> tryImport(File file) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return Files.readAllBytes(file.toPath());
+            } catch (IOException expected) {
+                return null;
+            }
+        }).thenCompose(data -> {
+            if (data == null) {
+                return CompletableFuture.completedFuture(null);
+            }
+
+            return deserialize(data);
+        });
     }
 
     @Override

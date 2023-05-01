@@ -1,5 +1,6 @@
 package me.illusion.cosmos.serialization;
 
+import java.io.File;
 import java.util.concurrent.CompletableFuture;
 import me.illusion.cosmos.template.TemplatedArea;
 import me.illusion.cosmos.utilities.geometry.Cuboid;
@@ -38,6 +39,14 @@ public interface CosmosSerializer {
      * @return A future of the created area
      */
     CompletableFuture<TemplatedArea> createArea(Cuboid bounds, Location anchor);
+
+    /**
+     * Attempts to import an area from a file. This method should return null if the file is not supported.
+     *
+     * @param file The file to import from
+     * @return A future of the imported area
+     */
+    CompletableFuture<TemplatedArea> tryImport(File file);
 
     /**
      * Obtains the name of the serializer.

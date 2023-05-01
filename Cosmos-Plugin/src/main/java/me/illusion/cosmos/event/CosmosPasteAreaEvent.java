@@ -5,6 +5,7 @@ import me.illusion.cosmos.event.base.CosmosEvent;
 import me.illusion.cosmos.template.PastedArea;
 import org.bukkit.event.HandlerList;
 
+
 @Getter
 public class CosmosPasteAreaEvent extends CosmosEvent {
 

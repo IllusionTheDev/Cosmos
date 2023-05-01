@@ -4,6 +4,7 @@ import me.illusion.cosmos.utilities.storage.YMLBase;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.java.JavaPlugin;
 
+
 public class CosmosDatabasesFile extends YMLBase {
 
     public CosmosDatabasesFile(JavaPlugin plugin) {
