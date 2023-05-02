@@ -25,4 +25,9 @@ public class SQLiteDataContainer extends SQLDataContainer {
     public SQLConnectionProvider getSQLConnectionProvider(ConfigurationSection section) {
         return new SQLiteConnectionProvider(file);
     }
+
+    @Override
+    public boolean requiresCredentials() {
+        return false;
+    }
 }
