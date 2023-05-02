@@ -167,12 +167,11 @@ public class CosmosSessionHolder {
      *
      * @return A future which will complete when all sessions are unloaded
      */
-    public CompletableFuture<Void> unloadAll() {
+    public CompletableFuture<Void> unloadAll(boolean save) {
         List<CompletableFuture<?>> futures = new ArrayList<>();
 
-        for (CosmosSession session : sessions.values()) {
-            futures.add(session.unload());
-            cancelUnload(session.getUuid());
+        for (UUID sessionId : sessions.keySet()) {
+            futures.add(unloadSession(sessionId, save));
         }
 
         return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));

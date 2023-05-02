@@ -46,6 +46,6 @@ public final class CosmosExamplePlugin extends JavaPlugin {
     @Override
     public void onDisable() {
         // We'll unload all the worlds when the plugin is disabled. We join the completable future to ensure it's completed before the plugin is disabled.
-        sessionHolder.unloadAll().join();
+        sessionHolder.unloadAll(true).join();
     }
 }
