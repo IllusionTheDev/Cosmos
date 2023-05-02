@@ -40,7 +40,10 @@ public class CosmosSession {
      */
     public CompletableFuture<Void> save(CosmosDataContainer container) {
         System.out.println("Saving session " + uuid.toString());
-        return container.saveTemplate(uuid.toString(), pastedArea);
+        return container.saveTemplate(uuid.toString(), pastedArea).exceptionally(throwable -> {
+            throwable.printStackTrace();
+            return null;
+        });
     }
 
     /**

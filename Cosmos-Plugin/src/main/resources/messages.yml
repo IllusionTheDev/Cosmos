@@ -1,0 +1,16 @@
+messages:
+  prefix: "&9Cosmos: &8»&7"
+
+  command:
+    invalid-args: "%prefix% &cInvalid args!"
+    cannot-use: "%prefix% &cYou are not allowed to use this command" # If the command is restricted to the console, for example
+    no-permission: "%prefix% &cYou do not have permission to use this command!"
+
+  import:
+    invalid-serializer-arg: "%prefix% &cInvalid argument! Usage: /cosmos import <serializer> <filename>"
+    invalid-file-arg: "%prefix% &cInvalid argument! Usage: /cosmos import <serializer> <filename>"
+    invalid-serializer: "%prefix% &cInvalid serializer! Valid serializers: %serializers%"
+    invalid-file: "%prefix% &cThe file %file% does not exist!"
+    failed: "%prefix% &cFailed to import %serializer% from %file%!"
+    success: "%prefix% &aSuccessfully imported %serializer% from %file%!"
+    save-success: "%prefix% &aSuccessfully saved %serializer% to %file%!"
