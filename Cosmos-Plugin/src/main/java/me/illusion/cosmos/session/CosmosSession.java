@@ -29,7 +29,7 @@ public class CosmosSession {
      */
     public CompletableFuture<Void> unload() {
         System.out.println("Unloading session " + uuid.toString());
-        return pastedArea.unload();
+        return pastedArea.unload().thenRun(() -> System.out.println("Unloaded session " + uuid));
     }
 
     /**
