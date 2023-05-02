@@ -19,6 +19,8 @@ public class SQLTable {
     private final Map<String, SQLColumn> columns = new HashMap<>();
     private final SQLConnectionProvider provider;
 
+    private boolean created = false;
+
     public SQLTable(String name, SQLConnectionProvider provider) {
         this.name = name;
         this.provider = provider;
@@ -32,6 +34,10 @@ public class SQLTable {
      */
     public CompletableFuture<Void> addColumn(ColumnData data) {
         columns.put(name, new SQLColumn(this, data));
+
+        if (!created) {
+            return CompletableFuture.completedFuture(null);
+        }
 
         return provider.getConnection().thenAccept(connection -> {
             try {
@@ -96,7 +102,30 @@ public class SQLTable {
     public CompletableFuture<Void> createTable() {
         return provider.getConnection().thenAccept(connection -> {
             try {
-                connection.createStatement().executeUpdate("CREATE TABLE IF NOT EXISTS " + name + " (id INT NOT NULL AUTO_INCREMENT, PRIMARY KEY (id))");
+                StringBuilder builder = new StringBuilder();
+                builder.append("CREATE TABLE IF NOT EXISTS ").append(name).append(" (");
+
+                for (SQLColumn column : columns.values()) {
+                    Object value = column.getData().getData();
+
+                    // value can be the length of a varchar, or the precision of a decimal, or just null
+                    String valueString = value == null ? "" : "(" + value + ")";
+
+                    boolean primary = column.getData().isPrimary();
+
+                    if (primary) {
+                        valueString += " PRIMARY KEY";
+                    }
+
+                    builder.append(column.getData().getName()).append(" ").append(column.getData().getType().name()).append(valueString).append(", ");
+                }
+
+                builder.deleteCharAt(builder.length() - 2);
+                builder.append(");");
+
+                connection.createStatement().executeUpdate(builder.toString());
+                created = true;
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
