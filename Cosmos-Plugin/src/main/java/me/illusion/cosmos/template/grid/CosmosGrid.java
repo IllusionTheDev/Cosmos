@@ -44,4 +44,11 @@ public interface CosmosGrid {
      */
     void registerUnload(PastedArea area);
 
+    /**
+     * Called when the grid is registered.
+     */
+    default void init() {
+
+    }
+
 }

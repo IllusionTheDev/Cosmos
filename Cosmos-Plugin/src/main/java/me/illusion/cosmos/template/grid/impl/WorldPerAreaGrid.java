@@ -40,10 +40,21 @@ public class WorldPerAreaGrid implements CosmosGrid {
     private int maxUnloadedWorlds = 25; // We'll delete worlds after this
 
     @Default
+    private int preGeneratedWorlds = 2; // We'll pre-generate this many worlds
+
+    @Default
     private ChunkGenerator chunkGenerator = new VoidGenerator();
 
     @Default
     private Vector spawnLocation = new Vector(0, 128, 0);
+
+    @Override
+    public void init() {
+        for (int index = 0; index < preGeneratedWorlds; index++) {
+            UUID createdWorldId = createWorld(false);
+            getOrCreateWorld(createdWorldId).setState(PooledWorldState.UNUSED);
+        }
+    }
 
     @Override
     public CompletableFuture<PastedArea> paste(TemplatedArea area) {
@@ -58,7 +69,7 @@ public class WorldPerAreaGrid implements CosmosGrid {
             return future;
         }
 
-        UUID worldId = createWorld();
+        UUID worldId = createWorld(true);
 
         getOrCreateWorld(worldId).setState(PooledWorldState.IN_USE);
 
@@ -207,15 +218,17 @@ public class WorldPerAreaGrid implements CosmosGrid {
      *
      * @return the world ID of the world that was created or re-used
      */
-    private UUID createWorld() {
+    private UUID createWorld(boolean cache) {
         // Let's see if we have any unused or unloaded worlds in our pool;
         List<Map.Entry<UUID, PooledWorld>> unusedWorlds = new ArrayList<>();
 
-        for (Map.Entry<UUID, PooledWorld> entry : worldPool.entrySet()) {
-            PooledWorld world = entry.getValue();
+        if (cache) {
+            for (Map.Entry<UUID, PooledWorld> entry : worldPool.entrySet()) {
+                PooledWorld world = entry.getValue();
 
-            if (world.getState() == PooledWorldState.UNUSED || world.getState() == PooledWorldState.UNLOADED) {
-                unusedWorlds.add(entry);
+                if (world.getState() == PooledWorldState.UNUSED || world.getState() == PooledWorldState.UNLOADED) {
+                    unusedWorlds.add(entry);
+                }
             }
         }
 
