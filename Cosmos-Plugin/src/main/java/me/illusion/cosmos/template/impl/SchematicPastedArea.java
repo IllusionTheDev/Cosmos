@@ -36,6 +36,7 @@ public class SchematicPastedArea extends SchematicTemplatedArea implements Paste
     @Override
     public CompletableFuture<Void> unload() {
         if (!Bukkit.isPrimaryThread()) {
+            System.out.println("Detected async unload. Unloading sync.");
             return CompletableFuture.runAsync(this::unload, MainThreadExecutor.INSTANCE);
         }
 

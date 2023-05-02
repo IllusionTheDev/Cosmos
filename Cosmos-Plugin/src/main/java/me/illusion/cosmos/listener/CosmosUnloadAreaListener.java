@@ -15,6 +15,7 @@ public class CosmosUnloadAreaListener implements Listener {
 
     @EventHandler
     private void onUnload(CosmosUnloadAreaEvent event) {
+        System.out.println("CosmosUnloadAreaEvent");
         plugin.getGridRegistry().handleUnload(event.getPastedArea());
     }
 }
