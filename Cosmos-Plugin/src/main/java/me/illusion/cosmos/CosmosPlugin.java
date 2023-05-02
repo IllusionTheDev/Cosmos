@@ -51,6 +51,11 @@ public final class CosmosPlugin extends JavaPlugin {
         registerListeners();
         registerCommands();
 
+        Bukkit.getScheduler().runTask(this, () -> {
+            containerRegistry.initializeDefaultContainer().thenAccept(container -> {
+                getLogger().info("Initialized default container: " + container.getName());
+            });
+        });
         // TODO: testing
     }
 
