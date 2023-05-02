@@ -124,9 +124,11 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
 
         return provider.getConnection().thenCompose(connection -> {
             if (connection == null) {
+                System.out.println("Could not connect to database");
                 return CompletableFuture.completedFuture(false);
             }
 
+            System.out.println("Connected to database");
             return createTable().thenApply(v -> true);
         });
     }
@@ -141,8 +143,7 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
                 futures.add(templatesTable.addColumn(column));
             }
 
-            futures.add(templatesTable.createTable());
-            return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+            return templatesTable.createTable().thenCompose(irrelevant -> CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])));
         });
     }
 
