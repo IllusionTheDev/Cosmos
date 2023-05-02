@@ -111,7 +111,7 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
     public CompletableFuture<Boolean> enable(ConfigurationSection section) {
         provider = getSQLConnectionProvider(section);
 
-        tableName = section.getString("table", "cosmos_templates");
+        tableName = section == null ? "cosmos_templates" : section.getString("table", "cosmos_templates");
 
         /*
             table: cosmos_templates
