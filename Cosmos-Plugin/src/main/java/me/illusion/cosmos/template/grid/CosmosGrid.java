@@ -1,6 +1,7 @@
 package me.illusion.cosmos.template.grid;
 
 import java.util.concurrent.CompletableFuture;
+import me.illusion.cosmos.CosmosPlugin;
 import me.illusion.cosmos.template.PastedArea;
 import me.illusion.cosmos.template.TemplatedArea;
 
@@ -47,7 +48,7 @@ public interface CosmosGrid {
     /**
      * Called when the grid is registered.
      */
-    default void init() {
+    default void init(CosmosPlugin plugin) {
 
     }
 

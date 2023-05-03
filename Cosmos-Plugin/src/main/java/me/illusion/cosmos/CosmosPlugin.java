@@ -47,7 +47,7 @@ public final class CosmosPlugin extends JavaPlugin {
         databasesFile = new CosmosDatabasesFile(this);
         containerRegistry = new CosmosContainerRegistry(this);
         serializerRegistry = new CosmosSerializerRegistry();
-        gridRegistry = new CosmosGridRegistry();
+        gridRegistry = new CosmosGridRegistry(this);
 
         templateCache = new CosmosCache<>();
         pasteCache = new CosmosCache<>();

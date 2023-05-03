@@ -23,16 +23,13 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
         new ColumnData("template_data", ColumnType.MEDIUMBLOB)
     };
 
-    private static final String FETCH_TEMPLATE = "SELECT * FROM %s WHERE template_id = ?";
-    private static final String SAVE_TEMPLATE = "INSERT INTO %s (template_id, template_serializer, template_data) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE template_serializer=VALUES(template_serializer), template_data=VALUES(template_data)";
-    private static final String DELETE_TEMPLATE = "DELETE FROM %s WHERE template_id = ?";
-    private static final String FETCH_ALL = "SELECT * FROM %s";
-
     private final List<CompletableFuture<?>> runningFutures = new ArrayList<>();
     private final CosmosPlugin plugin;
+
     private String tableName;
     private SQLTable templatesTable;
     private SQLConnectionProvider provider = null;
+    private Map<CosmosSQLQuery, String> queries;
 
     public SQLDataContainer(CosmosPlugin plugin) {
         this.plugin = plugin;
@@ -42,16 +39,17 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
     public CompletableFuture<TemplatedArea> fetchTemplate(String name) {
         CompletableFuture<TemplatedArea> future = new CompletableFuture<>();
 
-        CompletableFuture<Void> queryFuture = templatesTable.fetch(FETCH_TEMPLATE.formatted(tableName), name).thenAccept(results -> {
-            if (results == null || results.isEmpty()) {
-                future.complete(null);
-                return;
-            }
+        CompletableFuture<Void> queryFuture = templatesTable.fetch(queries.get(CosmosSQLQuery.FETCH_TEMPLATE).formatted(tableName), name)
+            .thenAccept(results -> {
+                if (results == null || results.isEmpty()) {
+                    future.complete(null);
+                    return;
+                }
 
-            String serializer = (String) results.get(0).get("template_serializer");
-            byte[] data = (byte[]) results.get(0).get("template_data");
+                String serializer = (String) results.get(0).get("template_serializer");
+                byte[] data = (byte[]) results.get(0).get("template_data");
 
-            CosmosSerializer cosmosSerializer = plugin.getSerializerRegistry().get(serializer);
+                CosmosSerializer cosmosSerializer = plugin.getSerializerRegistry().get(serializer);
 
             if (cosmosSerializer == null) {
                 plugin.getLogger().warning("Could not find serializer " + serializer + " for template " + name);
@@ -77,7 +75,7 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
     @Override
     public CompletableFuture<Void> saveTemplate(String name, TemplatedArea area) {
         CompletableFuture<Void> queryFuture = templatesTable.executeQuery(
-            SAVE_TEMPLATE.formatted(tableName),
+            queries.get(CosmosSQLQuery.STORE_TEMPLATE).formatted(tableName),
             name, area.getSerializer().getName(), area.getSerializer().serialize(area)
         ).thenRun(() -> {
         }); // map to future<void>
@@ -91,7 +89,7 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
     @Override
     public CompletableFuture<Void> deleteTemplate(String name) {
         CompletableFuture<Void> queryFuture = templatesTable.executeQuery(
-            DELETE_TEMPLATE.formatted(tableName),
+            queries.get(CosmosSQLQuery.DELETE_TEMPLATE).formatted(tableName),
             name
         ).thenRun(() -> {
         }); // map to future<void>
@@ -113,6 +111,8 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
     @Override
     public CompletableFuture<Boolean> enable(ConfigurationSection section) {
         provider = getSQLConnectionProvider(section);
+        queries = getQueries();
+
         System.out.println("Provider: " + provider);
 
         tableName = section == null ? "cosmos_templates" : section.getString("table", "cosmos_templates");
@@ -163,7 +163,7 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
     public CompletableFuture<Collection<String>> fetchAllTemplates() {
         CompletableFuture<Collection<String>> future = new CompletableFuture<>();
 
-        CompletableFuture<Void> queryFuture = templatesTable.fetch(FETCH_ALL.formatted(tableName)).thenAccept(results -> {
+        CompletableFuture<Void> queryFuture = templatesTable.fetch(queries.get(CosmosSQLQuery.FETCH_ALL).formatted(tableName)).thenAccept(results -> {
             if (results == null || results.isEmpty()) {
                 future.complete(null);
                 return;
@@ -193,4 +193,7 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
     }
 
     public abstract SQLConnectionProvider getSQLConnectionProvider(ConfigurationSection section);
+
+    protected abstract Map<CosmosSQLQuery, String> getQueries();
+
 }

@@ -12,6 +12,7 @@ import lombok.Builder;
 import lombok.Builder.Default;
 import lombok.Data;
 import lombok.Setter;
+import me.illusion.cosmos.CosmosPlugin;
 import me.illusion.cosmos.template.PastedArea;
 import me.illusion.cosmos.template.TemplatedArea;
 import me.illusion.cosmos.template.grid.CosmosGrid;
@@ -49,11 +50,19 @@ public class WorldPerAreaGrid implements CosmosGrid {
     private Vector spawnLocation = new Vector(0, 128, 0);
 
     @Override
-    public void init() {
-        for (int index = 0; index < preGeneratedWorlds; index++) {
-            UUID createdWorldId = createWorld(false);
-            getOrCreateWorld(createdWorldId).setState(PooledWorldState.UNUSED);
-        }
+    public void init(CosmosPlugin plugin) {
+        createWorld(plugin, preGeneratedWorlds);
+    }
+
+    private void createWorld(CosmosPlugin plugin, int amount) {
+        UUID createdWorldId = createWorld(false);
+        getOrCreateWorld(createdWorldId).setState(PooledWorldState.UNUSED);
+
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> {
+            if (amount > 1) {
+                createWorld(plugin, amount - 1);
+            }
+        }, 50L);
     }
 
     @Override
