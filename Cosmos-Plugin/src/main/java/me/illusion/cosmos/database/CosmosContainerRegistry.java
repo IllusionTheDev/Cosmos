@@ -41,6 +41,11 @@ public class CosmosContainerRegistry {
      * @param container The container to register
      */
     public CompletableFuture<Boolean> registerContainer(CosmosDataContainer container) {
+        if (cosmosPlugin.isInitialized()) {
+            throw new IllegalStateException(
+                "Cannot register containers after initialization! (Register your containers in the onEnable method of your plugin)");
+        }
+
         containers.put(container.getName(), container);
         System.out.println("Attempting to enable container " + container.getName() + "...");
         ConfigurationSection section = cosmosPlugin.getDatabasesFile().getDatabase(container.getName());
