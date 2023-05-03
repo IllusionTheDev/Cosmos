@@ -1,5 +1,6 @@
 package me.illusion.cosmos;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import me.illusion.cosmos.cache.CosmosCache;
 import me.illusion.cosmos.command.CosmosImportCommand;
@@ -32,8 +33,11 @@ public final class CosmosPlugin extends JavaPlugin {
     private CommandManager commandManager;
     private MessagesFile messages;
 
+    @Getter(AccessLevel.NONE) // we don't want to expose this to the API
     private Runnable onceInitializedAction = () -> {
     };
+
+    private boolean initialized = false;
 
     @Override
     public void onEnable() {
@@ -83,7 +87,7 @@ public final class CosmosPlugin extends JavaPlugin {
             Bukkit.getScheduler().runTask(this, () -> { // make sure we're running after all plugins enable, in case any external plugin registers a container
                 containerRegistry.initializeDefaultContainer().thenAccept(container -> {
                     getLogger().info("Initialized default container: " + container.getName());
-                    onceInitializedAction.run();
+                    finalizeInitialization();
                 });
             });
         }).exceptionally(throwable -> {
@@ -108,6 +112,11 @@ public final class CosmosPlugin extends JavaPlugin {
     }
 
     public void onceInitialized(Runnable runnable) {
+        if (initialized) {
+            runnable.run();
+            return;
+        }
+
         // merge
         Runnable old = onceInitializedAction;
 
@@ -115,5 +124,10 @@ public final class CosmosPlugin extends JavaPlugin {
             old.run();
             runnable.run();
         };
+    }
+
+    private void finalizeInitialization() {
+        initialized = true;
+        onceInitializedAction.run();
     }
 }
