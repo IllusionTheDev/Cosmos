@@ -24,7 +24,7 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
         new ColumnData("template_data", ColumnType.MEDIUMBLOB)
     };
 
-    private static final Pattern SQL_INJECTION = Pattern.compile("[^a-zA-Z0-9_]");
+    private static final Pattern SQL_VALID = Pattern.compile("[a-zA-Z0-9_]");
 
     private final List<CompletableFuture<?>> runningFutures = new ArrayList<>();
     private final CosmosPlugin plugin;
@@ -120,7 +120,7 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
 
         tableName = section == null ? "cosmos_templates" : section.getString("table", "cosmos_templates");
 
-        if (!SQL_INJECTION.matcher(tableName).find()) {
+        if (!SQL_VALID.matcher(tableName).find()) {
             plugin.getLogger().warning("Invalid SQL table name: " + tableName + " (suspected of attempting SQL Injection). Using default table name instead.");
             tableName = "cosmos_templates";
         }

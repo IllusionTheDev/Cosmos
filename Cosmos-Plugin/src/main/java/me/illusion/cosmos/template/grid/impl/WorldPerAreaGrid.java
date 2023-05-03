@@ -274,6 +274,8 @@ public class WorldPerAreaGrid implements CosmosGrid {
         }
 
         created.setSpawnLocation(spawnLocation.getBlockX(), spawnLocation.getBlockY(), spawnLocation.getBlockZ());
+        created.setAutoSave(false);
+        created.setKeepSpawnInMemory(false);
 
         return created.getUID();
     }
