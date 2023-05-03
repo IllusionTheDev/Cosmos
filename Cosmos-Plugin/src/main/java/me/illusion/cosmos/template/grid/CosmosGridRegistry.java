@@ -13,6 +13,7 @@ public class CosmosGridRegistry {
 
     public void register(CosmosGrid grid) {
         grids.add(grid);
+        grid.init();
     }
 
     public void unregister(CosmosGrid grid) {

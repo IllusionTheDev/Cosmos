@@ -22,13 +22,15 @@ public final class CosmosExamplePlugin extends JavaPlugin {
     public void onEnable() {
         cosmosPlugin = (CosmosPlugin) Bukkit.getPluginManager().getPlugin("Cosmos");
 
-        initCosmos();
-
         getCommand("settemplate").setExecutor(new SetTemplateCommand(this));
         Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(this), this);
+
+        cosmosPlugin.onceInitialized(this::initCosmos);
     }
 
+
     private void initCosmos() {
+        System.out.println("Cosmos has been initialized!");
         // On skyblock, we'll use a world per area grid, with a maximum of 25 active worlds at a time.
         // A world per area grid will create a new world for each area, automatically loading, unloading and deleting them as needed.
         CosmosGrid grid = WorldPerAreaGrid.builder().preGeneratedWorlds(5).maxActiveWorlds(25).build();

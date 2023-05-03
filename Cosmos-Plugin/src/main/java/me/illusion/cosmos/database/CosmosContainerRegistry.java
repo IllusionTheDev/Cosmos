@@ -14,7 +14,9 @@ import me.illusion.cosmos.database.impl.MemoryDataContainer;
 import me.illusion.cosmos.database.impl.MongoDataContainer;
 import me.illusion.cosmos.database.impl.MySQLDataContainer;
 import me.illusion.cosmos.database.impl.SQLiteDataContainer;
+import me.illusion.cosmos.event.CosmosDefaultContainerInitializedEvent;
 import me.illusion.cosmos.file.CosmosDatabasesFile;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 
 /**
@@ -40,10 +42,10 @@ public class CosmosContainerRegistry {
      */
     public CompletableFuture<Boolean> registerContainer(CosmosDataContainer container) {
         containers.put(container.getName(), container);
+        System.out.println("Attempting to enable container " + container.getName() + "...");
+        ConfigurationSection section = cosmosPlugin.getDatabasesFile().getDatabase(container.getName());
 
         if (container.requiresCredentials()) {
-            ConfigurationSection section = cosmosPlugin.getDatabasesFile().getDatabase(container.getName());
-
             if (section == null) {
                 cosmosPlugin.getLogger().warning("No credentials found for database " + container.getName() + ", disabling...");
                 return CompletableFuture.completedFuture(false);
@@ -62,11 +64,14 @@ public class CosmosContainerRegistry {
                 }
 
                 return result;
+            }).exceptionally(throwable -> {
+                throwable.printStackTrace();
+                return false;
             });
         }
 
         loadedContainers.add(container.getName());
-        return CompletableFuture.completedFuture(true);
+        return container.enable(section);
     }
 
     /**
@@ -107,7 +112,11 @@ public class CosmosContainerRegistry {
             registerContainer(new MySQLDataContainer(cosmosPlugin)),
             registerContainer(new SQLiteDataContainer(cosmosPlugin)),
             registerContainer(new MongoDataContainer(cosmosPlugin))
-        );
+        ).exceptionally(throwable -> {
+            throwable.printStackTrace();
+            return null;
+        });
+
     }
 
     /**
@@ -116,6 +125,7 @@ public class CosmosContainerRegistry {
      * @return A completable future that will complete when the container is initialized
      */
     public CompletableFuture<CosmosDataContainer> initializeDefaultContainer() {
+        System.out.println("Initializing default container...");
         CosmosDatabasesFile databasesFile = cosmosPlugin.getDatabasesFile();
 
         String defaultId = databasesFile.getDefault();
@@ -124,7 +134,10 @@ public class CosmosContainerRegistry {
             defaultId = defaultContainerId;
         }
 
-        return attemptInitializeContainer(defaultId);
+        return attemptInitializeContainer(defaultId).thenApply((container) -> {
+            Bukkit.getPluginManager().callEvent(new CosmosDefaultContainerInitializedEvent(container));
+            return container;
+        });
     }
 
     /**
@@ -136,23 +149,28 @@ public class CosmosContainerRegistry {
      * @return A completable future that will complete when the container is initialized
      */
     public CompletableFuture<CosmosDataContainer> attemptInitializeContainer(String id) {
+        System.out.println("Attempting to initialize container " + id + "...");
         CosmosDataContainer container = getContainer(id);
 
         if (container == null) {
+            System.out.println("Container " + id + " does not exist!");
             return attemptInitializeContainer(defaultContainerId);
         }
 
         ConfigurationSection section = cosmosPlugin.getDatabasesFile().getDatabase(id);
 
         if (section == null && container.requiresCredentials()) {
+            System.out.println("Container " + id + " requires credentials, but none were found!");
             return attemptInitializeContainer(defaultContainerId);
         }
 
         if (!loadedContainers.contains(id)) {
+            System.out.println("Container " + id + " is not loaded!");
             String fallback = section == null ? defaultContainerId : section.getString("fallback", defaultContainerId);
             return attemptInitializeContainer(fallback);
         }
 
+        System.out.println("Found container " + id + "!");
         defaultContainerId = id;
         return CompletableFuture.completedFuture(container);
     }

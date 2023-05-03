@@ -1,7 +1,9 @@
 package me.illusion.cosmos.database.base;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import me.illusion.cosmos.CosmosPlugin;
 import me.illusion.cosmos.database.CosmosDataContainer;
@@ -24,6 +26,7 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
     private static final String FETCH_TEMPLATE = "SELECT * FROM %s WHERE template_id = ?";
     private static final String SAVE_TEMPLATE = "INSERT INTO %s (template_id, template_serializer, template_data) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE template_serializer=VALUES(template_serializer), template_data=VALUES(template_data)";
     private static final String DELETE_TEMPLATE = "DELETE FROM %s WHERE template_id = ?";
+    private static final String FETCH_ALL = "SELECT * FROM %s";
 
     private final List<CompletableFuture<?>> runningFutures = new ArrayList<>();
     private final CosmosPlugin plugin;
@@ -45,8 +48,8 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
                 return;
             }
 
-            String serializer = (String) results.get("template_serializer");
-            byte[] data = (byte[]) results.get("template_data");
+            String serializer = (String) results.get(0).get("template_serializer");
+            byte[] data = (byte[]) results.get(0).get("template_data");
 
             CosmosSerializer cosmosSerializer = plugin.getSerializerRegistry().get(serializer);
 
@@ -110,9 +113,11 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
     @Override
     public CompletableFuture<Boolean> enable(ConfigurationSection section) {
         provider = getSQLConnectionProvider(section);
+        System.out.println("Provider: " + provider);
 
         tableName = section == null ? "cosmos_templates" : section.getString("table", "cosmos_templates");
 
+        System.out.println("Table name: " + tableName);
         /*
             table: cosmos_templates
             host: localhost
@@ -152,6 +157,34 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
             throwable.printStackTrace();
             return null;
         });
+    }
+
+    @Override
+    public CompletableFuture<Collection<String>> fetchAllTemplates() {
+        CompletableFuture<Collection<String>> future = new CompletableFuture<>();
+
+        CompletableFuture<Void> queryFuture = templatesTable.fetch(FETCH_ALL.formatted(tableName)).thenAccept(results -> {
+            if (results == null || results.isEmpty()) {
+                future.complete(null);
+                return;
+            }
+
+            List<String> names = new ArrayList<>();
+
+            for (Map<String, Object> result : results) {
+                names.add((String) result.get("template_id"));
+            }
+
+            future.complete(names);
+        });
+
+        queryFuture.thenRun(() -> runningFutures.remove(queryFuture));
+        runningFutures.add(queryFuture);
+
+        future.thenRun(() -> runningFutures.remove(future));
+        runningFutures.add(future);
+
+        return future;
     }
 
     @Override

@@ -1,5 +1,6 @@
 package me.illusion.cosmos.database.impl;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
@@ -40,6 +41,11 @@ public class MemoryDataContainer implements CosmosDataContainer {
     @Override
     public String getName() {
         return "memory";
+    }
+
+    @Override
+    public CompletableFuture<Collection<String>> fetchAllTemplates() {
+        return CompletableFuture.completedFuture(templates.keySet());
     }
 
     @Override

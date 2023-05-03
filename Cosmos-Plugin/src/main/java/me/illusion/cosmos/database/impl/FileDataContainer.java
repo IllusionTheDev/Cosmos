@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import me.illusion.cosmos.CosmosPlugin;
@@ -40,6 +41,48 @@ public class FileDataContainer implements CosmosDataContainer {
     @Override
     public String getName() {
         return "file";
+    }
+
+    @Override
+    public CompletableFuture<Collection<String>> fetchAllTemplates() {
+        CompletableFuture<Collection<String>> future = new CompletableFuture<>();
+
+        CompletableFuture<Void> task = CompletableFuture.runAsync(() -> {
+            Collection<String> templates = new ArrayList<>();
+
+            File[] files = worldContainer.listFiles();
+
+            if (files == null) {
+                future.complete(templates);
+                return;
+            }
+
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    templates.add(file.getName());
+                }
+            }
+
+            future.complete(templates);
+        }).exceptionally((e) -> {
+            e.printStackTrace();
+            future.completeExceptionally(e);
+            return null;
+        });
+
+        task.thenRun(() -> runningTasks.remove(task));
+        future.thenRun(() -> {
+            runningTasks.remove(future);
+            System.out.println("Completed fetch all templates");
+        }).exceptionally((e) -> {
+            e.printStackTrace();
+            return null;
+        });
+
+        runningTasks.add(task);
+        runningTasks.add(future);
+
+        return future;
     }
 
     @Override

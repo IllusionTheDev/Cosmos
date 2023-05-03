@@ -1,5 +1,6 @@
 package me.illusion.cosmos.database;
 
+import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import me.illusion.cosmos.template.TemplatedArea;
 import org.bukkit.configuration.ConfigurationSection;
@@ -52,12 +53,19 @@ public interface CosmosDataContainer {
     String getName();
 
     /**
+     * Fetches all templates from the container.
+     *
+     * @return A future which will be completed with a collection of all templates
+     */
+    CompletableFuture<Collection<String>> fetchAllTemplates();
+
+    /**
      * Enables the data container given the specified databases file Returns a future which resolves to true if the container was enabled successfully, or false
      * if it was not
      */
     default CompletableFuture<Boolean> enable(ConfigurationSection section) {
         // Some containers may not need to be enabled, such as the file container
-        return CompletableFuture.completedFuture(null);
+        return CompletableFuture.completedFuture(true);
     }
 
     boolean requiresCredentials();

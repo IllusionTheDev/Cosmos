@@ -5,6 +5,7 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import me.illusion.cosmos.CosmosPlugin;
@@ -118,6 +119,28 @@ public class MongoDataContainer implements CosmosDataContainer {
     @Override
     public String getName() {
         return "mongodb";
+    }
+
+    @Override
+    public CompletableFuture<Collection<String>> fetchAllTemplates() {
+        CompletableFuture<Collection<String>> future = new CompletableFuture<>();
+        futures.add(future);
+        future.thenRun(() -> futures.remove(future));
+
+        CompletableFuture<Void> fetch = CompletableFuture.runAsync(() -> {
+            List<String> names = new ArrayList<>();
+
+            for (Document document : templatesCollection.find()) {
+                names.add(document.getString("name"));
+            }
+
+            future.complete(names);
+        });
+
+        futures.add(fetch);
+        fetch.thenRun(() -> futures.remove(fetch));
+
+        return future;
     }
 
     @Override

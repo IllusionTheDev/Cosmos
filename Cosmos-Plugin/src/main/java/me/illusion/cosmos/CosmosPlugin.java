@@ -3,6 +3,7 @@ package me.illusion.cosmos;
 import lombok.Getter;
 import me.illusion.cosmos.cache.CosmosCache;
 import me.illusion.cosmos.command.CosmosImportCommand;
+import me.illusion.cosmos.command.CosmosMigrateCommand;
 import me.illusion.cosmos.database.CosmosContainerRegistry;
 import me.illusion.cosmos.database.CosmosDataContainer;
 import me.illusion.cosmos.file.CosmosDatabasesFile;
@@ -31,15 +32,18 @@ public final class CosmosPlugin extends JavaPlugin {
     private CommandManager commandManager;
     private MessagesFile messages;
 
+    private Runnable onceInitializedAction = () -> {
+    };
+
     @Override
     public void onEnable() {
         // Plugin startup logic
         MainThreadExecutor.init(this);
 
         databasesFile = new CosmosDatabasesFile(this);
+        containerRegistry = new CosmosContainerRegistry(this);
         serializerRegistry = new CosmosSerializerRegistry();
         gridRegistry = new CosmosGridRegistry();
-        containerRegistry = new CosmosContainerRegistry(this);
 
         templateCache = new CosmosCache<>();
         pasteCache = new CosmosCache<>();
@@ -54,6 +58,7 @@ public final class CosmosPlugin extends JavaPlugin {
 
         // TODO: testing
     }
+
 
     @Override
     public void onDisable() {
@@ -78,8 +83,12 @@ public final class CosmosPlugin extends JavaPlugin {
             Bukkit.getScheduler().runTask(this, () -> { // make sure we're running after all plugins enable, in case any external plugin registers a container
                 containerRegistry.initializeDefaultContainer().thenAccept(container -> {
                     getLogger().info("Initialized default container: " + container.getName());
+                    onceInitializedAction.run();
                 });
             });
+        }).exceptionally(throwable -> {
+            throwable.printStackTrace();
+            return null;
         });
     }
 
@@ -95,5 +104,16 @@ public final class CosmosPlugin extends JavaPlugin {
      */
     public void registerCommands() {
         commandManager.register(new CosmosImportCommand(this));
+        commandManager.register(new CosmosMigrateCommand(this));
+    }
+
+    public void onceInitialized(Runnable runnable) {
+        // merge
+        Runnable old = onceInitializedAction;
+
+        onceInitializedAction = () -> {
+            old.run();
+            runnable.run();
+        };
     }
 }
