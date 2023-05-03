@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import me.illusion.cosmos.utilities.sql.connection.SQLConnectionProvider;
 
 /**
@@ -16,7 +17,7 @@ import me.illusion.cosmos.utilities.sql.connection.SQLConnectionProvider;
 public class SQLTable {
 
     private final String name;
-    private final Map<String, SQLColumn> columns = new HashMap<>();
+    private final Map<String, SQLColumn> columns = new ConcurrentHashMap<>();
     private final SQLConnectionProvider provider;
 
     private boolean created = false;
@@ -33,7 +34,7 @@ public class SQLTable {
      * @return A completable future that completes when the column is added
      */
     public CompletableFuture<Void> addColumn(ColumnData data) {
-        columns.put(name, new SQLColumn(this, data));
+        columns.put(data.getName(), new SQLColumn(this, data));
 
         if (!created) {
             return CompletableFuture.completedFuture(null);
@@ -106,23 +107,25 @@ public class SQLTable {
                 builder.append("CREATE TABLE IF NOT EXISTS ").append(name).append(" (");
 
                 for (SQLColumn column : columns.values()) {
+                    builder.append(column.getData().getName()).append(" ").append(column.getData().getType().name());
+
                     Object value = column.getData().getData();
 
-                    // value can be the length of a varchar, or the precision of a decimal, or just null
-                    String valueString = value == null ? "" : "(" + value + ")";
-
-                    boolean primary = column.getData().isPrimary();
-
-                    if (primary) {
-                        valueString += " PRIMARY KEY";
+                    if (value != null) {
+                        builder.append("(").append(value).append(")");
                     }
 
-                    builder.append(column.getData().getName()).append(" ").append(column.getData().getType().name()).append(valueString).append(", ");
+                    if (column.getData().isPrimary()) {
+                        builder.append(" PRIMARY KEY");
+                    }
+
+                    builder.append(", ");
                 }
 
                 builder.deleteCharAt(builder.length() - 2);
                 builder.append(");");
 
+                System.err.println("query: " + builder);
                 connection.createStatement().executeUpdate(builder.toString());
                 created = true;
 

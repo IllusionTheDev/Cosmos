@@ -140,10 +140,17 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
             List<CompletableFuture<?>> futures = new ArrayList<>();
 
             for (ColumnData column : COLUMNS) {
+                System.err.println("Creating column " + column.getName());
                 futures.add(templatesTable.addColumn(column));
             }
 
-            return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).thenCompose(irrelevant -> templatesTable.createTable());
+            return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).exceptionally(throwable -> {
+                throwable.printStackTrace();
+                return null;
+            }).thenCompose(irrelevant -> templatesTable.createTable());
+        }).exceptionally(throwable -> {
+            throwable.printStackTrace();
+            return null;
         });
     }
 

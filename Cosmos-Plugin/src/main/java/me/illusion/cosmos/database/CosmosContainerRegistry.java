@@ -2,7 +2,9 @@ package me.illusion.cosmos.database;
 
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Sets;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.Setter;
@@ -23,6 +25,7 @@ public class CosmosContainerRegistry {
     private final Map<String, CosmosDataContainer> containers = new ConcurrentHashMap<>();
     private final CosmosPlugin cosmosPlugin;
 
+    private final Set<String> loadedContainers = Sets.newConcurrentHashSet();
     @Setter
     private String defaultContainerId = "file";
 
@@ -35,8 +38,35 @@ public class CosmosContainerRegistry {
      *
      * @param container The container to register
      */
-    public void registerContainer(CosmosDataContainer container) {
+    public CompletableFuture<Boolean> registerContainer(CosmosDataContainer container) {
         containers.put(container.getName(), container);
+
+        if (container.requiresCredentials()) {
+            ConfigurationSection section = cosmosPlugin.getDatabasesFile().getDatabase(container.getName());
+
+            if (section == null) {
+                cosmosPlugin.getLogger().warning("No credentials found for database " + container.getName() + ", disabling...");
+                return CompletableFuture.completedFuture(false);
+            }
+
+            return container.enable(section).thenApply(result -> {
+                if (!result) {
+                    cosmosPlugin.getLogger().warning("Failed to enable database " + container.getName() + "!");
+                    return result;
+                }
+
+                loadedContainers.add(container.getName());
+
+                if (container.getName().equals(defaultContainerId)) {
+                    cosmosPlugin.getLogger().info("Default database is " + container.getName() + ".");
+                }
+
+                return result;
+            });
+        }
+
+        loadedContainers.add(container.getName());
+        return CompletableFuture.completedFuture(true);
     }
 
     /**
@@ -70,12 +100,14 @@ public class CosmosContainerRegistry {
     /**
      * Registers all default containers.
      */
-    public void registerDefaults() {
-        registerContainer(new MemoryDataContainer()); // I wouldn't use this but whatever
-        registerContainer(new FileDataContainer(cosmosPlugin));
-        registerContainer(new MySQLDataContainer(cosmosPlugin));
-        registerContainer(new SQLiteDataContainer(cosmosPlugin));
-        registerContainer(new MongoDataContainer(cosmosPlugin));
+    public CompletableFuture<Void> registerDefaults() {
+        return CompletableFuture.allOf(
+            registerContainer(new MemoryDataContainer()), // I wouldn't use this but whatever
+            registerContainer(new FileDataContainer(cosmosPlugin)),
+            registerContainer(new MySQLDataContainer(cosmosPlugin)),
+            registerContainer(new SQLiteDataContainer(cosmosPlugin)),
+            registerContainer(new MongoDataContainer(cosmosPlugin))
+        );
     }
 
     /**
@@ -116,16 +148,13 @@ public class CosmosContainerRegistry {
             return attemptInitializeContainer(defaultContainerId);
         }
 
-        return container.enable(section).thenCompose((success) -> {
-            if (!success) {
-                cosmosPlugin.getLogger().warning("Failed to initialize container " + id + ". Attempting to initialize fallback container.");
-                String fallbackId = section == null ? defaultContainerId : section.getString("fallback", defaultContainerId);
-                return attemptInitializeContainer(fallbackId);
-            }
+        if (!loadedContainers.contains(id)) {
+            String fallback = section == null ? defaultContainerId : section.getString("fallback", defaultContainerId);
+            return attemptInitializeContainer(fallback);
+        }
 
-            defaultContainerId = id;
-            return CompletableFuture.completedFuture(container);
-        });
+        defaultContainerId = id;
+        return CompletableFuture.completedFuture(container);
     }
 
     /**
@@ -134,6 +163,7 @@ public class CosmosContainerRegistry {
      * @return The default container
      */
     public CosmosDataContainer getDefaultContainer() {
+        System.out.println("Default container ID: " + defaultContainerId);
         return getContainer(defaultContainerId);
     }
 
