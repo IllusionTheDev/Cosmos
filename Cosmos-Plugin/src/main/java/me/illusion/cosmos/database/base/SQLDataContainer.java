@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.regex.Pattern;
 import me.illusion.cosmos.CosmosPlugin;
 import me.illusion.cosmos.database.CosmosDataContainer;
 import me.illusion.cosmos.serialization.CosmosSerializer;
@@ -22,6 +23,8 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
         new ColumnData("template_serializer", ColumnType.TEXT),
         new ColumnData("template_data", ColumnType.MEDIUMBLOB)
     };
+
+    private static final Pattern SQL_INJECTION = Pattern.compile("[^a-zA-Z0-9_]");
 
     private final List<CompletableFuture<?>> runningFutures = new ArrayList<>();
     private final CosmosPlugin plugin;
@@ -116,6 +119,11 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
         System.out.println("Provider: " + provider);
 
         tableName = section == null ? "cosmos_templates" : section.getString("table", "cosmos_templates");
+
+        if (!SQL_INJECTION.matcher(tableName).find()) {
+            plugin.getLogger().warning("Invalid SQL table name: " + tableName + " (suspected of attempting SQL Injection). Using default table name instead.");
+            tableName = "cosmos_templates";
+        }
 
         System.out.println("Table name: " + tableName);
         /*
