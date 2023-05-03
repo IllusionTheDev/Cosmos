@@ -78,8 +78,13 @@ public class CosmosMigrateCommand implements SimpleCommand {
             return;
         }
 
-        sourceContainer.fetchTemplate(templateName).thenCompose(template -> destinationContainer.saveTemplate(templateName, template)).thenRun(() -> {
-            plugin.getMessages().sendMessage(sender, "migrate.success");
+        sourceContainer.fetchTemplate(templateName).thenCompose(template -> {
+            if (template == null) {
+                plugin.getMessages().sendMessage(sender, "migrate.invalid-template");
+                return CompletableFuture.completedFuture(null);
+            }
+
+            return destinationContainer.saveTemplate(templateName, template).thenRun(() -> plugin.getMessages().sendMessage(sender, "migrate.success"));
         });
 
         plugin.getMessages().sendMessage(sender, "migrate.started");
