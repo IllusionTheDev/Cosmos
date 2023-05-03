@@ -1,14 +1,18 @@
 package me.illusion.cosmos.command;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import me.illusion.cosmos.CosmosPlugin;
 import me.illusion.cosmos.database.CosmosDataContainer;
 import me.illusion.cosmos.utilities.command.SimpleCommand;
+import me.illusion.cosmos.utilities.text.Placeholder;
 import org.bukkit.command.CommandSender;
 
 public class CosmosMigrateCommand implements SimpleCommand {
+
+
 
     private final CosmosPlugin plugin;
 
@@ -28,6 +32,7 @@ public class CosmosMigrateCommand implements SimpleCommand {
 
     @Override
     public void execute(CommandSender sender, String... args) {
+
         String templateName = args[0];
         String source = args[1];
         String destination = args[2];
@@ -46,6 +51,12 @@ public class CosmosMigrateCommand implements SimpleCommand {
             plugin.getMessages().sendMessage(sender, "migrate.invalid-destination-arg");
             return;
         }
+
+        List<Placeholder<?>> placeholders = Arrays.asList(
+                new Placeholder<>("%template%", templateName),
+                new Placeholder<>("%source%", source),
+                new Placeholder<>("%destination%", destination)
+        );
 
         CosmosDataContainer sourceContainer = plugin.getContainerRegistry().getContainer(source);
         CosmosDataContainer destinationContainer = plugin.getContainerRegistry().getContainer(destination);
@@ -70,11 +81,19 @@ public class CosmosMigrateCommand implements SimpleCommand {
                 }
 
                 CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).thenRun(() -> {
-                    plugin.getMessages().sendMessage(sender, "migrate.success");
+                    plugin.getMessages().sendMessage(
+                            sender,
+                            "migrate.success"
+                    );
                 });
             });
 
-            plugin.getMessages().sendMessage(sender, "migrate.started");
+            plugin.getMessages().sendMessage(
+                    sender,
+                    "migrate.started"
+//                    new Placeholder<>("%source%", source),
+//                    new Placeholder<>("%destination%", destination)
+            );
             return;
         }
 
