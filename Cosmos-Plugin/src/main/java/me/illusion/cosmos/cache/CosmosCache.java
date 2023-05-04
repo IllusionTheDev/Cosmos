@@ -39,6 +39,12 @@ public class CosmosCache<T> {
             System.out.println("Cached area " + identifier);
             cache.put(identifier, value);
         });
+
+        valueFuture.exceptionally(throwable -> {
+            System.err.println("Failed to load area " + identifier);
+            throwable.printStackTrace();
+            return null;
+        });
     }
 
     /**
