@@ -7,4 +7,4 @@ softdepend:
   - WorldEdit
 
 libraries:
-  - org.mongodb:mongodb-driver:3.12.7
+  - org.mongodb:mongodb-driver-sync:4.9.0
