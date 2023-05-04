@@ -109,6 +109,11 @@ public class MongoDataContainer implements CosmosDataContainer {
 
     @Override
     public CompletableFuture<Void> flush() {
+        if (futures.isEmpty()) {
+            return CompletableFuture.completedFuture(null);
+        }
+
+        System.out.println("Flushing " + futures.size() + " futures");
         return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
     }
 
@@ -119,18 +124,14 @@ public class MongoDataContainer implements CosmosDataContainer {
 
     @Override
     public CompletableFuture<Collection<String>> fetchAllTemplates() {
-        CompletableFuture<Collection<String>> future = new CompletableFuture<>();
-        CompletableFuture<Void> fetch = CompletableFuture.runAsync(() -> {
-            List<String> names = new ArrayList<>();
+        CompletableFuture<Collection<String>> future = CompletableFuture.supplyAsync(() -> {
+            List<String> templates = new ArrayList<>();
 
-            for (Document document : templatesCollection.find()) {
-                names.add(document.getString("name"));
-            }
+            templatesCollection.find().forEach(document -> templates.add(document.getString("name")));
 
-            future.complete(names);
+            return templates;
         });
 
-        registerFuture(fetch);
         return registerFuture(future);
     }
 
@@ -145,10 +146,6 @@ public class MongoDataContainer implements CosmosDataContainer {
         futures.add(future);
 
         return future;
-    }
-
-    private CompletableFuture<Void> registerVoidFuture(CompletableFuture<?> future) {
-        return registerFuture(future.thenApply(irrelevant -> null));
     }
 
 

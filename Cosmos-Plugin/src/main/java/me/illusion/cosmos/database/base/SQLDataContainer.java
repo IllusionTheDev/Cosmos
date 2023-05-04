@@ -20,7 +20,7 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
 
     private static final ColumnData[] COLUMNS = new ColumnData[]{
         new ColumnData("template_id", ColumnType.MEDIUMTEXT, null, true),
-        new ColumnData("template_serializer", ColumnType.TINYTEXT, 255),
+        new ColumnData("template_serializer", ColumnType.VARCHAR, 255),
         new ColumnData("template_data", ColumnType.MEDIUMBLOB)};
 
     private static final Pattern SQL_VALID = Pattern.compile("[a-zA-Z0-9_]");
