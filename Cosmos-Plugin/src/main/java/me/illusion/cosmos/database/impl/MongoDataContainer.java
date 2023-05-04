@@ -35,6 +35,7 @@ public class MongoDataContainer implements CosmosDataContainer {
             String authsource = section.getString("auth-source");
             String username = section.getString("username");
             String password = section.getString("password");
+            boolean ssl = section.getBoolean("ssl", false);
 
             String database = section.getString("database", "cosmos");
             String collectionName = section.getString("collection", "cosmos_templates");
@@ -53,6 +54,10 @@ public class MongoDataContainer implements CosmosDataContainer {
 
             if (authsource != null && !authsource.isEmpty()) {
                 builder.append("/?authSource=").append(authsource);
+            }
+
+            if (ssl) {
+                builder.append("&ssl=true");
             }
 
             mongoClient = MongoClients.create(new ConnectionString(builder.toString()));
