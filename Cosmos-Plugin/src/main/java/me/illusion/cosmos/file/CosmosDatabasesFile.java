@@ -12,7 +12,7 @@ public class CosmosDatabasesFile extends YMLBase {
     }
 
     public ConfigurationSection getDatabase(String name) {
-        return getConfiguration().getConfigurationSection("databases." + name);
+        return getConfiguration().getConfigurationSection(name);
     }
 
     public String getDefault() {
