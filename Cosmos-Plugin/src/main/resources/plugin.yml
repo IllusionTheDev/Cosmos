@@ -8,3 +8,4 @@ softdepend:
 
 libraries:
   - org.mongodb:mongodb-driver-sync:4.9.0
+  - com.influxdb:influxdb-client-java:6.5.0
