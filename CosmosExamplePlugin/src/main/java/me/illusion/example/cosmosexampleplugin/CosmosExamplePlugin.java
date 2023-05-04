@@ -2,6 +2,7 @@ package me.illusion.example.cosmosexampleplugin;
 
 import lombok.Getter;
 import me.illusion.cosmos.CosmosPlugin;
+import me.illusion.cosmos.pool.world.WorldPoolSettings;
 import me.illusion.cosmos.session.CosmosSessionHolder;
 import me.illusion.cosmos.template.grid.CosmosGrid;
 import me.illusion.cosmos.template.grid.impl.WorldPerAreaGrid;
@@ -33,7 +34,7 @@ public final class CosmosExamplePlugin extends JavaPlugin {
         System.out.println("Cosmos has been initialized!");
         // On skyblock, we'll use a world per area grid, with a maximum of 25 active worlds at a time.
         // A world per area grid will create a new world for each area, automatically loading, unloading and deleting them as needed.
-        CosmosGrid grid = WorldPerAreaGrid.builder().preGeneratedWorlds(1).maxActiveWorlds(25).build();
+        CosmosGrid grid = new WorldPerAreaGrid(WorldPoolSettings.builder().preGeneratedWorlds(2).build());
 
         // Register the grid
         cosmosPlugin.getGridRegistry().register(grid);
