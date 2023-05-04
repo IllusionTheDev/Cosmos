@@ -177,7 +177,8 @@ public class WorldPool {
             UUID worldId = entry.getKey();
 
             if (entry.getValue().getState() == PooledWorldState.UNLOADED) {
-                World world = Bukkit.createWorld(WorldCreator.name(getOrCreateWorld(worldId).getWorldName()));
+                World world = Bukkit.createWorld(
+                    WorldCreator.name(getOrCreateWorld(worldId).getWorldName()).generator(settings.getChunkGenerator()).generateStructures(false));
                 world.setSpawnLocation(spawnLocation.getBlockX(), spawnLocation.getBlockY(), spawnLocation.getBlockZ());
 
                 worldPool.remove(entry.getKey()); // the UID changes
