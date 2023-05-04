@@ -60,13 +60,19 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
                 return;
             }
 
-            System.out.println("Loading template " + name + " with serializer " + serializer);
+                System.out.println("Loading template " + name + " with serializer " + serializer);
 
-            // merge these futures without joining
-            cosmosSerializer.deserialize(data).thenAccept(future::complete);
-        });
+                // merge these futures without joining
+                cosmosSerializer.deserialize(data).thenAccept(future::complete);
+            });
 
         queryFuture.thenRun(() -> runningFutures.remove(queryFuture));
+        queryFuture.exceptionally(throwable -> {
+            runningFutures.remove(queryFuture);
+            throwable.printStackTrace();
+            return null;
+        });
+
         runningFutures.add(queryFuture);
 
         future.thenRun(() -> runningFutures.remove(future));
@@ -84,6 +90,12 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
         }); // map to future<void>
 
         queryFuture.thenRun(() -> runningFutures.remove(queryFuture));
+        queryFuture.exceptionally(throwable -> {
+            runningFutures.remove(queryFuture);
+            throwable.printStackTrace();
+            return null;
+        });
+
         runningFutures.add(queryFuture);
 
         return queryFuture;
@@ -95,9 +107,15 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
             queries.get(CosmosSQLQuery.DELETE_TEMPLATE).formatted(tableName),
             name
         ).thenRun(() -> {
-        }); // map to future<void>
+        });
 
         queryFuture.thenRun(() -> runningFutures.remove(queryFuture));
+        queryFuture.exceptionally(throwable -> {
+            runningFutures.remove(queryFuture);
+            throwable.printStackTrace();
+            return null;
+        });
+
         runningFutures.add(queryFuture);
 
         return queryFuture;
@@ -187,6 +205,11 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
         });
 
         queryFuture.thenRun(() -> runningFutures.remove(queryFuture));
+        queryFuture.exceptionally(throwable -> {
+            runningFutures.remove(queryFuture);
+            throwable.printStackTrace();
+            return null;
+        });
         runningFutures.add(queryFuture);
 
         future.thenRun(() -> runningFutures.remove(future));
