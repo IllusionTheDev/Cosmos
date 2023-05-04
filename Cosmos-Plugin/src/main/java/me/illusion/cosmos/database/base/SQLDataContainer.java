@@ -75,17 +75,19 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
 
     @Override
     public CompletableFuture<Void> saveTemplate(String name, TemplatedArea area) {
-        return registerFuture(
-            templatesTable.executeQuery(queries.get(CosmosSQLQuery.STORE_TEMPLATE).formatted(tableName), name, area.getSerializer().getName(),
-                area.getSerializer().serialize(area)).thenRun(() -> {
-            })
-        );
+        return registerVoidFuture(area.getSerializer().serialize(area).thenCompose((contents) -> {
+            return templatesTable.executeQuery(
+                queries.get(CosmosSQLQuery.STORE_TEMPLATE).formatted(tableName),
+                area.getSerializer().getName(),
+                contents,
+                name
+            );
+        }));
     }
 
     @Override
     public CompletableFuture<Void> deleteTemplate(String name) {
-        return registerFuture(templatesTable.executeQuery(queries.get(CosmosSQLQuery.DELETE_TEMPLATE).formatted(tableName), name).thenRun(() -> {
-        }));
+        return registerVoidFuture(templatesTable.executeQuery(queries.get(CosmosSQLQuery.DELETE_TEMPLATE).formatted(tableName), name));
     }
 
     @Override
@@ -186,6 +188,10 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
         runningFutures.add(future);
 
         return future;
+    }
+
+    private CompletableFuture<Void> registerVoidFuture(CompletableFuture<?> future) {
+        return registerFuture(future.thenApply(irrelevant -> null));
     }
 
     @Override
