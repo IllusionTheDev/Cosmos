@@ -19,7 +19,7 @@ import org.bukkit.configuration.ConfigurationSection;
 public abstract class SQLDataContainer implements CosmosDataContainer {
 
     private static final ColumnData[] COLUMNS = new ColumnData[]{
-        new ColumnData("template_id", ColumnType.MEDIUMTEXT, null, true),
+        new ColumnData("template_id", ColumnType.VARCHAR, 255, true),
         new ColumnData("template_serializer", ColumnType.VARCHAR, 255),
         new ColumnData("template_data", ColumnType.MEDIUMBLOB)};
 
