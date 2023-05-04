@@ -190,4 +190,14 @@ public class CosmosContainerRegistry {
         return getContainer(defaultContainerId);
     }
 
+    /**
+     * Checks if a container is enabled.
+     *
+     * @param id The id of the container
+     * @return True if the container is enabled, false otherwise
+     */
+    public boolean isEnabled(String id) {
+        return loadedContainers.contains(id);
+    }
+
 }

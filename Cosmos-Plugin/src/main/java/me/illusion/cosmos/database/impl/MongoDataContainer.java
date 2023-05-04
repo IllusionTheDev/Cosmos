@@ -39,8 +39,22 @@ public class MongoDataContainer implements CosmosDataContainer {
             String database = section.getString("database", "cosmos");
             String collectionName = section.getString("collection", "cosmos_templates");
 
-            mongoClient = MongoClients.create(
-                new ConnectionString("mongodb://" + username + ":" + password + "@" + ip + ":" + port + "/?authSource=" + authsource));
+            StringBuilder builder = new StringBuilder();
+            if (username != null && !username.isEmpty()) {
+                builder.append(username);
+                if (password != null && !password.isEmpty()) {
+                    builder.append(":").append(password);
+                }
+                builder.append("@");
+            }
+
+            builder.append(ip).append(":").append(port);
+
+            if (authsource != null && !authsource.isEmpty()) {
+                builder.append("/?authSource=").append(authsource);
+            }
+
+            mongoClient = MongoClients.create(new ConnectionString(builder.toString()));
 
             try {
                 templatesCollection = mongoClient.getDatabase(database).getCollection(collectionName);

@@ -72,6 +72,11 @@ public final class CosmosPlugin extends JavaPlugin {
 
         System.out.println("Flushing all containers");
         for (CosmosDataContainer container : containerRegistry.getContainersAsCollection()) {
+            if (!containerRegistry.isEnabled(container.getName())) {
+                System.out.println("Skipping " + container.getName() + " because it's disabled");
+                continue;
+            }
+
             System.out.println("Flushing " + container.getName());
             container.flush().join();
             System.out.println("Flushed " + container.getName());
