@@ -14,3 +14,13 @@ messages:
     failed: "%prefix% &cFailed to import %serializer% from %file%!"
     success: "%prefix% &aSuccessfully imported %serializer% from %file%!"
     save-success: "%prefix% &aSuccessfully saved %serializer% to %file%!"
+
+  migrate:
+    invalid-template-arg: "%prefix% &cYou didn't provide a valid template to migrate from! Usage: /cosmos migrate <all/template> <source> <destination>"
+    invalid-source-arg: "%prefix% &cYou didn't provide a source! Usage: /cosmos migrate <all/template> <source> <destination>"
+    invalid-destination-arg: "%prefix% &cYou didn't provide a destination! Usage: /cosmos migrate <all/template> <source> <destination>"
+    invalid-source: "%prefix% &cInvalid source %source%!"
+    invalid-destination: "%prefix% &cInvalid destination %destination%!"
+    success: "%prefix% &aSuccessfully migrated %source% to %destination%!"
+    started: "%prefix% &aStarted migrating %source% to %destination%!"
+    invalid-template: "%prefix% &cInvalid template %template%!"
