@@ -30,37 +30,23 @@ public class MongoDataContainer implements CosmosDataContainer {
     @Override
     public CompletableFuture<Boolean> enable(ConfigurationSection section) {
         return CompletableFuture.supplyAsync(() -> {
-            String ip = section.getString("ip");
-            int port = section.getInt("port");
-            String authsource = section.getString("auth-source");
-            String username = section.getString("username");
-            String password = section.getString("password");
-            boolean ssl = section.getBoolean("ssl", false);
+            String connectionString = section.getString("connection-string");
+
+            if (connectionString == null) {
+                String ip = section.getString("ip");
+                int port = section.getInt("port");
+                String authsource = section.getString("auth-source");
+                String username = section.getString("username");
+                String password = section.getString("password");
+                boolean ssl = section.getBoolean("ssl", false);
+
+                connectionString = createConnectionString(ip, port, authsource, username, password, ssl);
+            }
 
             String database = section.getString("database", "cosmos");
             String collectionName = section.getString("collection", "cosmos_templates");
 
-            StringBuilder builder = new StringBuilder();
-            builder.append("mongodb://");
-            if (username != null && !username.isEmpty()) {
-                builder.append(username);
-                if (password != null && !password.isEmpty()) {
-                    builder.append(":").append(password);
-                }
-                builder.append("@");
-            }
-
-            builder.append(ip).append(":").append(port);
-
-            if (authsource != null && !authsource.isEmpty()) {
-                builder.append("/?authSource=").append(authsource);
-            }
-
-            if (ssl) {
-                builder.append("&ssl=true");
-            }
-
-            mongoClient = MongoClients.create(new ConnectionString(builder.toString()));
+            mongoClient = MongoClients.create(new ConnectionString(connectionString));
 
             try {
                 templatesCollection = mongoClient.getDatabase(database).getCollection(collectionName);
@@ -169,5 +155,29 @@ public class MongoDataContainer implements CosmosDataContainer {
     @Override
     public boolean requiresCredentials() {
         return true;
+    }
+
+    private String createConnectionString(String ip, int port, String authsource, String username, String password, boolean ssl) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("mongodb://");
+        if (username != null && !username.isEmpty()) {
+            builder.append(username);
+            if (password != null && !password.isEmpty()) {
+                builder.append(":").append(password);
+            }
+            builder.append("@");
+        }
+
+        builder.append(ip).append(":").append(port);
+
+        if (authsource != null && !authsource.isEmpty()) {
+            builder.append("/?authSource=").append(authsource);
+        }
+
+        if (ssl) {
+            builder.append("&ssl=true");
+        }
+
+        return builder.toString();
     }
 }
