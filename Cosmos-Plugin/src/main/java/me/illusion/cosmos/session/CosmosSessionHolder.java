@@ -249,4 +249,13 @@ public class CosmosSessionHolder {
 
         return null;
     }
+
+    /**
+     * Gets the number of sessions in memory.
+     *
+     * @return The number of sessions
+     */
+    public int getSessionCount() {
+        return sessions.size();
+    }
 }

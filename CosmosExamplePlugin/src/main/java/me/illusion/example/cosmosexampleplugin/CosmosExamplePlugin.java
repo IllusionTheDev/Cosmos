@@ -44,6 +44,8 @@ public final class CosmosExamplePlugin extends JavaPlugin {
 
         // Save on the default container, and use the grid we just registered
         sessionHolder = new CosmosSessionHolder(this, cosmosPlugin.getContainerRegistry().getDefaultContainer(), grid);
+        cosmosPlugin.getSessionHolderRegistry()
+            .registerHolder("sample-islands", sessionHolder); // If we want metrics, we need to register the holder. This is optional.
 
         // Attempt to fetch the template from the database and cache it, if it isn't found, it simply won't cache.
         cosmosPlugin.getTemplateCache().register("skyblock", cosmosPlugin.getContainerRegistry().getDefaultContainer().fetchTemplate("skyblock"));

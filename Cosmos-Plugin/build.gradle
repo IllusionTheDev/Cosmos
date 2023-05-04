@@ -37,6 +37,9 @@ dependencies {
 
     // mongo
     implementation('org.mongodb:mongodb-driver-sync:4.9.0')
+
+    // influx
+    implementation 'com.influxdb:influxdb-client-java:6.5.0'
 }
 
 def targetJavaVersion = 17

@@ -261,4 +261,23 @@ public class WorldPool {
 
         return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
     }
+
+    public int getWorldCount(PooledWorldState... stateWhitelist) {
+        if (stateWhitelist.length == 0 || stateWhitelist.length == PooledWorldState.values().length) {
+            return worldPool.size();
+        }
+
+        int count = 0;
+
+        for (PooledWorld world : worldPool.values()) {
+            for (PooledWorldState state : stateWhitelist) {
+                if (world.getState() == state) {
+                    count++;
+                    break;
+                }
+            }
+        }
+
+        return count;
+    }
 }
