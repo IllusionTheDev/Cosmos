@@ -13,6 +13,7 @@ import me.illusion.cosmos.database.CosmosDataContainer;
 import me.illusion.cosmos.serialization.CosmosSerializer;
 import me.illusion.cosmos.template.TemplatedArea;
 import org.bson.Document;
+import org.bson.types.Binary;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class MongoDataContainer implements CosmosDataContainer {
@@ -71,7 +72,7 @@ public class MongoDataContainer implements CosmosDataContainer {
                 return;
             }
 
-            byte[] data = document.get("data", byte[].class);
+            byte[] data = document.get("data", Binary.class).getData();
             String serializer = document.getString("serializer");
 
             CosmosSerializer cosmosSerializer = plugin.getSerializerRegistry().get(serializer);
