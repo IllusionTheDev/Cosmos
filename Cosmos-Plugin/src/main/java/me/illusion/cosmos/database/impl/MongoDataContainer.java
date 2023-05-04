@@ -40,6 +40,7 @@ public class MongoDataContainer implements CosmosDataContainer {
             String collectionName = section.getString("collection", "cosmos_templates");
 
             StringBuilder builder = new StringBuilder();
+            builder.append("mongodb://");
             if (username != null && !username.isEmpty()) {
                 builder.append(username);
                 if (password != null && !password.isEmpty()) {
