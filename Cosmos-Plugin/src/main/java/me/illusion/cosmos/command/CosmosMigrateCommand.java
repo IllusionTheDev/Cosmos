@@ -5,13 +5,13 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import me.illusion.cosmos.CosmosPlugin;
 import me.illusion.cosmos.database.CosmosDataContainer;
+import me.illusion.cosmos.event.CosmosTemplateMigrateEvent;
 import me.illusion.cosmos.utilities.command.SimpleCommand;
 import me.illusion.cosmos.utilities.text.Placeholder;
-import org.bukkit.command.Command;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 
 public class CosmosMigrateCommand implements SimpleCommand {
-
 
 
     private final CosmosPlugin plugin;
@@ -67,18 +67,18 @@ public class CosmosMigrateCommand implements SimpleCommand {
 
         if (sourceContainer == null) {
             plugin.getMessages().sendMessage(
-                    sender,
-                    "migrate.invalid-source",
-                    sourcePlaceholder
-                    );
+                sender,
+                "migrate.invalid-source",
+                sourcePlaceholder
+            );
             return;
         }
 
         if (destinationContainer == null) {
             plugin.getMessages().sendMessage(
-                    sender,
-                    "migrate.invalid-destination",
-                    destinationPlaceholder
+                sender,
+                "migrate.invalid-destination",
+                destinationPlaceholder
             );
             return;
         }
@@ -94,19 +94,19 @@ public class CosmosMigrateCommand implements SimpleCommand {
 
                 CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).thenRun(() -> {
                     plugin.getMessages().sendMessage(
-                            sender,
-                            "migrate.success",
-                            sourcePlaceholder,
-                            destinationPlaceholder
+                        sender,
+                        "migrate.success",
+                        sourcePlaceholder,
+                        destinationPlaceholder
                     );
                 });
             });
 
             plugin.getMessages().sendMessage(
-                    sender,
-                    "migrate.started",
-                    sourcePlaceholder,
-                    destinationPlaceholder
+                sender,
+                "migrate.started",
+                sourcePlaceholder,
+                destinationPlaceholder
             );
             return;
         }
@@ -114,24 +114,29 @@ public class CosmosMigrateCommand implements SimpleCommand {
         sourceContainer.fetchTemplate(templateName).thenCompose(template -> {
             if (template == null) {
                 plugin.getMessages().sendMessage(sender,
-                        "migrate.invalid-template",
-                        templatePlaceholder
+                    "migrate.invalid-template",
+                    templatePlaceholder
                 );
                 return CompletableFuture.completedFuture(null);
             }
 
-            return destinationContainer.saveTemplate(templateName, template).thenRun(() -> plugin.getMessages().sendMessage(
+            return destinationContainer.saveTemplate(templateName, template).thenRun(() -> {
+                plugin.getMessages().sendMessage(
                     sender,
                     "migrate.success",
                     sourcePlaceholder,
-                    destinationPlaceholder));
+                    destinationPlaceholder
+                );
+
+                Bukkit.getPluginManager().callEvent(new CosmosTemplateMigrateEvent(sourceContainer, destinationContainer, template, templateName));
+            });
         });
 
         plugin.getMessages().sendMessage(
-                sender,
-                "migrate.started",
-                sourcePlaceholder,
-                destinationPlaceholder
+            sender,
+            "migrate.started",
+            sourcePlaceholder,
+            destinationPlaceholder
         );
     }
 }
