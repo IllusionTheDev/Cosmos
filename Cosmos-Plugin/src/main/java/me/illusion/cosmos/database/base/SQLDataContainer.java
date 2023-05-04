@@ -19,8 +19,8 @@ import org.bukkit.configuration.ConfigurationSection;
 public abstract class SQLDataContainer implements CosmosDataContainer {
 
     private static final ColumnData[] COLUMNS = new ColumnData[]{
-        new ColumnData("template_id", ColumnType.TEXT, null, true),
-        new ColumnData("template_serializer", ColumnType.TEXT),
+        new ColumnData("template_id", ColumnType.MEDIUMTEXT, null, true),
+        new ColumnData("template_serializer", ColumnType.TINYTEXT),
         new ColumnData("template_data", ColumnType.MEDIUMBLOB)};
 
     private static final Pattern SQL_VALID = Pattern.compile("[a-zA-Z0-9_]");

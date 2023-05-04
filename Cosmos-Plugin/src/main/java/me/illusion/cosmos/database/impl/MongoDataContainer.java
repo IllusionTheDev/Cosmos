@@ -49,15 +49,15 @@ public class MongoDataContainer implements CosmosDataContainer {
                 e.printStackTrace();
                 return false;
             }
+        }).exceptionally(ex -> {
+            ex.printStackTrace();
+            return false;
         });
     }
 
     @Override
     public CompletableFuture<TemplatedArea> fetchTemplate(String name) {
         CompletableFuture<TemplatedArea> future = new CompletableFuture<>();
-        futures.add(future);
-        future.thenRun(() -> futures.remove(future));
-
         CompletableFuture<Void> fetch = CompletableFuture.runAsync(() -> {
             Document document = templatesCollection.find(new Document("name", name)).first();
             if (document == null) {
@@ -79,10 +79,8 @@ public class MongoDataContainer implements CosmosDataContainer {
             cosmosSerializer.deserialize(data).thenAccept(future::complete);
         });
 
-        futures.add(fetch);
-        fetch.thenRun(() -> futures.remove(fetch));
-
-        return future;
+        registerFuture(fetch);
+        return registerFuture(future);
     }
 
     @Override
@@ -95,20 +93,12 @@ public class MongoDataContainer implements CosmosDataContainer {
             templatesCollection.insertOne(document);
         });
 
-        futures.add(future);
-        future.thenRun(() -> futures.remove(future));
-
-        return future;
+        return registerFuture(future);
     }
 
     @Override
     public CompletableFuture<Void> deleteTemplate(String name) {
-        CompletableFuture<Void> future = CompletableFuture.runAsync(() -> templatesCollection.deleteOne(new Document("name", name)));
-
-        futures.add(future);
-        future.thenRun(() -> futures.remove(future));
-
-        return future;
+        return registerFuture(CompletableFuture.runAsync(() -> templatesCollection.deleteOne(new Document("name", name))));
     }
 
     @Override
@@ -124,9 +114,6 @@ public class MongoDataContainer implements CosmosDataContainer {
     @Override
     public CompletableFuture<Collection<String>> fetchAllTemplates() {
         CompletableFuture<Collection<String>> future = new CompletableFuture<>();
-        futures.add(future);
-        future.thenRun(() -> futures.remove(future));
-
         CompletableFuture<Void> fetch = CompletableFuture.runAsync(() -> {
             List<String> names = new ArrayList<>();
 
@@ -137,11 +124,27 @@ public class MongoDataContainer implements CosmosDataContainer {
             future.complete(names);
         });
 
-        futures.add(fetch);
-        fetch.thenRun(() -> futures.remove(fetch));
+        registerFuture(fetch);
+        return registerFuture(future);
+    }
+
+    private <T> CompletableFuture<T> registerFuture(CompletableFuture<T> future) {
+        future.thenRun(() -> futures.remove(future));
+        future.exceptionally(throwable -> {
+            futures.remove(future);
+            throwable.printStackTrace();
+            return null;
+        });
+
+        futures.add(future);
 
         return future;
     }
+
+    private CompletableFuture<Void> registerVoidFuture(CompletableFuture<?> future) {
+        return registerFuture(future.thenApply(irrelevant -> null));
+    }
+
 
     @Override
     public boolean requiresCredentials() {
