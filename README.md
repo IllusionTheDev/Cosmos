@@ -26,6 +26,11 @@ This project is in ALPHA, which means that there is some core functionality. Do 
 
 ------------
 
+### Developer API
+Check the wiki.
+
+------------
+
 ### Some thoughts:
 Cosmos is meant to be used as an API, with its design being intentionally modular so other plugins can register their own data containers (for storing worlds through any given database, such as Amazon S3) and serializers (for pasting worlds through any given format, such as SWM or .schem).
 The idea behind Cosmos is that most plugins handle things like Arena Regeneration manually, and struggle to expand into more advanced structures that may involve saving a world to a database and loading it in another server. Cosmos is here to standardize that, and provide a simple interface to load any given template from any given source at any given time. 
