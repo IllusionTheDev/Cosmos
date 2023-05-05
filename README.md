@@ -16,6 +16,10 @@ This project is in ALPHA, which means that there is some core functionality. Do 
 ### Technologies Used:
 - SpigotAPI
 - Gradle
+- MongoDB
+- MySQL
+- SQLite
+- InfluxDB
 
 #### Plugin Hooks
 - WorldEdit
