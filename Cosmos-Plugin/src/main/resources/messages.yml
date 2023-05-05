@@ -9,7 +9,7 @@ messages:
   import:
     invalid-serializer-arg: "%prefix% &cInvalid argument! Usage: /cosmos import <serializer> <filename>"
     invalid-file-arg: "%prefix% &cInvalid argument! Usage: /cosmos import <serializer> <filename>"
-    invalid-serializer: "%prefix% &cInvalid serializer! Valid serializers: %serializers%"
+    invalid-serializer: "%prefix% &cInvalid serializer!"
     invalid-file: "%prefix% &cThe file %file% does not exist!"
     failed: "%prefix% &cFailed to import %serializer% from %file%!"
     success: "%prefix% &aSuccessfully imported %serializer% from %file%!"
