@@ -44,6 +44,7 @@ public final class CosmosExamplePlugin extends JavaPlugin {
 
         // Save on the default container, and use the grid we just registered
         sessionHolder = new CosmosSessionHolder(this, cosmosPlugin.getContainerRegistry().getDefaultContainer(), grid);
+
         cosmosPlugin.getSessionHolderRegistry()
             .registerHolder("sample-islands", sessionHolder); // If we want metrics, we need to register the holder. This is optional.
 

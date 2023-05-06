@@ -86,6 +86,11 @@ public class CosmosContainerRegistry {
      * @return The container, or null if it does not exist
      */
     public CosmosDataContainer getContainer(String name) {
+        if (!loadedContainers.contains(name)) {
+            System.out.println("Container " + name + " is not loaded!");
+            return null;
+        }
+
         return containers.get(name);
     }
 

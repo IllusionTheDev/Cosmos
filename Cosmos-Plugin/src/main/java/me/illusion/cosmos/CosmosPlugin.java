@@ -74,7 +74,6 @@ public final class CosmosPlugin extends JavaPlugin {
         registerListeners();
         registerCommands();
 
-
         // TODO: testing
     }
 
