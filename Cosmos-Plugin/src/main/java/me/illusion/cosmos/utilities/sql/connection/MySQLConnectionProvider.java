@@ -62,6 +62,10 @@ public class MySQLConnectionProvider implements SQLConnectionProvider {
     }
 
     private CompletableFuture<Boolean> validateConnection(Connection connection) {
+        if (connection == null) {
+            return CompletableFuture.completedFuture(false);
+        }
+
         return CompletableFuture.supplyAsync(() -> {
             try {
                 return connection.isValid(1);
@@ -78,11 +82,12 @@ public class MySQLConnectionProvider implements SQLConnectionProvider {
             try {
                 Class.forName("com.mysql.jdbc.Driver");
                 return DriverManager.getConnection("jdbc:mysql://" + host + ":" + port + "/" + database, username, password);
-            } catch (Exception e) {
-                e.printStackTrace();
+            } catch (Exception expected) { // The driver will throw an exception if it fails to connect
+                return null;
             }
-
-            return null;
-        }).thenAccept(connection::set).thenApply(v -> connection.get());
+        }).thenApply(connection -> {
+            this.connection.set(connection);
+            return connection;
+        });
     }
 }
