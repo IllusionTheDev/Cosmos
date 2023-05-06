@@ -38,12 +38,27 @@ public class CosmosSession {
      * @param container The container to save the session to
      * @return A future which will complete when the session is saved
      */
-    public CompletableFuture<Void> save(CosmosDataContainer container) {
+    public CompletableFuture<Void> save(CosmosDataContainer container, boolean async) {
         System.out.println("Saving session " + uuid.toString());
-        return container.saveTemplate(uuid.toString(), pastedArea).exceptionally(throwable -> {
-            throwable.printStackTrace();
-            return null;
-        });
+
+        CompletableFuture<Void> future = container.saveTemplate(uuid.toString(), pastedArea);
+
+        if (async) {
+            return future;
+        }
+
+        future.join();
+        return CompletableFuture.completedFuture(null);
+    }
+
+    /**
+     * Saves the session to the specified container, asynchronously.
+     *
+     * @param container The container to save the session to
+     * @return A future which will complete when the session is saved
+     */
+    public CompletableFuture<Void> save(CosmosDataContainer container) {
+        return save(container, true);
     }
 
     /**

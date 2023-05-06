@@ -128,9 +128,10 @@ public class CosmosSessionHolder {
      *
      * @param sessionId The UUID of the session
      * @param save      Whether to save the session to the database
+     * @param async     Whether to save the session asynchronously
      * @return A future which will complete when the session is unloaded
      */
-    public CompletableFuture<Void> unloadSession(UUID sessionId, boolean save) {
+    public CompletableFuture<Void> unloadSession(UUID sessionId, boolean save, boolean async) {
         CosmosSession session = sessions.get(sessionId);
         System.out.println("Unloading session " + sessionId);
 
@@ -145,7 +146,7 @@ public class CosmosSessionHolder {
         if (save) {
             System.out.println("Saving session " + sessionId);
             // We unload after everything is saved to prevent any issues with servers stopping while data is being unloaded (if it stops, unloadAll will keep running)
-            return session.save(saveContainer).thenCompose((v) -> session.unload()).thenRun(() -> sessions.remove(sessionId));
+            return session.save(saveContainer, async).thenCompose((v) -> session.unload()).thenRun(() -> sessions.remove(sessionId));
         }
 
         System.out.println("Completing session unload for session " + sessionId);
@@ -167,11 +168,11 @@ public class CosmosSessionHolder {
      *
      * @return A future which will complete when all sessions are unloaded
      */
-    public CompletableFuture<Void> unloadAll(boolean save) {
+    public CompletableFuture<Void> unloadAll(boolean save, boolean async) {
         List<CompletableFuture<?>> futures = new ArrayList<>();
 
         for (UUID sessionId : sessions.keySet()) {
-            futures.add(unloadSession(sessionId, save));
+            futures.add(unloadSession(sessionId, save, async));
         }
 
         return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
@@ -209,7 +210,7 @@ public class CosmosSessionHolder {
 
             if (success) {
                 System.out.println("Unloading session request finished - " + sessionId);
-                return unloadSession(sessionId, save).thenApply(v -> true);
+                return unloadSession(sessionId, save, true).thenApply(v -> true);
             }
 
             System.out.println("Unloading session request cancelled - " + sessionId);
