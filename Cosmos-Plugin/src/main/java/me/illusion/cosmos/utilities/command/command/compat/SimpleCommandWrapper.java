@@ -20,7 +20,7 @@ public class SimpleCommandWrapper extends AbstractObjectiveModel<SimpleCommandEx
         this.command = command;
 
         int paramIndex = 1;
-        for (String sub : command.getIdentifier().split(".")) {
+        for (String sub : command.getIdentifier().split("\\.")) {
             if (sub.equalsIgnoreCase("*")) {
                 registerParameter(new Parameter<>("param" + paramIndex++, ParameterTypes.STRING, true));
             }
@@ -33,7 +33,7 @@ public class SimpleCommandWrapper extends AbstractObjectiveModel<SimpleCommandEx
         StringBuilder builder = new StringBuilder();
         int paramIndex = 1;
 
-        String[] split = command.getIdentifier().split(".");
+        String[] split = command.getIdentifier().split("\\.");
 
         for (String sub : split) {
             if (sub.equalsIgnoreCase("*")) {
