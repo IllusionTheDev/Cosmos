@@ -13,6 +13,7 @@ import me.illusion.cosmos.utilities.command.language.parser.argument.Argument;
 import me.illusion.cosmos.utilities.command.language.parser.argument.ParameterArgument;
 import me.illusion.cosmos.utilities.command.language.type.Parameter;
 import me.illusion.cosmos.utilities.command.language.type.ParameterType;
+import me.illusion.cosmos.utilities.command.language.type.ParameterTypes;
 import me.illusion.cosmos.utilities.command.language.type.impl.FilteredParameterType;
 import org.bukkit.command.CommandSender;
 
@@ -26,11 +27,12 @@ public abstract class AbstractObjectiveModel<T extends CompiledObjective> {
     public AbstractObjectiveModel(String syntax) {
         this.syntax = syntax;
 
+        parseDefaultParameters();
         parseArguments();
     }
 
     public void registerParameter(Parameter<?> parameter) {
-        argumentMap.put(parameter.getName(), parameter);
+        argumentMap.put(parameter.getName(), parameter); // register the parameter, this will override any existing parameters with the same name
 
         // optional checks
         arguments.clear();
@@ -345,6 +347,18 @@ public abstract class AbstractObjectiveModel<T extends CompiledObjective> {
                 if (filteredString.startsWith(lastWord)) {
                     suggestions.add(filteredString);
                 }
+            }
+        }
+    }
+
+    private void parseDefaultParameters() {
+        String[] split = syntax.split(" ");
+
+        for (String word : split) {
+            if (matchesParameterFormat(word) || matchesListFormat(word)) {
+                String parameter = removeFormat(word);
+
+                registerParameter(new Parameter<>(parameter, ParameterTypes.STRING, true));
             }
         }
     }

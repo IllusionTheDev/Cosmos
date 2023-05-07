@@ -5,8 +5,6 @@ import me.illusion.cosmos.CosmosPlugin;
 import me.illusion.cosmos.serialization.CosmosSerializer;
 import me.illusion.cosmos.utilities.command.command.impl.AdvancedCommand;
 import me.illusion.cosmos.utilities.command.command.impl.ExecutionContext;
-import me.illusion.cosmos.utilities.command.language.type.Parameter;
-import me.illusion.cosmos.utilities.command.language.type.ParameterTypes;
 import me.illusion.cosmos.utilities.text.Placeholder;
 import me.illusion.cosmos.utilities.text.TextUtils;
 import org.bukkit.command.CommandSender;
@@ -19,9 +17,6 @@ public class CosmosImportCommand extends AdvancedCommand {
         super("cosmos import <serializer> <filename>");
 
         this.plugin = plugin;
-
-        registerParameter(new Parameter<>("serializer", ParameterTypes.STRING, true));
-        registerParameter(new Parameter<>("filename", ParameterTypes.STRING, true));
     }
 
     @Override

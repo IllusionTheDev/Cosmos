@@ -8,8 +8,6 @@ import me.illusion.cosmos.database.CosmosDataContainer;
 import me.illusion.cosmos.event.CosmosTemplateMigrateEvent;
 import me.illusion.cosmos.utilities.command.command.impl.AdvancedCommand;
 import me.illusion.cosmos.utilities.command.command.impl.ExecutionContext;
-import me.illusion.cosmos.utilities.command.language.type.Parameter;
-import me.illusion.cosmos.utilities.command.language.type.ParameterTypes;
 import me.illusion.cosmos.utilities.text.Placeholder;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -22,10 +20,6 @@ public class CosmosMigrateCommand extends AdvancedCommand {
         super("cosmos migrate <template> <source> <destination>");
 
         this.plugin = plugin;
-
-        registerParameter(new Parameter<>("template", ParameterTypes.STRING, true));
-        registerParameter(new Parameter<>("source", ParameterTypes.STRING, true));
-        registerParameter(new Parameter<>("destination", ParameterTypes.STRING, true));
     }
 
     @Override

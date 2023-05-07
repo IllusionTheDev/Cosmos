@@ -5,8 +5,6 @@ import me.illusion.cosmos.database.CosmosDataContainer;
 import me.illusion.cosmos.serialization.CosmosSerializer;
 import me.illusion.cosmos.utilities.command.command.impl.AdvancedCommand;
 import me.illusion.cosmos.utilities.command.command.impl.ExecutionContext;
-import me.illusion.cosmos.utilities.command.language.type.Parameter;
-import me.illusion.cosmos.utilities.command.language.type.ParameterTypes;
 import me.illusion.cosmos.utilities.geometry.Cuboid;
 import me.illusion.cosmos.utilities.hook.WorldEditUtils;
 import org.bukkit.command.CommandSender;
@@ -20,9 +18,6 @@ public class CosmosSetTemplateCommand extends AdvancedCommand {
         super("cosmos settemplate <template> <container>");
 
         this.plugin = plugin;
-
-        registerParameter(new Parameter<>("template", ParameterTypes.STRING, true));
-        registerParameter(new Parameter<>("container", ParameterTypes.STRING, true));
     }
 
     @Override
