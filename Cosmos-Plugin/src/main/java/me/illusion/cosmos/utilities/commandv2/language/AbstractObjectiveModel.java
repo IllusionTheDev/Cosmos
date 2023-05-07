@@ -1,6 +1,7 @@
 package me.illusion.cosmos.utilities.commandv2.language;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -213,47 +214,94 @@ public abstract class AbstractObjectiveModel<T extends CompiledObjective> {
         }
 
         String[] split = fullLine.split(" ");
-        String lastWord = split[split.length - 1];
+        String lastWord = split[0];
+
+        if (fullLine.endsWith(" ")) {
+            // we need to add this space to the array
+            split = Arrays.copyOf(split, split.length + 1);
+            split[split.length - 1] = "";
+        }
 
         List<String> suggestions = new ArrayList<>();
 
         List<Argument<?>> arguments = new ArrayList<>(this.arguments);
-        Collections.reverse(arguments);
 
-        for (Argument<?> reverseArgument : arguments) {
-            String argumentName = reverseArgument.getName();
+        int argumentIndex = 0;
+        Argument<?> lastArgument = null;
 
-            if (reverseArgument.getArgumentType() == ArgumentType.TAG || reverseArgument.getArgumentType() == ArgumentType.STRING) {
-                if (argumentName.startsWith(lastWord)) {
-                    suggestions.add(argumentName);
-                }
+        for (String word : split) {
+            System.out.println("Iterating word : \"" + word + "\"");
+            if (argumentIndex >= arguments.size()) {
+                System.out.println("We are past the last argument, so we can't suggest anything");
+                // we are past the last argument, so we can't suggest anything
+                break;
             }
 
-            if (reverseArgument.getArgumentType() == ArgumentType.PARAMETER) {
-                ParameterArgument<?> parameterArgument = (ParameterArgument<?>) reverseArgument;
-                addCompletions(suggestions, lastWord, parameterArgument);
+            Argument<?> argument = arguments.get(argumentIndex++);
 
-                if (reverseArgument.isOptional()) {
-                    continue;
-                }
+            lastWord = word;
+            lastArgument = argument;
 
-                if (suggestions.isEmpty()) {
-                    return null;
-                }
+            ArgumentType argumentType = argument.getArgumentType();
+
+            // are we past this stage?
+            if (argumentType.isLiteral() && argument.getName().equalsIgnoreCase(word)) {
+                // we are past this stage, so we can skip it
+                continue;
             }
 
-            if (reverseArgument.getArgumentType() == ArgumentType.LIST) {
-                ParameterArgument<?> parameterArgument = (ParameterArgument<?>) reverseArgument;
-                addCompletions(suggestions, lastWord, parameterArgument);
-
-                if (reverseArgument.isOptional()) {
-                    continue;
+            if (argumentType.isLiteral()) {
+                if (!argument.isOptional()) {
+                    System.out.println("We can't skip this argument, so we can't suggest anything yet");
+                    // we can't skip this argument, so we can't suggest anything
+                    break;
                 }
 
-                return suggestions;
+                continue;
             }
+
+            // What is not literal is a parameter argument
+            ParameterArgument<?> parameterArgument = (ParameterArgument<?>) argument;
+
+            if (parameterArgument.getType().isType(word)) {
+                // we are past this stage, so we can skip it
+                continue;
+            }
+
+            if (!parameterArgument.isOptional()) {
+                System.out.println("This argument is not optional, so we can't suggest anything yet");
+                // we can't skip this argument, so we can't suggest anything
+                break;
+            }
+
+            addCompletions(suggestions, word, parameterArgument);
         }
 
+        if (lastArgument == null) {
+            // we are past the last argument, so we can't suggest anything
+            System.out.println("Reached the end of the arguments, so we can't suggest anything");
+            return suggestions;
+        }
+
+        if (lastArgument.getArgumentType().isLiteral()) {
+            if (lastArgument.getName().equalsIgnoreCase(lastWord)) {
+                // we are past this stage, so we can't suggest anything
+                System.out.println("Our last argument is a literal, and we are past this stage, so we can't suggest anything");
+                return suggestions;
+            }
+
+            if (lastArgument.getName().startsWith(lastWord)) {
+                suggestions.add(lastArgument.getName());
+            }
+
+            System.out.println("Reached the end of literal argument, so we can't suggest anything");
+            return suggestions;
+        }
+
+        ParameterArgument<?> parameterArgument = (ParameterArgument<?>) lastArgument;
+        addCompletions(suggestions, lastWord, parameterArgument);
+
+        System.out.println("Reached the end of parameter argument, so we can't suggest anything");
         return suggestions;
 
     }

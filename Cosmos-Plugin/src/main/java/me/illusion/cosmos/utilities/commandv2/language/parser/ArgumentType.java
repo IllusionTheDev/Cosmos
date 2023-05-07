@@ -5,5 +5,9 @@ public enum ArgumentType {
     PARAMETER,
     TAG,
     LIST,
-    STRING
+    STRING;
+
+    public boolean isLiteral() {
+        return this == TAG || this == STRING;
+    }
 }
