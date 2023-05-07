@@ -86,7 +86,6 @@ public abstract class AbstractObjectiveModel<T extends CompiledObjective> {
         String firstSyntaxWord = syntaxSplit[0];
 
         if (!firstWord.equalsIgnoreCase(firstSyntaxWord)) {
-            System.err.println("Whhy");
             return null; // The first word is not the same, so this is not the correct command
         }
 
@@ -109,14 +108,12 @@ public abstract class AbstractObjectiveModel<T extends CompiledObjective> {
                 Parameter<?> parameterType = argumentMap.get(unformattedSyntaxWord);
                 syntaxIndex++;
                 if (parameterType == null) {
-                    System.err.println("Parameter type not found: " + unformattedSyntaxWord);
                     return null;
                 }
 
                 ParameterType<?> type = parameterType.getType();
 
                 if (!type.isType(word)) {
-                    System.err.println("Invalid type: " + word + " for parameter " + unformattedSyntaxWord);
                     return null;
                 }
 
@@ -125,7 +122,6 @@ public abstract class AbstractObjectiveModel<T extends CompiledObjective> {
                 Parameter<?> parameterType = argumentMap.get(unformattedSyntaxWord);
                 syntaxIndex++;
                 if (parameterType == null) {
-                    System.err.println("Parameter type not found: " + unformattedSyntaxWord);
                     return null;
                 }
 
@@ -146,7 +142,6 @@ public abstract class AbstractObjectiveModel<T extends CompiledObjective> {
                 arguments.add(new ParameterArgument<>(unformattedSyntaxWord, type, parameterType.isOptional(), listValues));
             } else {
                 if (!word.equalsIgnoreCase(syntaxWord)) {
-                    System.err.println("Invalid syntax: " + fullLine);
                     return null;
                 }
 
@@ -182,10 +177,6 @@ public abstract class AbstractObjectiveModel<T extends CompiledObjective> {
         }
 
         if (requiredParameters > 0) {
-            System.err.println("Missing parameters: " + fullLine + " " + requiredParameters + " more required");
-            System.err.println("Syntax: " + syntax);
-            System.err.println("Arguments: " + arguments);
-
             return null;
         }
 
@@ -230,9 +221,9 @@ public abstract class AbstractObjectiveModel<T extends CompiledObjective> {
         Argument<?> lastArgument = null;
 
         for (String word : split) {
-            System.out.println("Iterating word : \"" + word + "\"");
+            // System.out.println("Iterating word : \"" + word + "\"");
             if (argumentIndex >= arguments.size()) {
-                System.out.println("We are past the last argument, so we can't suggest anything");
+                // System.out.println("We are past the last argument, so we can't suggest anything");
                 // we are past the last argument, so we can't suggest anything
                 break;
             }
@@ -252,7 +243,7 @@ public abstract class AbstractObjectiveModel<T extends CompiledObjective> {
 
             if (argumentType.isLiteral()) {
                 if (!argument.isOptional()) {
-                    System.out.println("We can't skip this argument, so we can't suggest anything yet");
+                    // System.out.println("We can't skip this argument, so we can't suggest anything yet");
                     // we can't skip this argument, so we can't suggest anything
                     break;
                 }
@@ -269,7 +260,7 @@ public abstract class AbstractObjectiveModel<T extends CompiledObjective> {
             }
 
             if (!parameterArgument.isOptional()) {
-                System.out.println("This argument is not optional, so we can't suggest anything yet");
+                // System.out.println("This argument is not optional, so we can't suggest anything yet");
                 // we can't skip this argument, so we can't suggest anything
                 break;
             }
@@ -279,14 +270,14 @@ public abstract class AbstractObjectiveModel<T extends CompiledObjective> {
 
         if (lastArgument == null) {
             // we are past the last argument, so we can't suggest anything
-            System.out.println("Reached the end of the arguments, so we can't suggest anything");
+            // System.out.println("Reached the end of the arguments, so we can't suggest anything");
             return suggestions;
         }
 
         if (lastArgument.getArgumentType().isLiteral()) {
             if (lastArgument.getName().equalsIgnoreCase(lastWord)) {
                 // we are past this stage, so we can't suggest anything
-                System.out.println("Our last argument is a literal, and we are past this stage, so we can't suggest anything");
+                // System.out.println("Our last argument is a literal, and we are past this stage, so we can't suggest anything");
                 return suggestions;
             }
 
@@ -294,14 +285,14 @@ public abstract class AbstractObjectiveModel<T extends CompiledObjective> {
                 suggestions.add(lastArgument.getName());
             }
 
-            System.out.println("Reached the end of literal argument, so we can't suggest anything");
+            // System.out.println("Reached the end of literal argument, so we can't suggest anything");
             return suggestions;
         }
 
         ParameterArgument<?> parameterArgument = (ParameterArgument<?>) lastArgument;
         addCompletions(suggestions, lastWord, parameterArgument);
 
-        System.out.println("Reached the end of parameter argument, so we can't suggest anything");
+        // System.out.println("Reached the end of parameter argument, so we can't suggest anything");
         return suggestions;
 
     }

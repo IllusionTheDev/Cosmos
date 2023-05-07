@@ -47,8 +47,6 @@ public class CommandUtilities {
                  InvocationTargetException e) {
             e.printStackTrace();
         }
-
-        System.out.println(base + " was registered as a command");
     }
 
 }

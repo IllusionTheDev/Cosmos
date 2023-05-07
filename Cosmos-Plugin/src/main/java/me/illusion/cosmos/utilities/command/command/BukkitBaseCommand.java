@@ -1,6 +1,5 @@
 package me.illusion.cosmos.utilities.command.command;
 
-import java.util.Arrays;
 import java.util.List;
 import me.illusion.cosmos.utilities.command.language.AbstractObjectiveModel;
 import me.illusion.cosmos.utilities.command.language.CompiledObjective;
@@ -59,7 +58,6 @@ public class BukkitBaseCommand implements CommandExecutor, TabCompleter {
         // we can't trim as we need to know the last word
         String fullLine = (s + " " + String.join(" ", strings));
 
-        System.out.println("tabComplete " + Arrays.toString(strings));
         if (strings.length == 0) {
             return manager.tabComplete(s);
         }

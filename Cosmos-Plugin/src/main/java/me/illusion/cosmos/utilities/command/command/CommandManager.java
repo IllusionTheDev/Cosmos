@@ -49,8 +49,6 @@ public class CommandManager {
     }
 
     public List<String> tabComplete(String line) {
-        System.out.println("tabComplete: \"" + line + "\"");
-
         // remove double spaces and all
         line = line.replaceAll(" +", " ");
 

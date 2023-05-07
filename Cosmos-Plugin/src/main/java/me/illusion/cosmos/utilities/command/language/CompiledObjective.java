@@ -26,8 +26,6 @@ public abstract class CompiledObjective {
 
             if (value instanceof String text) {
                 if (!(argument instanceof ParameterArgument<?>)) {
-                    System.err.println("Argument " + argument.getName() + " is not a parameter argument");
-                    System.err.println(argument);
                     continue;
                 }
 
@@ -40,8 +38,6 @@ public abstract class CompiledObjective {
                     Object object = newList.get(i);
                     if (object instanceof String text) {
                         if (!(argument instanceof ParameterArgument<?>)) {
-                            System.err.println("Argument " + argument.getName() + " is not a parameter argument");
-                            System.err.println(argument);
                             continue;
                         }
 
@@ -53,12 +49,6 @@ public abstract class CompiledObjective {
             }
 
             return (T) value;
-        }
-
-        System.err.println("Parameter " + name + " does not exist");
-
-        for (Argument<?> argument : metadata.getArguments()) {
-            System.err.println("Argument: " + argument.toString());
         }
 
         throw new IllegalArgumentException("Parameter " + name + " does not exist");
@@ -88,8 +78,6 @@ public abstract class CompiledObjective {
         // So for example, if we have the parameter {x}, we can replace it with the variable x, and then replace the variable x with the value 1
         StringBuilder builder = new StringBuilder();
         for (Argument<?> argument : metadata.getArguments()) {
-            System.err.println("Argument: " + argument.toString());
-
             if (argument.getArgumentType() == ArgumentType.LIST) {
                 List<?> list = (List<?>) argument.getValue();
                 for (Object object : list) {
@@ -149,7 +137,6 @@ public abstract class CompiledObjective {
         List<Argument<?>> arguments = metadata.getAllArguments();
         List<Argument<?>> variableArguments = new ArrayList<>();
         for (Argument<?> argument : arguments) {
-            System.out.println("Argument: " + argument.toString());
             if (argument.getArgumentType() == ArgumentType.STRING) {
                 continue;
             }
