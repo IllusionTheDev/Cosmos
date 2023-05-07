@@ -18,7 +18,7 @@ import me.illusion.cosmos.session.CosmosSessionHolderRegistry;
 import me.illusion.cosmos.template.PastedArea;
 import me.illusion.cosmos.template.TemplatedArea;
 import me.illusion.cosmos.template.grid.CosmosGridRegistry;
-import me.illusion.cosmos.utilities.command.impl.CommandManager;
+import me.illusion.cosmos.utilities.command.command.CommandManager;
 import me.illusion.cosmos.utilities.concurrency.MainThreadExecutor;
 import me.illusion.cosmos.utilities.storage.MessagesFile;
 import org.bukkit.Bukkit;
@@ -143,8 +143,8 @@ public final class CosmosPlugin extends JavaPlugin {
      * Registers any commands
      */
     public void registerCommands() {
-        commandManager.register(new CosmosImportCommand(this));
-        commandManager.register(new CosmosMigrateCommand(this));
+        commandManager.registerCommand(new CosmosImportCommand(this));
+        commandManager.registerCommand(new CosmosMigrateCommand(this));
     }
 
     /**

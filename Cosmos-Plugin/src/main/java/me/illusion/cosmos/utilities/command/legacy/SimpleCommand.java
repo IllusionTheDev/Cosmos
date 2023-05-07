@@ -1,4 +1,4 @@
-package me.illusion.cosmos.utilities.command;
+package me.illusion.cosmos.utilities.command.legacy;
 
 import java.util.ArrayList;
 import java.util.HashMap;
