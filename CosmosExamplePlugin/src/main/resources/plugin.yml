@@ -5,5 +5,3 @@ api-version: 1.19
 
 depend:
   - Cosmos
-commands:
-  settemplate:

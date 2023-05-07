@@ -6,7 +6,6 @@ import me.illusion.cosmos.pool.world.WorldPoolSettings;
 import me.illusion.cosmos.session.CosmosSessionHolder;
 import me.illusion.cosmos.template.grid.CosmosGrid;
 import me.illusion.cosmos.template.grid.impl.WorldPerAreaGrid;
-import me.illusion.example.cosmosexampleplugin.command.SetTemplateCommand;
 import me.illusion.example.cosmosexampleplugin.listener.PlayerJoinListener;
 import me.illusion.example.cosmosexampleplugin.listener.TemplateCacheListener;
 import org.bukkit.Bukkit;
@@ -23,8 +22,6 @@ public final class CosmosExamplePlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         cosmosPlugin = (CosmosPlugin) Bukkit.getPluginManager().getPlugin("Cosmos");
-
-        getCommand("settemplate").setExecutor(new SetTemplateCommand(this));
 
         Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(this), this);
         Bukkit.getPluginManager().registerEvents(new TemplateCacheListener(this), this);
