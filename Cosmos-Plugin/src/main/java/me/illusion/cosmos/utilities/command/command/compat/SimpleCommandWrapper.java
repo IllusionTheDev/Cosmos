@@ -1,12 +1,12 @@
 package me.illusion.cosmos.utilities.command.command.compat;
 
-import me.illusion.cosmos.utilities.command.SimpleCommand;
 import me.illusion.cosmos.utilities.command.command.compat.SimpleCommandWrapper.SimpleCommandExecutor;
 import me.illusion.cosmos.utilities.command.language.AbstractObjectiveModel;
 import me.illusion.cosmos.utilities.command.language.CompiledObjective;
 import me.illusion.cosmos.utilities.command.language.data.ObjectiveMetadata;
 import me.illusion.cosmos.utilities.command.language.type.Parameter;
 import me.illusion.cosmos.utilities.command.language.type.ParameterTypes;
+import me.illusion.cosmos.utilities.command.legacy.SimpleCommand;
 import org.bukkit.command.CommandSender;
 
 public class SimpleCommandWrapper extends AbstractObjectiveModel<SimpleCommandExecutor> {
