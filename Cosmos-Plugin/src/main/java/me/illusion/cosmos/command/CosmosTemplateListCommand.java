@@ -1,20 +1,15 @@
 package me.illusion.cosmos.command;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.concurrent.CompletableFuture;
-
-import io.reactivex.rxjava3.core.Completable;
 import me.illusion.cosmos.CosmosPlugin;
 import me.illusion.cosmos.database.CosmosDataContainer;
-import me.illusion.cosmos.serialization.CosmosSerializer;
 import me.illusion.cosmos.utilities.command.command.impl.AdvancedCommand;
 import me.illusion.cosmos.utilities.command.command.impl.ExecutionContext;
 import me.illusion.cosmos.utilities.storage.MessagesFile;
-import me.illusion.cosmos.utilities.text.Placeholder;
-import me.illusion.cosmos.utilities.text.TextUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.Collection;
+import java.util.concurrent.CompletableFuture;
 
 public class CosmosTemplateListCommand extends AdvancedCommand {
 
