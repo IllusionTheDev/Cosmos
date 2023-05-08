@@ -12,6 +12,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import lombok.Getter;
 import me.illusion.cosmos.utilities.io.FileUtils;
+import me.illusion.cosmos.utilities.time.Time;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
@@ -20,9 +21,8 @@ import org.bukkit.util.Vector;
 
 public class WorldPool {
 
-    private static final Executor DELAYED_EXECUTOR = CompletableFuture.delayedExecutor(1, TimeUnit.SECONDS);
-
     private final Map<UUID, PooledWorld> worldPool = new ConcurrentHashMap<>();
+    private final Executor delayedExecutor;
 
     private final JavaPlugin plugin;
 
@@ -32,6 +32,9 @@ public class WorldPool {
     public WorldPool(JavaPlugin plugin, WorldPoolSettings settings) {
         this.plugin = plugin;
         this.settings = settings;
+
+        Time deletionDelay = settings.getDeletionDelay();
+        delayedExecutor = CompletableFuture.delayedExecutor(deletionDelay.as(TimeUnit.MILLISECONDS), TimeUnit.MILLISECONDS);
 
         createBatch(settings.getPreGeneratedWorlds());
     }
@@ -48,7 +51,7 @@ public class WorldPool {
             if (amount > 1) {
                 createBatch(amount - 1);
             }
-        }, 50L);
+        }, settings.getBatchDelayTicks());
     }
 
     /**
@@ -263,7 +266,7 @@ public class WorldPool {
                 futures.add(CompletableFuture.runAsync(() -> {
                     File dir = new File(Bukkit.getWorldContainer(), world.getWorldName());
                     FileUtils.deleteDirectory(dir);
-                }, DELAYED_EXECUTOR)); // Unfortunately there is no guarantee that the world files are flushed to disk when we unload the world, so we have to
+                }, delayedExecutor)); // Unfortunately there is no guarantee that the world files are flushed to disk when we unload the world, so we have to
                 // wait a bit before deleting the files, and we can't guarantee that the bukkit scheduler will be available (on shutdown, for example, it's not)
             }
         }
