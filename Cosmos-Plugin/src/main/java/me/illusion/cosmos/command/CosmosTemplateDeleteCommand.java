@@ -1,51 +1,48 @@
 package me.illusion.cosmos.command;
 
+import java.io.File;
+import java.util.Collection;
+import java.util.concurrent.CompletableFuture;
+
+import io.reactivex.rxjava3.core.Completable;
 import me.illusion.cosmos.CosmosPlugin;
 import me.illusion.cosmos.database.CosmosDataContainer;
 import me.illusion.cosmos.serialization.CosmosSerializer;
+import me.illusion.cosmos.template.TemplatedArea;
 import me.illusion.cosmos.utilities.command.command.impl.AdvancedCommand;
 import me.illusion.cosmos.utilities.command.command.impl.ExecutionContext;
-import me.illusion.cosmos.utilities.geometry.Cuboid;
-import me.illusion.cosmos.utilities.hook.WorldEditUtils;
 import me.illusion.cosmos.utilities.storage.MessagesFile;
+import me.illusion.cosmos.utilities.text.Placeholder;
+import me.illusion.cosmos.utilities.text.TextUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class CosmosSetTemplateCommand extends AdvancedCommand {
+public class CosmosTemplateDeleteCommand extends AdvancedCommand {
 
     private final CosmosPlugin plugin;
     private final MessagesFile messages;
 
-    public CosmosSetTemplateCommand(CosmosPlugin plugin) {
-        super("cosmos settemplate <template> <container>");
+    public CosmosTemplateDeleteCommand(CosmosPlugin plugin) {
+        super("cosmos templates delete <template> <container>");
 
         this.plugin = plugin;
         this.messages = plugin.getMessages();
 
-        addInputValidation("template", sender -> messages.sendMessage(sender, "settemplate.invalid-template-arg"));
-        addInputValidation("container", sender -> messages.sendMessage(sender, "settemplate.invalid-container-arg"));
+        addInputValidation("template", sender -> messages.sendMessage(sender, "templates.delete.invalid-template-arg"));
+        addInputValidation("container", sender -> messages.sendMessage(sender, "templates.delete.invalid-container-arg"));
     }
 
     @Override
     public boolean canExecute(CommandSender sender) {
         return sender instanceof Player;
     }
-
     @Override
     public void execute(CommandSender sender, ExecutionContext context) {
+
         Player bukkitPlayer = (Player) sender;
-
-        String templateName = context.getParameter("template");
         String container = context.getParameter("container");
+        String template = context.getParameter("template");
 
-        Cuboid selection = WorldEditUtils.getPlayerSelection(bukkitPlayer);
-
-        if (selection == null) {
-            bukkitPlayer.sendMessage("You must make a WorldEdit selection first!");
-            return;
-        }
-
-        CosmosSerializer serializer = plugin.getSerializerRegistry().get("worldedit");
         CosmosDataContainer dataContainer = null;
 
         if (container != null) {
@@ -60,15 +57,15 @@ public class CosmosSetTemplateCommand extends AdvancedCommand {
         }
 
         CosmosDataContainer finalDataContainer = dataContainer;
-        serializer.createArea(selection, bukkitPlayer.getLocation()).thenAccept(area -> {
-
-            finalDataContainer.saveTemplate(templateName, area).thenRun(() -> {
-                bukkitPlayer.sendMessage("Template saved!");
-            });
-
-            plugin.getTemplateCache().register(templateName, area);
+        dataContainer.fetchTemplate(template).thenAccept(templateToDelete -> {
+            if (templateToDelete == null) {
+                bukkitPlayer.sendMessage("Invalid template!");
+                return;
+            }
+            finalDataContainer.deleteTemplate(template);
         });
+        //TODO: ADD CONFIRMATION
 
-        bukkitPlayer.sendMessage("Saving template...");
     }
+
 }
