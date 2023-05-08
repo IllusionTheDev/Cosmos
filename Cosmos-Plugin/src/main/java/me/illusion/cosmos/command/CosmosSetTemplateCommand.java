@@ -7,25 +7,33 @@ import me.illusion.cosmos.utilities.command.command.impl.AdvancedCommand;
 import me.illusion.cosmos.utilities.command.command.impl.ExecutionContext;
 import me.illusion.cosmos.utilities.geometry.Cuboid;
 import me.illusion.cosmos.utilities.hook.WorldEditUtils;
+import me.illusion.cosmos.utilities.storage.MessagesFile;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class CosmosSetTemplateCommand extends AdvancedCommand {
 
     private final CosmosPlugin plugin;
+    private final MessagesFile messages;
 
     public CosmosSetTemplateCommand(CosmosPlugin plugin) {
         super("cosmos settemplate <template> <container>");
 
         this.plugin = plugin;
+        this.messages = plugin.getMessages();
+
+        addInputValidation("template", sender -> messages.sendMessage(sender, "settemplate.invalid-template-arg"));
+        addInputValidation("container", sender -> messages.sendMessage(sender, "settemplate.invalid-container-arg"));
+    }
+
+    @Override
+    public boolean canExecute(CommandSender sender) {
+        return sender instanceof Player;
     }
 
     @Override
     public void execute(CommandSender sender, ExecutionContext context) {
-        if (!(sender instanceof Player bukkitPlayer)) {
-            sender.sendMessage("You must be a player to use this command!");
-            return;
-        }
+        Player bukkitPlayer = (Player) sender;
 
         String templateName = context.getParameter("template");
         String container = context.getParameter("container");

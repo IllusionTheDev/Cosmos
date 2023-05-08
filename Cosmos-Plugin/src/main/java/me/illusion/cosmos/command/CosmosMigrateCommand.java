@@ -8,6 +8,7 @@ import me.illusion.cosmos.database.CosmosDataContainer;
 import me.illusion.cosmos.event.CosmosTemplateMigrateEvent;
 import me.illusion.cosmos.utilities.command.command.impl.AdvancedCommand;
 import me.illusion.cosmos.utilities.command.command.impl.ExecutionContext;
+import me.illusion.cosmos.utilities.storage.MessagesFile;
 import me.illusion.cosmos.utilities.text.Placeholder;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -15,11 +16,17 @@ import org.bukkit.command.CommandSender;
 public class CosmosMigrateCommand extends AdvancedCommand {
 
     private final CosmosPlugin plugin;
+    private final MessagesFile messages;
 
     public CosmosMigrateCommand(CosmosPlugin plugin) {
         super("cosmos migrate <template> <source> <destination>");
 
         this.plugin = plugin;
+        this.messages = plugin.getMessages();
+
+        addInputValidation("template", sender -> messages.sendMessage(sender, "migrate.invalid-template-arg"));
+        addInputValidation("source", sender -> messages.sendMessage(sender, "migrate.invalid-source-arg"));
+        addInputValidation("destination", sender -> messages.sendMessage(sender, "migrate.invalid-destination-arg"));
     }
 
     @Override
@@ -27,21 +34,6 @@ public class CosmosMigrateCommand extends AdvancedCommand {
         String templateName = context.getParameter("template");
         String source = context.getParameter("source");
         String destination = context.getParameter("destination");
-
-        if (templateName.isEmpty()) {
-            plugin.getMessages().sendMessage(sender, "migrate.invalid-template-arg");
-            return;
-        }
-
-        if (source.isEmpty()) {
-            plugin.getMessages().sendMessage(sender, "migrate.invalid-source-arg");
-            return;
-        }
-
-        if (destination.isEmpty()) {
-            plugin.getMessages().sendMessage(sender, "migrate.invalid-destination-arg");
-            return;
-        }
 
 //        List<Placeholder<?>> placeholders = Arrays.asList(
 //                new Placeholder<>("%template%", templateName),
