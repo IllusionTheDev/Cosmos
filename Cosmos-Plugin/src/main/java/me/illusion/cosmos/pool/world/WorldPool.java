@@ -9,6 +9,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.Getter;
+import me.illusion.cosmos.utilities.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
@@ -245,7 +246,7 @@ public class WorldPool {
         for (Map.Entry<UUID, PooledWorld> entry : worldPool.entrySet()) {
             PooledWorld world = entry.getValue();
 
-            if (world.getState() == PooledWorldState.IN_USE || world.getState() == PooledWorldState.UNUSED) {
+            if (world.getState().isLoaded()) {
                 World bukkitWorld = Bukkit.getWorld(world.getWorldName());
 
                 if (bukkitWorld != null) {
@@ -255,7 +256,10 @@ public class WorldPool {
                 Bukkit.unloadWorld(world.getWorldName(), false);
                 getOrCreateWorld(entry.getKey()).setState(PooledWorldState.UNLOADED);
 
-                futures.add(CompletableFuture.runAsync(() -> new File(Bukkit.getWorldContainer(), world.getWorldName()).delete()));
+                futures.add(CompletableFuture.runAsync(() -> {
+                    File dir = new File(Bukkit.getWorldContainer(), world.getWorldName());
+                    FileUtils.deleteDirectory(dir);
+                }));
             }
         }
 
