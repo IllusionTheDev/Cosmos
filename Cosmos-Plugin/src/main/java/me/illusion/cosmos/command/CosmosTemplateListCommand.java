@@ -30,6 +30,7 @@ public class CosmosTemplateListCommand extends AdvancedCommand {
     public boolean canExecute(CommandSender sender) {
         return sender instanceof Player;
     }
+
     @Override
     public void execute(CommandSender sender, ExecutionContext context) {
 

@@ -1,6 +1,5 @@
 package me.illusion.cosmos.command;
 
-import java.io.File;
 import me.illusion.cosmos.CosmosPlugin;
 import me.illusion.cosmos.serialization.CosmosSerializer;
 import me.illusion.cosmos.utilities.command.command.impl.AdvancedCommand;
@@ -9,6 +8,8 @@ import me.illusion.cosmos.utilities.storage.MessagesFile;
 import me.illusion.cosmos.utilities.text.Placeholder;
 import me.illusion.cosmos.utilities.text.TextUtils;
 import org.bukkit.command.CommandSender;
+
+import java.io.File;
 
 public class CosmosImportCommand extends AdvancedCommand {
 

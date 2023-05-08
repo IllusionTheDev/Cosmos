@@ -1,19 +1,10 @@
 package me.illusion.cosmos.command;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.concurrent.CompletableFuture;
-
-import io.reactivex.rxjava3.core.Completable;
 import me.illusion.cosmos.CosmosPlugin;
 import me.illusion.cosmos.database.CosmosDataContainer;
-import me.illusion.cosmos.serialization.CosmosSerializer;
-import me.illusion.cosmos.template.TemplatedArea;
 import me.illusion.cosmos.utilities.command.command.impl.AdvancedCommand;
 import me.illusion.cosmos.utilities.command.command.impl.ExecutionContext;
 import me.illusion.cosmos.utilities.storage.MessagesFile;
-import me.illusion.cosmos.utilities.text.Placeholder;
-import me.illusion.cosmos.utilities.text.TextUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -36,6 +27,7 @@ public class CosmosTemplateDeleteCommand extends AdvancedCommand {
     public boolean canExecute(CommandSender sender) {
         return sender instanceof Player;
     }
+
     @Override
     public void execute(CommandSender sender, ExecutionContext context) {
 

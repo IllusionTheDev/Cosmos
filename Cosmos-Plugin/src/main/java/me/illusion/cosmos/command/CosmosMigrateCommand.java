@@ -1,8 +1,5 @@
 package me.illusion.cosmos.command;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import me.illusion.cosmos.CosmosPlugin;
 import me.illusion.cosmos.database.CosmosDataContainer;
 import me.illusion.cosmos.event.CosmosTemplateMigrateEvent;
@@ -12,6 +9,10 @@ import me.illusion.cosmos.utilities.storage.MessagesFile;
 import me.illusion.cosmos.utilities.text.Placeholder;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class CosmosMigrateCommand extends AdvancedCommand {
 
@@ -64,7 +65,7 @@ public class CosmosMigrateCommand extends AdvancedCommand {
 
                 for (String fetchedTemplateName : allTemplates) {
                     futures.add(sourceContainer.fetchTemplate(fetchedTemplateName)
-                        .thenCompose(template -> destinationContainer.saveTemplate(fetchedTemplateName, template)));
+                            .thenCompose(template -> destinationContainer.saveTemplate(fetchedTemplateName, template)));
                 }
 
                 CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).thenRun(() -> {
