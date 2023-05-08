@@ -2,27 +2,27 @@ package me.illusion.cosmos.command;
 
 import me.illusion.cosmos.CosmosPlugin;
 import me.illusion.cosmos.database.CosmosDataContainer;
-import me.illusion.cosmos.serialization.CosmosSerializer;
 import me.illusion.cosmos.utilities.command.command.impl.AdvancedCommand;
 import me.illusion.cosmos.utilities.command.command.impl.ExecutionContext;
-import me.illusion.cosmos.utilities.geometry.Cuboid;
-import me.illusion.cosmos.utilities.hook.WorldEditUtils;
 import me.illusion.cosmos.utilities.storage.MessagesFile;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-public class CosmosSetTemplateCommand extends AdvancedCommand {
+import java.util.Collection;
+import java.util.concurrent.CompletableFuture;
+
+public class CosmosTemplateListCommand extends AdvancedCommand {
 
     private final CosmosPlugin plugin;
     private final MessagesFile messages;
 
-    public CosmosSetTemplateCommand(CosmosPlugin plugin) {
-        super("cosmos settemplate <template> <container>");
+    public CosmosTemplateListCommand(CosmosPlugin plugin) {
+        super("cosmos templates list <container>");
 
         this.plugin = plugin;
         this.messages = plugin.getMessages();
 
-        addInputValidation("template", sender -> messages.sendMessage(sender, "settemplate.invalid-template-arg"));
+//        addInputValidation("serializer", sender -> messages.sendMessage(sender, "import.invalid-serializer-arg"));
         addInputValidation("container", sender -> messages.sendMessage(sender, "settemplate.invalid-container-arg"));
     }
 
@@ -33,19 +33,10 @@ public class CosmosSetTemplateCommand extends AdvancedCommand {
 
     @Override
     public void execute(CommandSender sender, ExecutionContext context) {
-        Player bukkitPlayer = (Player) sender;
 
-        String templateName = context.getParameter("template");
+        Player bukkitPlayer = (Player) sender;
         String container = context.getParameter("container");
 
-        Cuboid selection = WorldEditUtils.getPlayerSelection(bukkitPlayer);
-
-        if (selection == null) {
-            bukkitPlayer.sendMessage("You must make a WorldEdit selection first!");
-            return;
-        }
-
-        CosmosSerializer serializer = plugin.getSerializerRegistry().get("worldedit");
         CosmosDataContainer dataContainer = null;
 
         if (container != null) {
@@ -59,16 +50,20 @@ public class CosmosSetTemplateCommand extends AdvancedCommand {
             dataContainer = plugin.getContainerRegistry().getDefaultContainer();
         }
 
-        CosmosDataContainer finalDataContainer = dataContainer;
-        serializer.createArea(selection, bukkitPlayer.getLocation()).thenAccept(area -> {
+        CompletableFuture<Collection<String>> templatesToPrint = dataContainer.fetchAllTemplates();
 
-            finalDataContainer.saveTemplate(templateName, area).thenRun(() -> {
-                bukkitPlayer.sendMessage("Template saved!");
-            });
+        bukkitPlayer.sendMessage("Templates in " + dataContainer.getName() + ":");
+        templatesToPrint.thenAccept(templates -> {
+            if (templates.isEmpty()) {
+                bukkitPlayer.sendMessage("No templates found! :(");
+                return;
+            }
 
-            plugin.getTemplateCache().register(templateName, area);
+            for (String template : templates) {
+                bukkitPlayer.sendMessage(" - " + template + "\n");
+            }
         });
 
-        bukkitPlayer.sendMessage("Saving template...");
     }
+
 }
