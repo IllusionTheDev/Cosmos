@@ -8,6 +8,8 @@ import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
+import java.util.concurrent.TimeUnit;
 import lombok.Getter;
 import me.illusion.cosmos.utilities.io.FileUtils;
 import org.bukkit.Bukkit;
@@ -17,6 +19,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
 
 public class WorldPool {
+
+    private static final Executor DELAYED_EXECUTOR = CompletableFuture.delayedExecutor(1, TimeUnit.SECONDS);
 
     private final Map<UUID, PooledWorld> worldPool = new ConcurrentHashMap<>();
 
@@ -259,7 +263,8 @@ public class WorldPool {
                 futures.add(CompletableFuture.runAsync(() -> {
                     File dir = new File(Bukkit.getWorldContainer(), world.getWorldName());
                     FileUtils.deleteDirectory(dir);
-                }));
+                }, DELAYED_EXECUTOR)); // Unfortunately there is no guarantee that the world files are flushed to disk when we unload the world, so we have to
+                // wait a bit before deleting the files, and we can't guarantee that the bukkit scheduler will be available (on shutdown, for example, it's not)
             }
         }
 

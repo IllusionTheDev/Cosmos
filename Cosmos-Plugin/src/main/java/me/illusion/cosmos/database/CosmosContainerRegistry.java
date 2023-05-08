@@ -71,9 +71,6 @@ public class CosmosContainerRegistry {
                 }
 
                 return result;
-            }).exceptionally(throwable -> {
-                throwable.printStackTrace();
-                return false;
             });
         }
 

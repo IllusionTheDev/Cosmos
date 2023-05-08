@@ -1,7 +1,6 @@
 package me.illusion.cosmos.database.impl.remote;
 
 import com.mongodb.ConnectionString;
-import com.mongodb.MongoSocketOpenException;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
@@ -48,17 +47,14 @@ public class MongoDataContainer implements CosmosDataContainer {
             String database = section.getString("database", "cosmos");
             String collectionName = section.getString("collection", "cosmos_templates");
 
-            mongoClient = MongoClients.create(new ConnectionString(connectionString));
 
             try {
+                mongoClient = MongoClients.create(new ConnectionString(connectionString));
                 templatesCollection = mongoClient.getDatabase(database).getCollection(collectionName); // if the collection doesn't exist, it will be created
                 return true;
-            } catch (IllegalArgumentException | MongoSocketOpenException expected) {
+            } catch (Exception expected) { // catching MongoException doesn't work for some reason
                 return false;
             }
-        }).exceptionally(ex -> {
-            ex.printStackTrace();
-            return false;
         });
     }
 

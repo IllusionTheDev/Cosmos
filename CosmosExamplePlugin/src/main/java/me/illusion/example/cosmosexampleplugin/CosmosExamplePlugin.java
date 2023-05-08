@@ -22,10 +22,6 @@ public final class CosmosExamplePlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         cosmosPlugin = (CosmosPlugin) Bukkit.getPluginManager().getPlugin("Cosmos");
-
-        Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(this), this);
-        Bukkit.getPluginManager().registerEvents(new TemplateCacheListener(this), this);
-
         cosmosPlugin.onceInitialized(this::initCosmos);
     }
 
@@ -47,6 +43,10 @@ public final class CosmosExamplePlugin extends JavaPlugin {
 
         // Attempt to fetch the template from the database and cache it, if it isn't found, it simply won't cache.
         cosmosPlugin.getTemplateCache().register("skyblock", cosmosPlugin.getContainerRegistry().getDefaultContainer().fetchTemplate("skyblock"));
+
+        // These listeners rely on the plugin being initialized, so we'll register them here.
+        Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(this), this);
+        Bukkit.getPluginManager().registerEvents(new TemplateCacheListener(this), this);
     }
 
     @Override
