@@ -11,9 +11,11 @@ import lombok.Setter;
 import me.illusion.cosmos.CosmosPlugin;
 import me.illusion.cosmos.database.impl.FileDataContainer;
 import me.illusion.cosmos.database.impl.MemoryDataContainer;
-import me.illusion.cosmos.database.impl.MongoDataContainer;
-import me.illusion.cosmos.database.impl.MySQLDataContainer;
 import me.illusion.cosmos.database.impl.SQLiteDataContainer;
+import me.illusion.cosmos.database.impl.remote.MariaDBDataProvider;
+import me.illusion.cosmos.database.impl.remote.MongoDataContainer;
+import me.illusion.cosmos.database.impl.remote.MySQLDataContainer;
+import me.illusion.cosmos.database.impl.remote.PostgresDataContainer;
 import me.illusion.cosmos.event.CosmosDefaultContainerInitializedEvent;
 import me.illusion.cosmos.file.CosmosDatabasesFile;
 import org.bukkit.Bukkit;
@@ -121,7 +123,9 @@ public class CosmosContainerRegistry {
             registerContainer(new FileDataContainer(cosmosPlugin)),
             registerContainer(new MySQLDataContainer(cosmosPlugin)),
             registerContainer(new SQLiteDataContainer(cosmosPlugin)),
-            registerContainer(new MongoDataContainer(cosmosPlugin))
+            registerContainer(new MongoDataContainer(cosmosPlugin)),
+            registerContainer(new MariaDBDataProvider(cosmosPlugin)),
+            registerContainer(new PostgresDataContainer(cosmosPlugin))
         ).exceptionally(throwable -> {
             throwable.printStackTrace();
             return null;

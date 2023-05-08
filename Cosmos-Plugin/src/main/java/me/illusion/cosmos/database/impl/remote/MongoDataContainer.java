@@ -1,4 +1,4 @@
-package me.illusion.cosmos.database.impl;
+package me.illusion.cosmos.database.impl.remote;
 
 import com.mongodb.ConnectionString;
 import com.mongodb.MongoSocketOpenException;

@@ -6,6 +6,10 @@ api-version: 1.19
 softdepend:
   - WorldEdit
 
+# postgres and mariadb too
 libraries:
   - org.mongodb:mongodb-driver-sync:4.9.0
   - com.influxdb:influxdb-client-java:6.5.0
+  - org.postgresql:postgresql:42.6.0
+  - org.mariadb.jdbc:mariadb-java-client:3.1.4
+

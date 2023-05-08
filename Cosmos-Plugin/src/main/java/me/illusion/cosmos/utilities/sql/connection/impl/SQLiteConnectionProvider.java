@@ -1,4 +1,4 @@
-package me.illusion.cosmos.utilities.sql.connection;
+package me.illusion.cosmos.utilities.sql.connection.impl;
 
 import java.io.File;
 import java.io.IOException;
@@ -7,6 +7,7 @@ import java.sql.DriverManager;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 import me.illusion.cosmos.utilities.sql.SQLTable;
+import me.illusion.cosmos.utilities.sql.connection.SQLConnectionProvider;
 
 /**
  * Represents a connection provider for SQLite.

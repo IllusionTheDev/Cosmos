@@ -1,32 +1,32 @@
-package me.illusion.cosmos.database.impl;
+package me.illusion.cosmos.database.impl.remote;
 
 import java.util.Map;
 import me.illusion.cosmos.CosmosPlugin;
 import me.illusion.cosmos.database.base.CosmosSQLQuery;
 import me.illusion.cosmos.database.base.SQLDataContainer;
-import me.illusion.cosmos.utilities.sql.connection.MySQLConnectionProvider;
 import me.illusion.cosmos.utilities.sql.connection.SQLConnectionProvider;
+import me.illusion.cosmos.utilities.sql.connection.impl.PostgresConnectionProvider;
 import org.bukkit.configuration.ConfigurationSection;
 
-public class MySQLDataContainer extends SQLDataContainer {
+public class PostgresDataContainer extends SQLDataContainer {
 
     private static final String FETCH_TEMPLATE = "SELECT * FROM %s WHERE template_id = ?";
-    private static final String SAVE_TEMPLATE = "INSERT INTO %s (template_id, template_serializer, template_data) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE template_serializer=VALUES(template_serializer), template_data=VALUES(template_data)";
+    private static final String SAVE_TEMPLATE = "INSERT INTO %s (template_id, template_serializer, template_data) VALUES (?, ?, ?) ON CONFLICT (template_id) DO UPDATE SET template_serializer=EXCLUDED.template_serializer, template_data=EXCLUDED.template_data";
     private static final String DELETE_TEMPLATE = "DELETE FROM %s WHERE template_id = ?";
     private static final String FETCH_ALL = "SELECT * FROM %s";
 
-    public MySQLDataContainer(CosmosPlugin plugin) {
+    public PostgresDataContainer(CosmosPlugin plugin) {
         super(plugin);
     }
 
     @Override
     public String getName() {
-        return "mysql";
+        return "postgres";
     }
 
     @Override
     public SQLConnectionProvider getSQLConnectionProvider(ConfigurationSection section) {
-        return new MySQLConnectionProvider(section);
+        return new PostgresConnectionProvider(section);
     }
 
     @Override

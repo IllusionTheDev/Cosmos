@@ -1,10 +1,11 @@
-package me.illusion.cosmos.utilities.sql.connection;
+package me.illusion.cosmos.utilities.sql.connection.impl;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 import me.illusion.cosmos.utilities.sql.SQLTable;
+import me.illusion.cosmos.utilities.sql.connection.SQLConnectionProvider;
 import org.bukkit.configuration.ConfigurationSection;
 
 /**
