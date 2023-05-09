@@ -41,6 +41,8 @@ public enum ColumnType {
     MULTILINESTRING,
     MULTIPOLYGON,
     GEOMETRYCOLLECTION,
-    JSON
+    JSON,
 
+    // postgres specific
+    BYTEA
 }

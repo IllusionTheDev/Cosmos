@@ -4,6 +4,8 @@ import java.util.Map;
 import me.illusion.cosmos.CosmosPlugin;
 import me.illusion.cosmos.database.base.CosmosSQLQuery;
 import me.illusion.cosmos.database.base.SQLDataContainer;
+import me.illusion.cosmos.utilities.sql.ColumnData;
+import me.illusion.cosmos.utilities.sql.ColumnType;
 import me.illusion.cosmos.utilities.sql.connection.SQLConnectionProvider;
 import me.illusion.cosmos.utilities.sql.connection.impl.PostgresConnectionProvider;
 import org.bukkit.configuration.ConfigurationSection;
@@ -17,6 +19,8 @@ public class PostgresDataContainer extends SQLDataContainer {
 
     public PostgresDataContainer(CosmosPlugin plugin) {
         super(plugin);
+
+        overrideColumn("template_data", new ColumnData("template_data", ColumnType.BYTEA));
     }
 
     @Override

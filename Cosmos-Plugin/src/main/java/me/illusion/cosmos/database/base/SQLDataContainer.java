@@ -18,10 +18,11 @@ import org.bukkit.configuration.ConfigurationSection;
 
 public abstract class SQLDataContainer implements CosmosDataContainer {
 
-    private static final ColumnData[] COLUMNS = new ColumnData[]{
+    private final ColumnData[] columns = new ColumnData[]{
         new ColumnData("template_id", ColumnType.VARCHAR, 255, true),
         new ColumnData("template_serializer", ColumnType.VARCHAR, 255),
-        new ColumnData("template_data", ColumnType.MEDIUMBLOB)};
+        new ColumnData("template_data", ColumnType.MEDIUMBLOB)
+    };
 
     private static final Pattern SQL_VALID = Pattern.compile("[a-zA-Z0-9_]");
 
@@ -141,7 +142,7 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
 
             List<CompletableFuture<?>> futures = new ArrayList<>();
 
-            for (ColumnData column : COLUMNS) {
+            for (ColumnData column : columns) {
                 System.err.println("Creating column " + column.getName());
                 futures.add(templatesTable.addColumn(column));
             }
@@ -190,6 +191,15 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
         runningFutures.add(future);
 
         return future;
+    }
+
+    protected void overrideColumn(String name, ColumnData data) {
+        for (int i = 0; i < columns.length; i++) {
+            if (columns[i].getName().equals(name)) {
+                columns[i] = data;
+                return;
+            }
+        }
     }
 
     private CompletableFuture<Void> registerVoidFuture(CompletableFuture<?> future) {

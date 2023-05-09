@@ -20,7 +20,7 @@ public class WorldPoolSettings {
     private int maxUnloadedWorlds = 25; // We'll delete worlds after this
 
     @Default
-    private int preGeneratedWorlds = 2; // We'll pre-generate this many worlds
+    private int preGeneratedWorlds = 2; // We'll keep this many worlds in a pre-generated buffer state (So when a world is requested, we can give it to them immediately, and then generate a new one in the background)
 
     @Default
     private ChunkGenerator chunkGenerator = new VoidGenerator();
