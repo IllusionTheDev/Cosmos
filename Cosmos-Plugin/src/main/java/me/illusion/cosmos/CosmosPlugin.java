@@ -5,9 +5,7 @@ import java.util.concurrent.CompletableFuture;
 import lombok.AccessLevel;
 import lombok.Getter;
 import me.illusion.cosmos.cache.CosmosCache;
-import me.illusion.cosmos.command.CosmosImportCommand;
-import me.illusion.cosmos.command.CosmosMigrateCommand;
-import me.illusion.cosmos.command.CosmosSetTemplateCommand;
+import me.illusion.cosmos.command.*;
 import me.illusion.cosmos.database.CosmosContainerRegistry;
 import me.illusion.cosmos.database.CosmosDataContainer;
 import me.illusion.cosmos.file.CosmosDatabasesFile;
@@ -146,7 +144,10 @@ public final class CosmosPlugin extends JavaPlugin {
     public void registerCommands() {
         commandManager.registerCommand(new CosmosImportCommand(this));
         commandManager.registerCommand(new CosmosMigrateCommand(this));
-        commandManager.registerCommand(new CosmosSetTemplateCommand(this));
+        commandManager.registerCommand(new CosmosTemplateSetCommand(this));
+        commandManager.registerCommand(new CosmosTemplateListCommand(this));
+        commandManager.registerCommand(new CosmosTemplateDeleteCommand(this));
+        commandManager.registerCommand(new CosmosTemplatePasteCommand(this));
     }
 
     /**
