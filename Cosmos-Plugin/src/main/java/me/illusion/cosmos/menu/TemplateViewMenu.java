@@ -101,7 +101,7 @@ public class TemplateViewMenu implements UpdatableMenu {
     }
 
     @Override
-    public void refresh() {
+    public synchronized void refresh() {
         area.clearArea();
 
         List<TemplateData> sorted = new ArrayList<>(templates);
