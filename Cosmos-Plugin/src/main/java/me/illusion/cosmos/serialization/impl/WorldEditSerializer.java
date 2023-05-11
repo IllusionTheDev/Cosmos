@@ -90,7 +90,7 @@ public class WorldEditSerializer implements CosmosSerializer {
                 cuboidRegion.getMinimumPoint()
             );
 
-            forwardExtentCopy.setCopyingEntities(false);
+            forwardExtentCopy.setCopyingEntities(true);
             forwardExtentCopy.setCopyingBiomes(true);
 
             Operations.complete(forwardExtentCopy);

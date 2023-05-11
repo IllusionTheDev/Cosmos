@@ -223,9 +223,7 @@ public abstract class AbstractObjectiveModel<T extends CompiledObjective> {
         Argument<?> lastArgument = null;
 
         for (String word : split) {
-            // System.out.println("Iterating word : \"" + word + "\"");
             if (argumentIndex >= arguments.size()) {
-                // System.out.println("We are past the last argument, so we can't suggest anything");
                 // we are past the last argument, so we can't suggest anything
                 break;
             }
@@ -245,7 +243,6 @@ public abstract class AbstractObjectiveModel<T extends CompiledObjective> {
 
             if (argumentType.isLiteral()) {
                 if (!argument.isOptional()) {
-                    // System.out.println("We can't skip this argument, so we can't suggest anything yet");
                     // we can't skip this argument, so we can't suggest anything
                     break;
                 }
@@ -262,7 +259,6 @@ public abstract class AbstractObjectiveModel<T extends CompiledObjective> {
             }
 
             if (!parameterArgument.isOptional()) {
-                // System.out.println("This argument is not optional, so we can't suggest anything yet");
                 // we can't skip this argument, so we can't suggest anything
                 break;
             }
@@ -272,14 +268,12 @@ public abstract class AbstractObjectiveModel<T extends CompiledObjective> {
 
         if (lastArgument == null) {
             // we are past the last argument, so we can't suggest anything
-            // System.out.println("Reached the end of the arguments, so we can't suggest anything");
             return suggestions;
         }
 
         if (lastArgument.getArgumentType().isLiteral()) {
             if (lastArgument.getName().equalsIgnoreCase(lastWord)) {
                 // we are past this stage, so we can't suggest anything
-                // System.out.println("Our last argument is a literal, and we are past this stage, so we can't suggest anything");
                 return suggestions;
             }
 

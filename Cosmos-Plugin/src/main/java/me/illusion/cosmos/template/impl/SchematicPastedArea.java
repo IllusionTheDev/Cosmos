@@ -88,7 +88,7 @@ public class SchematicPastedArea extends SchematicTemplatedArea implements Paste
                 cuboidRegion.getMinimumPoint()
             );
 
-            forwardExtentCopy.setCopyingEntities(false);
+            forwardExtentCopy.setCopyingEntities(true); // sure we can copy entities over
             forwardExtentCopy.setCopyingBiomes(true);
 
             Operations.complete(forwardExtentCopy);
