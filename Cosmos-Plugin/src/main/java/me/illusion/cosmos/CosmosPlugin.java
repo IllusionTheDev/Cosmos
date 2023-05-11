@@ -24,6 +24,7 @@ import me.illusion.cosmos.template.TemplatedArea;
 import me.illusion.cosmos.template.grid.CosmosGridRegistry;
 import me.illusion.cosmos.utilities.command.command.CommandManager;
 import me.illusion.cosmos.utilities.concurrency.MainThreadExecutor;
+import me.illusion.cosmos.utilities.io.FileUtils;
 import me.illusion.cosmos.utilities.menu.registry.MenuRegistry;
 import me.illusion.cosmos.utilities.storage.MessagesFile;
 import org.bukkit.Bukkit;
@@ -81,6 +82,7 @@ public final class CosmosPlugin extends JavaPlugin {
         registerListeners();
         registerCommands();
 
+        FileUtils.copyBuiltInResources(this, getFile());
         // TODO: testing
     }
 
