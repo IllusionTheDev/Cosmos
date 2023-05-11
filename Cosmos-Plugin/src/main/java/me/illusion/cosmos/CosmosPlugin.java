@@ -54,7 +54,6 @@ public final class CosmosPlugin extends JavaPlugin {
     };
 
     private boolean initialized = false;
-    private final boolean disabled = false;
 
     @Override
     public void onEnable() {
