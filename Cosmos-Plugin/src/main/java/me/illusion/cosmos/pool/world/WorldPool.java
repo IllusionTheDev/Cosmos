@@ -146,8 +146,10 @@ public class WorldPool {
         }
 
         for (Map.Entry<UUID, PooledWorld> entry : List.copyOf(worldPool.entrySet())) {
-            CompletableFuture.runAsync(() -> new File(Bukkit.getWorldContainer(), entry.getValue().getWorldName()).delete());
+            PooledWorld world = entry.getValue();
+            File worldFolder = new File(Bukkit.getWorldContainer(), world.getWorldName());
 
+            CompletableFuture.runAsync(() -> FileUtils.deleteDirectory(worldFolder), delayedExecutor);
             worldPool.remove(entry.getKey());
         }
     }
