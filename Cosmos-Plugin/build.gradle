@@ -24,6 +24,12 @@ repositories {
         url = 'https://maven.enginehub.org/repo/'
     }
 
+    // authlib
+    maven {
+        name = 'minecraft-repo'
+        url = 'https://libraries.minecraft.net/'
+    }
+
 }
 
 dependencies {
@@ -40,6 +46,10 @@ dependencies {
 
     // influx
     implementation 'com.influxdb:influxdb-client-java:6.8.0'
+
+    // authlib
+    implementation 'com.mojang:authlib:1.5.25'
+
 }
 
 def targetJavaVersion = 17
