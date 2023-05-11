@@ -112,7 +112,10 @@ public class TemplateViewMenu implements UpdatableMenu {
                 // Left click to paste at the location, right click to delete
                 CosmosDataContainer container = cosmos.getContainerRegistry().getContainer(data.getContainerName());
                 if (event.isRightClick()) {
-                    container.deleteTemplate(data.getTemplateName()).thenRun(this::refresh); // TODO: delegate this through the confirmation menu
+                    container.deleteTemplate(data.getTemplateName()).thenRun(() -> {
+                        templates.remove(data); // TODO: delegate this through the confirmation menu
+                        refresh();
+                    });
                     return;
                 }
 
