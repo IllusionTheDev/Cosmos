@@ -60,6 +60,7 @@ public final class CosmosPlugin extends JavaPlugin {
     public void onEnable() {
         // Plugin startup logic
         MainThreadExecutor.init(this);
+        FileUtils.copyBuiltInResources(this, getFile());
 
         databasesFile = new CosmosDatabasesFile(this);
         metricsFile = new CosmosMetricsFile(this);
@@ -82,7 +83,6 @@ public final class CosmosPlugin extends JavaPlugin {
         registerListeners();
         registerCommands();
 
-        FileUtils.copyBuiltInResources(this, getFile());
         // TODO: testing
     }
 

@@ -98,7 +98,14 @@ public class MenuRegistry {
     }
 
     public BaseMenu create(String name, Player player) {
-        return getInitializer(name).apply(player);
+        Function<Player, BaseMenu> initializer = getInitializer(name);
+
+        if (initializer == null) {
+            plugin.getLogger().warning("No menu initializer found for " + name);
+            return null;
+        }
+
+        return initializer.apply(player);
     }
 
     public void registerPostInitTask(String name, Consumer<BaseMenu> consumer) {
