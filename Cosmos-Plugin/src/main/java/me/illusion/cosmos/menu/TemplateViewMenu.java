@@ -19,6 +19,7 @@ import me.illusion.cosmos.utilities.menu.layer.PaginableLayer;
 import me.illusion.cosmos.utilities.menu.pagination.PaginableArea;
 import me.illusion.cosmos.utilities.menu.registry.communication.UpdatableMenu;
 import me.illusion.cosmos.utilities.text.Placeholder;
+import me.illusion.cosmos.utilities.text.TextUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -125,9 +126,9 @@ public class TemplateViewMenu implements UpdatableMenu {
             });
 
             button.setPlaceholders(
-                new Placeholder<>("template-name", data.getTemplateName()),
-                new Placeholder<>("template-serializer", data.getSerializerName()),
-                new Placeholder<>("template-container", data.getContainerName())
+                new Placeholder<>("template-name", TextUtils.capitalize(data.getTemplateName())),
+                new Placeholder<>("template-serializer", TextUtils.capitalize(data.getSerializerName())),
+                new Placeholder<>("template-container", TextUtils.capitalize(data.getContainerName()))
             );
 
             area.addElement(button);
