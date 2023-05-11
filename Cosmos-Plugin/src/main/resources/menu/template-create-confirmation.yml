@@ -1,0 +1,20 @@
+title: "Creating: %TEMPLATE_NAME%"
+layout:
+  - '. . . . . . . . .'
+  - '. . cancel . . . confirm . .'
+  - '. . . . . . . . .'
+
+items:
+  cancel:
+    type: "RED_CONCRETE"
+    name: "&cCancel Creation"
+  confirm:
+    type: "GREEN_CONCRETE"
+    name: "&cConfirm Deletion"
+    lore:
+      - ""
+      - " &7Name: &e%TEMPLATE_NAME%"
+      - " &7Serializer: &b%TEMPLATE_SERIALIZER%"
+      - " &7Storing In: &a%TEMPLATE_CONTAINER%"
+      - ""
+      - "&eClick to Save!"
