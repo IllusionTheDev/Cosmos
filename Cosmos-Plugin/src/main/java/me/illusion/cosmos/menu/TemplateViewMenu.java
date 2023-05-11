@@ -80,7 +80,7 @@ public class TemplateViewMenu implements UpdatableMenu {
                             return;
                         }
 
-                        TemplateData data = new TemplateData(container.getName(), templateId, serializer);
+                        TemplateData data = new TemplateData(templateId, serializer, container.getName());
                         templates.add(data);
                         refresh();
                     });
