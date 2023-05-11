@@ -49,6 +49,12 @@ public class MemoryDataContainer implements CosmosDataContainer {
     }
 
     @Override
+    public CompletableFuture<String> fetchTemplateSerializer(String name) {
+        return templates.containsKey(name) ? CompletableFuture.completedFuture(templates.get(name).getSerializer().getName())
+            : CompletableFuture.completedFuture(null);
+    }
+
+    @Override
     public boolean requiresCredentials() {
         return false;
     }

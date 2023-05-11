@@ -132,6 +132,23 @@ public class MongoDataContainer implements CosmosDataContainer {
         return registerFuture(future);
     }
 
+    @Override
+    public CompletableFuture<String> fetchTemplateSerializer(String name) {
+        CompletableFuture<String> future = new CompletableFuture<>();
+        CompletableFuture<Void> fetch = CompletableFuture.runAsync(() -> {
+            Document document = templatesCollection.find(new Document("name", name)).first();
+            if (document == null) {
+                future.complete(null);
+                return;
+            }
+
+            future.complete(document.getString("serializer"));
+        });
+
+        registerFuture(fetch);
+        return registerFuture(future);
+    }
+
     private <T> CompletableFuture<T> registerFuture(CompletableFuture<T> future) {
         future.thenRun(() -> futures.remove(future));
         future.exceptionally(throwable -> {

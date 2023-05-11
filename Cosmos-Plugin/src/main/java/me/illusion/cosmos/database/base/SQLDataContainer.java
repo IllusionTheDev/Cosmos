@@ -180,6 +180,24 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
         return registerFuture(future);
     }
 
+    @Override
+    public CompletableFuture<String> fetchTemplateSerializer(String name) {
+        CompletableFuture<String> future = new CompletableFuture<>();
+
+        CompletableFuture<Void> queryFuture = templatesTable.fetch(queries.get(CosmosSQLQuery.FETCH_TEMPLATE_SERIALIZER).formatted(tableName), name)
+            .thenAccept(results -> {
+                if (results == null || results.isEmpty()) {
+                    future.complete(null);
+                    return;
+                }
+
+                future.complete((String) results.get(0).get("template_serializer"));
+            });
+
+        registerFuture(queryFuture);
+        return registerFuture(future);
+    }
+
     private <T> CompletableFuture<T> registerFuture(CompletableFuture<T> future) {
         future.thenRun(() -> runningFutures.remove(future));
         future.exceptionally(throwable -> {

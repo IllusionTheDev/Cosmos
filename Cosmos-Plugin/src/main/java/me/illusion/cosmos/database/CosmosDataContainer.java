@@ -60,6 +60,14 @@ public interface CosmosDataContainer {
     CompletableFuture<Collection<String>> fetchAllTemplates();
 
     /**
+     * Fetches the template serializer from the container. This is used in the menu to display the template.
+     *
+     * @param name The name of the template
+     * @return A future which will be completed with the template serializer
+     */
+    CompletableFuture<String> fetchTemplateSerializer(String name);
+
+    /**
      * Enables the data container given the specified databases file Returns a future which resolves to true if the container was enabled successfully, or false
      * if it was not
      */

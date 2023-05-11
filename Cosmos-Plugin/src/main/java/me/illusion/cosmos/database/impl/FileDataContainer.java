@@ -86,6 +86,37 @@ public class FileDataContainer implements CosmosDataContainer {
     }
 
     @Override
+    public CompletableFuture<String> fetchTemplateSerializer(String name) {
+        CompletableFuture<String> future = CompletableFuture.supplyAsync(() -> {
+            File templateFolder = new File(worldContainer, name);
+
+            if (!templateFolder.exists()) {
+                return null;
+            }
+
+            File metadataFile = new File(templateFolder, "metadata.yml");
+
+            if (!metadataFile.exists()) {
+                return null;
+            }
+
+            YamlConfiguration yaml = YamlConfiguration.loadConfiguration(metadataFile);
+            return yaml.getString("serializer");
+        });
+
+        this.runningTasks.add(future);
+        future.thenRun(() -> {
+            runningTasks.remove(future);
+            System.out.println("Completed fetch template serializer");
+        }).exceptionally((e) -> {
+            e.printStackTrace();
+            return null;
+        });
+
+        return future;
+    }
+
+    @Override
     public CompletableFuture<TemplatedArea> fetchTemplate(String name) {
         CompletableFuture<TemplatedArea> future = new CompletableFuture<>();
 

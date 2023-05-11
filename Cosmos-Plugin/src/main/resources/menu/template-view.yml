@@ -4,13 +4,17 @@ layout:
   - '. . . . . . . . .'
   - '. . . . . . . . .'
   - '. . . . . . . . .'
-  - '. . . . . . . . .'
-  - 'left . . back close sort . . right'
+  - '# # # # # # # # #'
+  - 'left # # create close sort # # right'
+
+sorting-placeholders:
+  active: "&f->"
+  inactive: "&7"
 
 items:
-  back:
-    type: "ARROW"
-    name: "&eBack to Template Editor"
+  create:
+    type: "NETHER_STAR"
+    name: "&eCreate a new template"
   left:
     type: "ARROW"
     name: "&ePrevious Page"
@@ -27,7 +31,7 @@ items:
     lore:
       - "&8Sorting %NUMBER_OF_TEMPLATES% templates!"
       - ""
-      - " %SORT_BY_TEMPLATE_NAME% "
+      - "%template_sorting_state% Template Name "
       - " %SORT_BY_SERIALIZER_NAME% "
       - " %SORT_BY_CONTAINER_NAME% "
       - ""

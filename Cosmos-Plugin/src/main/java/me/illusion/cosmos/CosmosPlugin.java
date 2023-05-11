@@ -5,7 +5,12 @@ import java.util.concurrent.CompletableFuture;
 import lombok.AccessLevel;
 import lombok.Getter;
 import me.illusion.cosmos.cache.CosmosCache;
-import me.illusion.cosmos.command.*;
+import me.illusion.cosmos.command.CosmosImportCommand;
+import me.illusion.cosmos.command.CosmosMigrateCommand;
+import me.illusion.cosmos.command.CosmosTemplateDeleteCommand;
+import me.illusion.cosmos.command.CosmosTemplateListCommand;
+import me.illusion.cosmos.command.CosmosTemplatePasteCommand;
+import me.illusion.cosmos.command.CosmosTemplateSetCommand;
 import me.illusion.cosmos.database.CosmosContainerRegistry;
 import me.illusion.cosmos.database.CosmosDataContainer;
 import me.illusion.cosmos.file.CosmosDatabasesFile;
@@ -19,6 +24,7 @@ import me.illusion.cosmos.template.TemplatedArea;
 import me.illusion.cosmos.template.grid.CosmosGridRegistry;
 import me.illusion.cosmos.utilities.command.command.CommandManager;
 import me.illusion.cosmos.utilities.concurrency.MainThreadExecutor;
+import me.illusion.cosmos.utilities.menu.registry.MenuRegistry;
 import me.illusion.cosmos.utilities.storage.MessagesFile;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -37,6 +43,7 @@ public final class CosmosPlugin extends JavaPlugin {
     private CosmosCache<TemplatedArea> templateCache;
 
     private CommandManager commandManager;
+    private MenuRegistry menuRegistry;
 
     private MessagesFile messages;
     private CosmosDatabasesFile databasesFile;
@@ -68,6 +75,7 @@ public final class CosmosPlugin extends JavaPlugin {
         pasteCache = new CosmosCache<>();
 
         messages = new MessagesFile(this);
+        menuRegistry = new MenuRegistry(this);
         commandManager = new CommandManager(this, messages);
 
         registerDefaults();
