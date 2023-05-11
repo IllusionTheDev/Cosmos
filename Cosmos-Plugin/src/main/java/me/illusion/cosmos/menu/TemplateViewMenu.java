@@ -108,7 +108,20 @@ public class TemplateViewMenu implements UpdatableMenu {
 
         for (TemplateData data : sorted) {
             Button button = menu.getApplicator().createButton("active-item", (event) -> {
-                // TODO: Write some logic to actually manage this individual template
+                // Left click to paste at the location, right click to delete
+                CosmosDataContainer container = cosmos.getContainerRegistry().getContainer(data.getContainerName());
+                if (event.isRightClick()) {
+                    container.deleteTemplate(data.getTemplateName()).thenRun(this::refresh); // TODO: delegate this through the confirmation menu
+                    return;
+                }
+
+                container.fetchTemplate(data.getTemplateName()).thenAccept(template -> {
+                    if (template == null) {
+                        return;
+                    }
+
+                    template.paste(getViewer().getLocation());
+                });
             });
 
             button.setPlaceholders(
