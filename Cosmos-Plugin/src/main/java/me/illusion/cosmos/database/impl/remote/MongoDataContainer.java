@@ -51,6 +51,9 @@ public class MongoDataContainer implements CosmosDataContainer {
             try {
                 mongoClient = MongoClients.create(new ConnectionString(connectionString));
                 templatesCollection = mongoClient.getDatabase(database).getCollection(collectionName); // if the collection doesn't exist, it will be created
+
+                // validate the session
+                mongoClient.listDatabaseNames().first(); // throws an exception if the connection is invalid
                 return true;
             } catch (Exception expected) { // catching MongoException doesn't work for some reason
                 return false;
