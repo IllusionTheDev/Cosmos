@@ -1,32 +1,32 @@
 title: "Template Editor"
 layout:
   - '. . . . . . . . .'
-  - '. . viewTemplates . . . createTemplate . .'
+  - '. . view-templates . . . create-template . .'
   - '. . . . . . . . .'
   - '. . . . close . . . .'
 
 items:
-  viewTemplates:
+  view-templates:
     type: COMPASS
     name: '&eView Templates'
     lore:
       - '&8Currently Storing %NUMBER_OF_TEMPLATES% Templates'
       - ''
       - '&eClick to view all templates'
-#  importTemplate:
-#    type: CLOCK
-#    name: '&eImport Templates'
-#    lore:
-#      - '&8Currently Storing %NUMBER_OF_TEMPLATES% Templates'
-#      - ''
-#      - ''
-#      - ''
-#      - '&eClick to import a template'
-  createTemplate:
+  #  importTemplate:
+  #    type: CLOCK
+  #    name: '&eImport Templates'
+  #    lore:
+  #      - '&8Currently Storing %NUMBER_OF_TEMPLATES% Templates'
+  #      - ''
+  #      - ''
+  #      - ''
+  #      - '&eClick to import a template'
+  create-template:
     type: PAPER
     name: '&eCreate Template'
     lore:
-      - ' &8Currently Selected %BLOCKS_IN_REGION% Blocks'# <- this line hidden if no region selected
+      - ' &8Currently Selected %BLOCKS_IN_REGION% Blocks' # <- this line hidden if no region selected
       - ''
       - '%TEMPLATE_CLICK_PROMPT%' #&eClick to Create a Template / &cMake a Worldedit Selection First!
   close:
