@@ -1,0 +1,22 @@
+title: "Deleting: %TEMPLATE_NAME%"
+layout:
+  - '. . . . . . . . .'
+  - '. . cancel . . . confirm . .'
+  - '. . . . . . . . .'
+
+items:
+    cancel:
+        type: "RED_CONCRETE"
+        name: "&cReturn to Template View"
+    confirm:
+        type: "TNT"
+        name: "&cConfirm Deletion"
+        lore:
+        - " "
+        - " &7Template: &e%TEMPLATE_NAME%"
+        - " &7Serializer: &b%TEMPLATE_SERIALIZER%"
+        - " &7Container: &a%TEMPLATE_CONTAINER%"
+        - " "
+        - "&c&lTHIS ACTION IS PERMANENT!"
+        - ''
+        - "&cClick to Delete!"

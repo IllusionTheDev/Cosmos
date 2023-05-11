@@ -1,0 +1,47 @@
+title: "Viewing Templates"
+layout:
+  - '. . . . . . . . .'
+  - '. . . . . . . . .'
+  - '. . . . . . . . .'
+  - '. . . . . . . . .'
+  - '. . . . . . . . .'
+  - 'left . . back close sort . . right'
+
+items:
+  back:
+    type: "ARROW"
+    name: "&eBack to Template Editor"
+  left:
+    type: "ARROW"
+    name: "&ePrevious Page"
+  right:
+    type: "ARROW"
+    name: "&eNext Page"
+  close:
+    type: "BARRIER"
+    name: "&cClose"
+
+  sort:
+    type: "HOPPER"
+    name: "View Templates By:"
+    lore:
+      - "&8Sorting %NUMBER_OF_TEMPLATES% templates!"
+      - ""
+      - " %SORT_BY_TEMPLATE_NAME% "
+      - " %SORT_BY_SERIALIZER_NAME% "
+      - " %SORT_BY_CONTAINER_NAME% "
+      - ""
+      - "&eClick to sort!"
+  active_item:
+    type: "PAPER"
+    name: "&a%TEMPLATE_NAME%"
+    lore:
+    - "&8%CREATION_DATE%"
+    #- ""
+    #- " &7Owned By: %TEMPLATE_PLAYER%"
+    - ""
+    - " &7Serializer: %TEMPLATE_SERIALIZER%"
+    - " &7Container: %TEMPLATE_CONTAINER%"
+    - " "
+    - "&eLeft Click to paste at your location!"
+    - "&eRight Click to delete!"
