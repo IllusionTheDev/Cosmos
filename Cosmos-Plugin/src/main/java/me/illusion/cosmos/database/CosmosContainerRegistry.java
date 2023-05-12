@@ -161,7 +161,7 @@ public class CosmosContainerRegistry {
      */
     public CompletableFuture<CosmosDataContainer> attemptInitializeContainer(String id) {
         System.out.println("Attempting to initialize container " + id + "...");
-        CosmosDataContainer container = getContainer(id);
+        CosmosDataContainer container = containers.get(id); // getContainer does load checks and we want to bypass that
 
         if (container == null) {
             System.out.println("Container " + id + " does not exist!");

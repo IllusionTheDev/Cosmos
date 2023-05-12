@@ -4,6 +4,7 @@ import com.mongodb.ConnectionString;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
+import com.mongodb.client.model.ReplaceOptions;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -96,7 +97,7 @@ public class MongoDataContainer implements CosmosDataContainer {
                 .append("data", binary)
                 .append("serializer", area.getSerializer().getName());
 
-            templatesCollection.insertOne(document);
+            templatesCollection.replaceOne(new Document("name", name), document, new ReplaceOptions().upsert(true));
         });
 
         return registerFuture(future);
