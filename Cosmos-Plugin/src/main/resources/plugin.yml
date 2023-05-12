@@ -5,6 +5,7 @@ api-version: 1.19
 
 softdepend:
   - WorldEdit
+  - FastAsyncWorldEdit
 
 # postgres and mariadb too
 libraries:
