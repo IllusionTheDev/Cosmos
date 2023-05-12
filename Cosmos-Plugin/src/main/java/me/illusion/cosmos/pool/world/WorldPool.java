@@ -70,6 +70,11 @@ public class WorldPool {
      * The order in which worlds are unloaded is not guaranteed. This method is called automatically when a world is unloaded.
      */
     public void attemptUnloadExtraWorlds() {
+        if (!Bukkit.isPrimaryThread()) { // thanks bukkit
+            Bukkit.getScheduler().runTask(plugin, this::attemptUnloadExtraWorlds);
+            return;
+        }
+
         int unusedWorlds = 0;
 
         for (PooledWorld world : worldPool.values()) {
