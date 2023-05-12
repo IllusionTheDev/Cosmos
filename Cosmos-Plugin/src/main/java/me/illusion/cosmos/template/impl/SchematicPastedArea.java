@@ -39,7 +39,7 @@ public class SchematicPastedArea extends SchematicTemplatedArea implements Paste
 
     @Override
     public CompletableFuture<Void> unload() {
-        if (!Bukkit.isPrimaryThread()) {
+        if (!Bukkit.isPrimaryThread() && !Bukkit.getPluginManager().isPluginEnabled("FastAsyncWorldEdit")) { // FAWE is allowed to unload async
             System.out.println("Detected async unload. Unloading sync.");
             return CompletableFuture.runAsync(this::unload, MainThreadExecutor.INSTANCE).thenRun(() -> System.out.println("Unloaded async unload sync"));
         }

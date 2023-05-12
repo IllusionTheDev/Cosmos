@@ -37,7 +37,7 @@ public class SchematicTemplatedArea implements TemplatedArea {
 
     @Override
     public CompletableFuture<PastedArea> paste(Location location) {
-        if (!Bukkit.isPrimaryThread()) {
+        if (!Bukkit.isPrimaryThread() && !Bukkit.getPluginManager().isPluginEnabled("FastAsyncWorldEdit")) { // FAWE is allowed to paste async
             CompletableFuture<PastedArea> future = new CompletableFuture<>();
             CompletableFuture.runAsync(() -> paste(location).thenAccept(future::complete),
                 MainThreadExecutor.INSTANCE); // paste sync and then complete the future
