@@ -31,7 +31,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 @Getter
-public final class CosmosPlugin extends JavaPlugin {
+public abstract class CosmosPlugin extends JavaPlugin {
 
     private CosmosSerializerRegistry serializerRegistry;
     private CosmosGridRegistry gridRegistry;
@@ -186,4 +186,5 @@ public final class CosmosPlugin extends JavaPlugin {
         initialized = true;
         onceInitializedAction.run();
     }
+
 }
