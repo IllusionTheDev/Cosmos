@@ -8,6 +8,7 @@ import java.util.UUID;
 import me.illusion.cosmos.CosmosPlugin;
 import me.illusion.cosmos.database.CosmosDataContainer;
 import me.illusion.cosmos.menu.data.TemplateData;
+import me.illusion.cosmos.menu.generic.GenericConfirmationMenu;
 import me.illusion.cosmos.menu.sorting.SortingOption;
 import me.illusion.cosmos.utilities.menu.base.BaseMenu;
 import me.illusion.cosmos.utilities.menu.base.ConfigurableMenu;
@@ -108,14 +109,31 @@ public class TemplateViewMenu implements UpdatableMenu {
         sorted.sort(sortingOptionSwitch.getSelectedChoice().getComparator());
 
         for (TemplateData data : sorted) {
+            List<Placeholder<Player>> placeholders = List.of(new Placeholder<>("template-name", TextUtils.capitalize(data.getTemplateName())),
+                new Placeholder<>("template-serializer", TextUtils.capitalize(data.getSerializerName())),
+                new Placeholder<>("template-container", TextUtils.capitalize(data.getContainerName())));
+
             Button button = menu.getApplicator().createButton("active-item", (event) -> {
                 // Left click to paste at the location, right click to delete
                 CosmosDataContainer container = cosmos.getContainerRegistry().getContainer(data.getContainerName());
+
                 if (event.isRightClick()) {
-                    container.deleteTemplate(data.getTemplateName()).thenRun(() -> {
-                        templates.remove(data); // TODO: delegate this through the confirmation menu
-                        refresh();
+                    GenericConfirmationMenu confirmationMenu = new GenericConfirmationMenu(cosmos, "delete-template-confirm", getViewer());
+
+                    confirmationMenu.onConfirm(() -> {
+                        container.deleteTemplate(data.getTemplateName()).thenRun(() -> {
+                            templates.remove(data); // TODO: delegate this through the confirmation menu
+                            refresh();
+                        });
+
+                        open();
                     });
+
+                    confirmationMenu.onDeny(this::open);
+                    confirmationMenu.setPlaceholders(placeholders);
+
+                    confirmationMenu.open();
+
                     return;
                 }
 
@@ -128,11 +146,7 @@ public class TemplateViewMenu implements UpdatableMenu {
                 });
             });
 
-            button.setPlaceholders(
-                new Placeholder<>("template-name", TextUtils.capitalize(data.getTemplateName())),
-                new Placeholder<>("template-serializer", TextUtils.capitalize(data.getSerializerName())),
-                new Placeholder<>("template-container", TextUtils.capitalize(data.getContainerName()))
-            );
+            button.setPlaceholders(placeholders);
 
             area.addElement(button);
         }
