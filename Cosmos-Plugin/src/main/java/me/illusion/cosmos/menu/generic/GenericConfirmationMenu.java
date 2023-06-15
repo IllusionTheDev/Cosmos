@@ -45,15 +45,11 @@ public class GenericConfirmationMenu implements UpdatableMenu {
         baseLayer = new BaseLayer(baseMenu);
 
         applicator.registerButton(baseLayer, "confirm", () -> {
-            if (confirmTask != null) {
-                confirmTask.run();
-            }
+            runTask(confirmTask);
         });
 
         applicator.registerButton(baseLayer, "deny", () -> {
-            if (denyTask != null) {
-                denyTask.run();
-            }
+            runTask(denyTask);
         });
 
         baseMenu.addRenderable(baseLayer);
@@ -79,6 +75,12 @@ public class GenericConfirmationMenu implements UpdatableMenu {
     public void setPlaceholders(Collection<Placeholder<Player>> placeholders) {
         baseLayer.setItemPlaceholders(placeholders);
         menu.forceUpdate();
+    }
+
+    private void runTask(Runnable task) {
+        if (task != null) {
+            task.run();
+        }
     }
 
     // UpdatableMenu stuff

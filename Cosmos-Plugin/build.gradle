@@ -79,11 +79,25 @@ processResources {
 
 afterEvaluate {
     publishing {
+        repositories {
+            maven {
+                name = "illusionRepository"
+                url = uri("https://repo.illusionthe.dev/releases")
+                credentials {
+                    username = "$illusionRepositoryUsername"
+                    password = "$illusionRepositoryPassword"
+                }
+                authentication {
+                    create(BasicAuthentication)
+                }
+            }
+        }
         publications {
-            release(MavenPublication) {
-                groupId = 'com.github.IllusionTheDev' //your git id
-                artifactId = 'Cosmos' //your-repository
-                version = 'master-SNAPSHOT' // As same as the Tag
+            create(MavenPublication) {
+                groupId = "me.illusion"
+                artifactId = "cosmos-plugin"
+                version = "1.0"
+                from components.java
             }
         }
     }

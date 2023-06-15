@@ -11,6 +11,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import lombok.Builder;
 import lombok.Builder.Default;
+import me.illusion.cosmos.CosmosPlugin;
 import me.illusion.cosmos.template.PastedArea;
 import me.illusion.cosmos.template.TemplatedArea;
 import me.illusion.cosmos.template.grid.CosmosGrid;
@@ -35,7 +36,7 @@ public class SingleWorldGrid implements CosmosGrid {
     private final Set<Integer> usedIndexes = Sets.newConcurrentHashSet();
     private final Map<PastedArea, Integer> pasteIndexes = new ConcurrentHashMap<>();
 
-    private final UUID worldId;
+    private UUID worldId;
     private final ChunkGenerator chunkGenerator;
 
     @Default
@@ -80,11 +81,6 @@ public class SingleWorldGrid implements CosmosGrid {
                 for (File file : regionFolder.listFiles()) {
                     file.delete();
                 }
-            }).thenRun(() -> {
-                WorldCreator creator = new WorldCreator(name);
-                creator.generator(chunkGenerator);
-
-                Bukkit.createWorld(creator);
             }));
         }
 
@@ -100,6 +96,13 @@ public class SingleWorldGrid implements CosmosGrid {
         }
 
         usedIndexes.remove(boxedIndex);
+    }
+
+    @Override
+    public void init(CosmosPlugin plugin) {
+        if (worldId == null || Bukkit.getWorld(worldId) == null) {
+            worldId = Bukkit.createWorld(new WorldCreator(worldId.toString()).generator(chunkGenerator)).getUID();
+        }
     }
 
     /**
