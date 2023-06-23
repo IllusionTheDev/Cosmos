@@ -41,19 +41,19 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
     @Override
     public CompletableFuture<TemplatedArea> fetchTemplate(String name) {
         CompletableFuture<TemplatedArea> future = new CompletableFuture<>();
-        CompletableFuture<Void> queryFuture = templatesTable.fetch(queries.get(CosmosSQLQuery.FETCH_TEMPLATE).formatted(tableName), name)
+        CompletableFuture<Void> task = templatesTable.fetch(queries.get(CosmosSQLQuery.FETCH_TEMPLATE).formatted(tableName), name)
             .thenAccept(results -> {
                 if (results == null || results.isEmpty()) {
                     future.complete(null);
                     return;
                 }
 
-                for (Map<String, Object> result : results) {
+                /* for (Map<String, Object> result : results) {
                     System.out.println(result);
                     for (String key : result.keySet()) {
                         System.out.println(key + " : " + result.get(key) + "(" + result.get(key).getClass() + ")");
                     }
-                }
+                } */
 
                 String serializer = (String) results.get(0).get("template_serializer");
                 byte[] data = (byte[]) results.get(0).get("template_data");
@@ -72,7 +72,7 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
                 cosmosSerializer.deserialize(data).thenAccept(future::complete);
             });
 
-        registerFuture(queryFuture);
+        registerFuture(task);
         return registerFuture(future);
     }
 
@@ -116,14 +116,6 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
         }
 
         System.out.println("Table name: " + tableName);
-        /*
-            table: cosmos_templates
-            host: localhost
-            port: 3306
-            database: cosmos
-            username: root
-            password: password
-         */
 
         return provider.getConnection().thenCompose(connection -> {
             if (connection == null) {
@@ -161,7 +153,7 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
     public CompletableFuture<Collection<String>> fetchAllTemplates() {
         CompletableFuture<Collection<String>> future = new CompletableFuture<>();
 
-        CompletableFuture<Void> queryFuture = templatesTable.fetch(queries.get(CosmosSQLQuery.FETCH_ALL).formatted(tableName)).thenAccept(results -> {
+        CompletableFuture<Void> task = templatesTable.fetch(queries.get(CosmosSQLQuery.FETCH_ALL).formatted(tableName)).thenAccept(results -> {
             if (results == null || results.isEmpty()) {
                 future.complete(null);
                 return;
@@ -176,7 +168,7 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
             future.complete(names);
         });
 
-        registerFuture(queryFuture);
+        registerFuture(task);
         return registerFuture(future);
     }
 
@@ -184,7 +176,7 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
     public CompletableFuture<String> fetchTemplateSerializer(String name) {
         CompletableFuture<String> future = new CompletableFuture<>();
 
-        CompletableFuture<Void> queryFuture = templatesTable.fetch(queries.get(CosmosSQLQuery.FETCH_TEMPLATE_SERIALIZER).formatted(tableName), name)
+        CompletableFuture<Void> task = templatesTable.fetch(queries.get(CosmosSQLQuery.FETCH_TEMPLATE_SERIALIZER).formatted(tableName), name)
             .thenAccept(results -> {
                 if (results == null || results.isEmpty()) {
                     future.complete(null);
@@ -194,7 +186,7 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
                 future.complete((String) results.get(0).get("template_serializer"));
             });
 
-        registerFuture(queryFuture);
+        registerFuture(task);
         return registerFuture(future);
     }
 
@@ -207,7 +199,6 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
         });
 
         runningFutures.add(future);
-
         return future;
     }
 

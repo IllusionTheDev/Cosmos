@@ -65,7 +65,7 @@ public class MongoDataContainer implements CosmosDataContainer {
     @Override
     public CompletableFuture<TemplatedArea> fetchTemplate(String name) {
         CompletableFuture<TemplatedArea> future = new CompletableFuture<>();
-        CompletableFuture<Void> fetch = CompletableFuture.runAsync(() -> {
+        CompletableFuture<Void> task = CompletableFuture.runAsync(() -> {
             Document document = templatesCollection.find(new Document("name", name)).first();
             if (document == null) {
                 future.complete(null);
@@ -86,7 +86,7 @@ public class MongoDataContainer implements CosmosDataContainer {
             cosmosSerializer.deserialize(data).thenAccept(future::complete);
         });
 
-        registerFuture(fetch);
+        registerFuture(task);
         return registerFuture(future);
     }
 
