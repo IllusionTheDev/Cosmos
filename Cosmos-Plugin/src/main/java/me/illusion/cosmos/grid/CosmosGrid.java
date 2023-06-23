@@ -1,4 +1,4 @@
-package me.illusion.cosmos.template.grid;
+package me.illusion.cosmos.grid;
 
 import java.util.concurrent.CompletableFuture;
 import me.illusion.cosmos.CosmosPlugin;

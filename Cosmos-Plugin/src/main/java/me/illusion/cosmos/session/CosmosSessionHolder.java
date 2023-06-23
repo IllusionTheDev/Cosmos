@@ -12,7 +12,7 @@ import me.illusion.cosmos.database.CosmosDataContainer;
 import me.illusion.cosmos.session.task.UnloadRequest;
 import me.illusion.cosmos.session.task.UnloadTask;
 import me.illusion.cosmos.template.TemplatedArea;
-import me.illusion.cosmos.template.grid.CosmosGrid;
+import me.illusion.cosmos.grid.CosmosGrid;
 import me.illusion.cosmos.utilities.time.Time;
 import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -61,9 +61,7 @@ public class CosmosSessionHolder {
             return CompletableFuture.completedFuture(existingSession);
         }
 
-        System.out.println("Creating session " + sessionId.toString());
         return grid.paste(template).thenApply((pastedArea) -> {
-            System.out.println("Created session " + sessionId);
             CosmosSession session = new CosmosSession(sessionId, pastedArea);
             sessions.put(sessionId, session);
             return session;

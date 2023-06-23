@@ -1,4 +1,4 @@
-package me.illusion.cosmos.template.grid.impl;
+package me.illusion.cosmos.grid.impl;
 
 import com.google.common.collect.Sets;
 import java.io.File;
@@ -14,7 +14,7 @@ import lombok.Builder.Default;
 import me.illusion.cosmos.CosmosPlugin;
 import me.illusion.cosmos.template.PastedArea;
 import me.illusion.cosmos.template.TemplatedArea;
-import me.illusion.cosmos.template.grid.CosmosGrid;
+import me.illusion.cosmos.grid.CosmosGrid;
 import me.illusion.cosmos.utilities.geometry.Point;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -101,7 +101,8 @@ public class SingleWorldGrid implements CosmosGrid {
     @Override
     public void init(CosmosPlugin plugin) {
         if (worldId == null || Bukkit.getWorld(worldId) == null) {
-            worldId = Bukkit.createWorld(new WorldCreator(worldId.toString()).generator(chunkGenerator)).getUID();
+            WorldCreator worldCreator = new WorldCreator(worldId.toString()).generator(chunkGenerator);
+            worldId = Bukkit.createWorld(worldCreator).getUID();
         }
     }
 

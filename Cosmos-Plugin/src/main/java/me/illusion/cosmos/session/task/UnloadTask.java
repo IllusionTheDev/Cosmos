@@ -5,8 +5,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
- * A task that will unload a session after a specified amount of time. This task is self-correcting, meaning that if the server is lagging, it will correct
- * itself by using recursion.
+ * A task that will unload a session after a specified amount of time. This task is self-correcting,
+ * meaning that if the server is lagging, it will correct itself by using recursion.
  *
  * @author Illusion
  */
@@ -36,11 +36,8 @@ public class UnloadTask implements Runnable {
         long delayTicks = delay * 20;
 
         if (delayTicks < 5) {
-            // 0.25 seconds is okay
-            System.out.println("Time's up! Unloading session " + request.getSessionId());
             request.complete();
         } else {
-            System.out.println("Recursing unload task for " + request.getSessionId() + " with delay " + delayTicks);
             Bukkit.getScheduler().runTaskLater(plugin, this, delayTicks / 2); // Re-run the task in half the remaining time, so we can self-correct
         }
     }

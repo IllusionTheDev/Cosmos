@@ -32,7 +32,7 @@ public class CosmosCache<T> {
     public void register(String identifier, CompletableFuture<T> valueFuture) {
         valueFuture.thenAccept(value -> {
             if (value == null) {
-                System.out.println("Failed to load area " + identifier);
+                System.err.println("Failed to load area " + identifier);
                 return; // the future failed to load the area, so we'll not cache it
             }
 

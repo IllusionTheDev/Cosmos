@@ -30,8 +30,10 @@ public class CosmosTemplatePasteCommand extends AdvancedCommand {
 
     @Override
     public void execute(CommandSender sender, ExecutionContext context) {
+        if (!(sender instanceof Player player)) {
+            return;
+        }
 
-        Player bukkitPlayer = (Player) sender;
         String container = context.getParameter("container");
         String template = context.getParameter("template");
 
@@ -41,7 +43,7 @@ public class CosmosTemplatePasteCommand extends AdvancedCommand {
             dataContainer = plugin.getContainerRegistry().getContainer(container);
 
             if (dataContainer == null) {
-                bukkitPlayer.sendMessage("Invalid container!");
+                player.sendMessage("Invalid container!");
                 return;
             }
         } else {
@@ -50,13 +52,13 @@ public class CosmosTemplatePasteCommand extends AdvancedCommand {
 
         dataContainer.fetchTemplate(template).thenAccept(templateToPaste -> {
             if (templateToPaste == null) {
-                bukkitPlayer.sendMessage("Invalid template!");
+                player.sendMessage("Invalid template!");
                 return;
             }
-            bukkitPlayer.sendMessage("Pasting template...");
-            templateToPaste.paste(bukkitPlayer.getLocation());
+            player.sendMessage("Pasting template...");
+            templateToPaste.paste(player.getLocation());
 
         });
-        bukkitPlayer.sendMessage("Template pasted!");
+        player.sendMessage("Template pasted!");
     }
 }

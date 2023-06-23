@@ -1,10 +1,6 @@
 package me.illusion.cosmos.menu;
 
 import com.google.common.collect.Sets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 import me.illusion.cosmos.CosmosPlugin;
 import me.illusion.cosmos.database.CosmosDataContainer;
 import me.illusion.cosmos.menu.data.TemplateData;
@@ -23,6 +19,11 @@ import me.illusion.cosmos.utilities.text.Placeholder;
 import me.illusion.cosmos.utilities.text.TextUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 public class TemplateViewMenu implements UpdatableMenu {
 
@@ -57,7 +58,7 @@ public class TemplateViewMenu implements UpdatableMenu {
         paginableLayer.addArea(area);
 
         applicator.registerButton(baseLayer, "create", () -> {
-            // TODO: write this
+            // TODO: Create this.
         });
 
         applicator.registerButton(baseLayer, "left", paginableLayer::previousPage);
@@ -109,44 +110,42 @@ public class TemplateViewMenu implements UpdatableMenu {
         sorted.sort(sortingOptionSwitch.getSelectedChoice().getComparator());
 
         for (TemplateData data : sorted) {
+            CosmosDataContainer container = cosmos.getContainerRegistry().getContainer(data.getContainerName());
+
             List<Placeholder<Player>> placeholders = List.of(new Placeholder<>("template-name", TextUtils.capitalize(data.getTemplateName())),
-                new Placeholder<>("template-serializer", TextUtils.capitalize(data.getSerializerName())),
-                new Placeholder<>("template-container", TextUtils.capitalize(data.getContainerName())));
+                    new Placeholder<>("template-serializer", TextUtils.capitalize(data.getSerializerName())),
+                    new Placeholder<>("template-container", TextUtils.capitalize(data.getContainerName())));
 
-            Button button = menu.getApplicator().createButton("active-item", (event) -> {
-                // Left click to paste at the location, right click to delete
-                CosmosDataContainer container = cosmos.getContainerRegistry().getContainer(data.getContainerName());
+            Button button = new Button(menu.getApplicator().getItem("active-item"));
+            button.setPlaceholders(placeholders);
 
-                if (event.isRightClick()) {
-                    GenericConfirmationMenu confirmationMenu = new GenericConfirmationMenu(cosmos, "delete-template-confirm", getViewer());
+            // Delete the template
+            button.setRightClickAction(() -> {
+                GenericConfirmationMenu confirmationMenu = new GenericConfirmationMenu(cosmos, "delete-template-confirm", getViewer());
 
-                    confirmationMenu.onConfirm(() -> {
-                        container.deleteTemplate(data.getTemplateName()).thenRun(() -> {
-                            templates.remove(data); // TODO: delegate this through the confirmation menu
-                            refresh();
-                        });
-
-                        open();
+                confirmationMenu.onConfirm(() -> {
+                    container.deleteTemplate(data.getTemplateName()).thenRun(() -> {
+                        templates.remove(data);
+                        refresh();
                     });
 
-                    confirmationMenu.onDeny(this::open);
-                    confirmationMenu.setPlaceholders(placeholders);
+                    open();
+                });
 
-                    confirmationMenu.open();
+                confirmationMenu.onDeny(this::open);
+                confirmationMenu.setPlaceholders(placeholders);
 
+                confirmationMenu.open();
+            });
+
+            // Paste the template
+            button.setLeftClickAction(() -> container.fetchTemplate(data.getTemplateName()).thenAccept(template -> {
+                if (template == null) {
                     return;
                 }
 
-                container.fetchTemplate(data.getTemplateName()).thenAccept(template -> {
-                    if (template == null) {
-                        return;
-                    }
-
-                    template.paste(getViewer().getLocation());
-                });
-            });
-
-            button.setPlaceholders(placeholders);
+                template.paste(getViewer().getLocation());
+            }));
 
             area.addElement(button);
         }
