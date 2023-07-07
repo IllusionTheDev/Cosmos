@@ -1,7 +1,7 @@
 package me.illusion.cosmos.listener;
 
 import me.illusion.cosmos.CosmosPlugin;
-import me.illusion.cosmos.event.CosmosUnloadAreaEvent;
+import me.illusion.cosmos.event.area.CosmosUnloadAreaEvent;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 

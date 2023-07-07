@@ -1,19 +1,18 @@
-package me.illusion.cosmos.event;
+package me.illusion.cosmos.event.area;
 
 import lombok.Getter;
 import me.illusion.cosmos.event.base.CosmosEvent;
 import me.illusion.cosmos.template.PastedArea;
 import org.bukkit.event.HandlerList;
 
-
 @Getter
-public class CosmosPasteAreaEvent extends CosmosEvent {
+public class CosmosUnloadAreaEvent extends CosmosEvent {
 
     private static final HandlerList HANDLER_LIST = new HandlerList();
 
     private final PastedArea pastedArea;
 
-    public CosmosPasteAreaEvent(PastedArea pastedArea) {
+    public CosmosUnloadAreaEvent(PastedArea pastedArea) {
         this.pastedArea = pastedArea;
     }
 

@@ -5,7 +5,9 @@ import java.util.concurrent.CompletableFuture;
 import lombok.Data;
 import lombok.Getter;
 import me.illusion.cosmos.database.CosmosDataContainer;
+import me.illusion.cosmos.event.session.CosmosUnloadSessionEvent;
 import me.illusion.cosmos.template.PastedArea;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 
@@ -29,7 +31,10 @@ public class CosmosSession {
      */
     public CompletableFuture<Void> unload() {
         System.out.println("Unloading session " + uuid.toString());
-        return pastedArea.unload().thenRun(() -> System.out.println("Unloaded session " + uuid));
+        return pastedArea.unload().thenRun(() -> {
+            System.out.println("Unloaded session " + uuid);
+            Bukkit.getPluginManager().callEvent(new CosmosUnloadSessionEvent(this));
+        });
     }
 
     /**
