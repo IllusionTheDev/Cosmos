@@ -125,6 +125,7 @@ public class Placeholder<T> {
      * @return The text with the placeholder replaced
      */
     public String replace(String text, T object) {
+
         if (text == null) {
             return null;
         }

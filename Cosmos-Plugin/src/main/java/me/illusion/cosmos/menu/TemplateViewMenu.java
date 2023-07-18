@@ -15,6 +15,7 @@ import me.illusion.cosmos.utilities.menu.layer.BaseLayer;
 import me.illusion.cosmos.utilities.menu.layer.PaginableLayer;
 import me.illusion.cosmos.utilities.menu.pagination.PaginableArea;
 import me.illusion.cosmos.utilities.menu.registry.communication.UpdatableMenu;
+import me.illusion.cosmos.utilities.menu.selection.Selection;
 import me.illusion.cosmos.utilities.text.Placeholder;
 import me.illusion.cosmos.utilities.text.TextUtils;
 import org.bukkit.Bukkit;
@@ -68,8 +69,12 @@ public class TemplateViewMenu implements UpdatableMenu {
         sortingOptionSwitch = new MultiSwitch<>(applicator.createButton("sort", (event) -> {
         }), SortingOption.values());
         sortingOptionSwitch.setChoice(SortingOption.TEMPLATE_NAME);
+        sortingOptionSwitch.onChoiceUpdate(irrelevant ->  {
+            refresh();
+        });
 
-        sortingOptionSwitch.onChoiceUpdate(irrelevant -> refresh());
+        Selection selection = baseMenu.getMask().selection("sort");
+        baseLayer.applyRawSelection(selection, sortingOptionSwitch);
 
         for (CosmosDataContainer container : cosmos.getContainerRegistry().getContainersAsCollection()) {
             if (!cosmos.getContainerRegistry().isEnabled(container.getName())) {
@@ -91,6 +96,8 @@ public class TemplateViewMenu implements UpdatableMenu {
             });
         }
 
+
+
         refresh();
 
         baseMenu.addRenderable(baseLayer, paginableLayer);
@@ -109,19 +116,27 @@ public class TemplateViewMenu implements UpdatableMenu {
         List<TemplateData> sorted = new ArrayList<>(templates);
         sorted.sort(sortingOptionSwitch.getSelectedChoice().getComparator());
 
+        System.out.println("Sorting by " + sortingOptionSwitch.getSelectedChoice().name());
+
+        List<Placeholder<Player>> sortingPlaceholders = List.of(
+                new Placeholder<>("NUMBER_OF_TEMPLATES", String.valueOf(templates.size())),
+                new Placeholder<>("SORTING_STATE", TextUtils.capitalize(sortingOptionSwitch.getSelectedChoice().name().replace("_", " "))));
+        sortingOptionSwitch.setItemPlaceholders(sortingPlaceholders);
+
         for (TemplateData data : sorted) {
             CosmosDataContainer container = cosmos.getContainerRegistry().getContainer(data.getContainerName());
 
-            List<Placeholder<Player>> placeholders = List.of(new Placeholder<>("template-name", TextUtils.capitalize(data.getTemplateName())),
-                    new Placeholder<>("template-serializer", TextUtils.capitalize(data.getSerializerName())),
-                    new Placeholder<>("template-container", TextUtils.capitalize(data.getContainerName())));
+            List<Placeholder<Player>> placeholders = List.of(
+                    new Placeholder<>("TEMPLATE_NAME", TextUtils.capitalize(data.getTemplateName())),
+                    new Placeholder<>("TEMPLATE_SERIALIZER", TextUtils.capitalize(data.getSerializerName())),
+                    new Placeholder<>("TEMPLATE_CONTAINER", TextUtils.capitalize(data.getContainerName())));
 
             Button button = new Button(menu.getApplicator().getItem("active-item"));
             button.setPlaceholders(placeholders);
 
             // Delete the template
             button.setRightClickAction(() -> {
-                GenericConfirmationMenu confirmationMenu = new GenericConfirmationMenu(cosmos, "delete-template-confirm", getViewer());
+                GenericConfirmationMenu confirmationMenu = new GenericConfirmationMenu(cosmos, "template-delete-confirmation", getViewer());
 
                 confirmationMenu.onConfirm(() -> {
                     container.deleteTemplate(data.getTemplateName()).thenRun(() -> {
@@ -132,9 +147,13 @@ public class TemplateViewMenu implements UpdatableMenu {
                     open();
                 });
 
-                confirmationMenu.onDeny(this::open);
+                confirmationMenu.onDeny(() -> {
+                    confirmationMenu.close();
+                    open();
+                });
                 confirmationMenu.setPlaceholders(placeholders);
 
+                close();
                 confirmationMenu.open();
             });
 
