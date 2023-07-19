@@ -44,7 +44,7 @@ public class CosmosTemplateSetCommand extends AdvancedCommand {
 
         if (selection == null) {
             //bukkitPlayer.sendMessage("You must make a WorldEdit selection first!");
-            plugin.getMessages().sendMessage(sender, "templates.set.no-selection");
+            plugin.getMessages().sendMessage(sender, "template.set-no-selection");
             return;
         }
 

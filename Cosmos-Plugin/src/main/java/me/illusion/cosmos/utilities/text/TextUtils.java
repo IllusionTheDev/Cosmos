@@ -49,7 +49,7 @@ public class TextUtils {
         String[] split = toCapitalize.split(" ");
         StringBuilder builder = new StringBuilder();
         for (String string : split) {
-            builder.append(string.substring(0, 1).toUpperCase() + toCapitalize.substring(1).toLowerCase());
+            builder.append(string.substring(0, 1).toUpperCase() + toCapitalize.substring(1).toLowerCase() + " ");
         }
 
         return builder.toString();

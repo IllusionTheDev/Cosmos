@@ -58,9 +58,7 @@ public class TemplateViewMenu implements UpdatableMenu {
         area = new PaginableArea(baseMenu.getMask().selection("."));
         paginableLayer.addArea(area);
 
-        applicator.registerButton(baseLayer, "create", () -> {
-            // TODO: Create this.
-        });
+        applicator.registerButton(baseLayer, "create", () -> new TemplateCreationMenu(cosmos, viewerId, this));
 
         applicator.registerButton(baseLayer, "left", paginableLayer::previousPage);
         applicator.registerButton(baseLayer, "right", paginableLayer::nextPage);
@@ -95,8 +93,6 @@ public class TemplateViewMenu implements UpdatableMenu {
                 }
             });
         }
-
-
 
         refresh();
 

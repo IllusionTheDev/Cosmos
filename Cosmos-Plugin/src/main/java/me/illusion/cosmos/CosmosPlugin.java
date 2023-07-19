@@ -151,6 +151,7 @@ public abstract class CosmosPlugin extends JavaPlugin {
         commandManager.registerCommand(new CosmosTemplateSetCommand(this));
         commandManager.registerCommand(new CosmosTemplateListCommand(this));
         commandManager.registerCommand(new CosmosTemplateDeleteCommand(this));
+        commandManager.registerCommand(new CosmosTemplateCreateCommand(this));
         commandManager.registerCommand(new CosmosTemplatePasteCommand(this));
         commandManager.registerCommand(new CosmosTemplateViewMenuCommand(this));
     }

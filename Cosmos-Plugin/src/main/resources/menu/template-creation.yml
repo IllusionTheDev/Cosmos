@@ -1,0 +1,38 @@
+title: "Template Creation"
+layout:
+  - '. . . . a . . . .'
+  - '. . . . . . . . .'
+  - '. . . n . c . . .'
+  - '# # # # # # # # #'
+  - '# # # create # close # # #'
+
+items:
+  create:
+    type: "NETHER_STAR"
+    name: "&eCreate a new template"
+  close:
+    type: "BARRIER"
+    name: "&cClose"
+
+  n:
+    type: "BOOK"
+    name: "&eName"
+    lore:
+      - "&7Change the name of the template"
+      - " "
+      - "&7Current name: &f%TEMPLATE_NAME%"
+
+  c:
+    type: "CHEST"
+    name: "&eContainer"
+    lore:
+      - "&7Switch between available containers"
+      - " "
+      - "&7Current container: &f%TEMPLATE_CONTAINER%"
+  a:
+    type: "PAPER"
+    name: "&a%TEMPLATE_NAME%"
+    lore:
+      - " &7Serializer: %TEMPLATE_SERIALIZER%"
+      - " &7Container: %TEMPLATE_CONTAINER%"
+      - " "

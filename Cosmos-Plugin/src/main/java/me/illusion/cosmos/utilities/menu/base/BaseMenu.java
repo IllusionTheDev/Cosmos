@@ -1,10 +1,7 @@
 package me.illusion.cosmos.utilities.menu.base;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+
 import me.illusion.cosmos.utilities.concurrency.MainThreadExecutor;
 import me.illusion.cosmos.utilities.item.ItemUtil;
 import me.illusion.cosmos.utilities.menu.element.MenuElement;
@@ -54,6 +51,12 @@ public class BaseMenu implements InventoryHolder {
         }
         forceUpdate();
         player.openInventory(inventory);
+    }
+
+    public void setItemPlaceholders(Collection<Placeholder<Player>> placeholders) {
+        for (MenuElement element : elements.values()) {
+            element.setItemPlaceholders(placeholders);
+        }
     }
 
     public Player getPlayer() {
