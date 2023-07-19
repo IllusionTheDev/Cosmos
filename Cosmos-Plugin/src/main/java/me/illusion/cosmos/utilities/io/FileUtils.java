@@ -50,8 +50,6 @@ public class FileUtils {
                 JarEntry entry = entries.nextElement();
                 String name = entry.getName();
 
-                // System.out.println("Copying " + name + " to " + getDataFolder().getAbsolutePath());
-
                 // Make sure to not copy classes (including dependencies), we only want resources
                 if (name.endsWith(".class")) {
                     continue;

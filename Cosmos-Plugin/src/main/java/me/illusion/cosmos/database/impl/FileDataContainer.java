@@ -1,5 +1,11 @@
 package me.illusion.cosmos.database.impl;
 
+import me.illusion.cosmos.CosmosPlugin;
+import me.illusion.cosmos.database.CosmosDataContainer;
+import me.illusion.cosmos.serialization.CosmosSerializer;
+import me.illusion.cosmos.template.TemplatedArea;
+import org.bukkit.configuration.file.YamlConfiguration;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -9,26 +15,19 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import me.illusion.cosmos.CosmosPlugin;
-import me.illusion.cosmos.database.CosmosDataContainer;
-import me.illusion.cosmos.serialization.CosmosSerializer;
-import me.illusion.cosmos.template.TemplatedArea;
-import org.bukkit.configuration.file.YamlConfiguration;
 
 public class FileDataContainer implements CosmosDataContainer {
 
     private final CosmosPlugin plugin;
     private final File worldContainer;
 
-    private final List<CompletableFuture<?>> runningTasks = new ArrayList<>();
+    private final List<CompletableFuture<?>> runningFutures = new ArrayList<>();
 
     public FileDataContainer(CosmosPlugin plugin) {
         this.plugin = plugin;
-
         File cosmosFolder = plugin.getDataFolder();
 
         worldContainer = new File(cosmosFolder, "templates");
-
         createFolder(worldContainer);
     }
 
@@ -64,30 +63,16 @@ public class FileDataContainer implements CosmosDataContainer {
             }
 
             future.complete(templates);
-        }).exceptionally((e) -> {
-            e.printStackTrace();
-            future.completeExceptionally(e);
-            return null;
         });
 
-        task.thenRun(() -> runningTasks.remove(task));
-        future.thenRun(() -> {
-            runningTasks.remove(future);
-            System.out.println("Completed fetch all templates");
-        }).exceptionally((e) -> {
-            e.printStackTrace();
-            return null;
-        });
-
-        runningTasks.add(task);
-        runningTasks.add(future);
-
+        registerFuture(task);
+        registerFuture(future);
         return future;
     }
 
     @Override
     public CompletableFuture<String> fetchTemplateSerializer(String name) {
-        CompletableFuture<String> future = CompletableFuture.supplyAsync(() -> {
+        CompletableFuture<String> task = CompletableFuture.supplyAsync(() -> {
             File templateFolder = new File(worldContainer, name);
 
             if (!templateFolder.exists()) {
@@ -104,16 +89,8 @@ public class FileDataContainer implements CosmosDataContainer {
             return yaml.getString("serializer");
         });
 
-        this.runningTasks.add(future);
-        future.thenRun(() -> {
-            runningTasks.remove(future);
-            System.out.println("Completed fetch template serializer");
-        }).exceptionally((e) -> {
-            e.printStackTrace();
-            return null;
-        });
-
-        return future;
+        registerFuture(task);
+        return task;
     }
 
     @Override
@@ -149,29 +126,11 @@ public class FileDataContainer implements CosmosDataContainer {
                 return;
             }
 
-            System.out.println("Loading template " + name + " with serializer " + serializer);
             byte[] dataContents = readFully(dataFile);
-
-            // merge these futures without joining
             cosmosSerializer.deserialize(dataContents).thenAccept(future::complete);
-        }).exceptionally((e) -> {
-            e.printStackTrace();
-            future.completeExceptionally(e);
-            return null;
         });
 
-        task.thenRun(() -> runningTasks.remove(task));
-        future.thenRun(() -> {
-            runningTasks.remove(future);
-            System.out.println("Completed template " + name);
-        }).exceptionally((e) -> {
-            e.printStackTrace();
-            return null;
-        });
-
-        runningTasks.add(task);
-        runningTasks.add(future);
-
+        registerFuture(task);
         return future;
     }
 
@@ -196,14 +155,9 @@ public class FileDataContainer implements CosmosDataContainer {
 
             // write contents to dataFile
             writeFully(dataFile, contents);
-        }).exceptionally((e) -> {
-            e.printStackTrace();
-            return null;
         });
 
-        task.thenRun(() -> runningTasks.remove(task));
-        runningTasks.add(task);
-
+        registerFuture(task);
         return task;
     }
 
@@ -227,20 +181,27 @@ public class FileDataContainer implements CosmosDataContainer {
             metadataFile.delete();
 
             templateFolder.delete();
-        }).exceptionally((e) -> {
-            e.printStackTrace();
-            return null;
         });
 
-        task.thenRun(() -> runningTasks.remove(task));
-        runningTasks.add(task);
-
+        registerFuture(task);
         return task;
     }
 
     @Override
     public CompletableFuture<Void> flush() {
-        return CompletableFuture.allOf(runningTasks.toArray(new CompletableFuture[0]));
+        return CompletableFuture.allOf(runningFutures.toArray(new CompletableFuture[0]));
+    }
+
+    private <T> CompletableFuture<T> registerFuture(CompletableFuture<T> future) {
+        future.thenRun(() -> runningFutures.remove(future));
+        future.exceptionally(throwable -> {
+            runningFutures.remove(future);
+            throwable.printStackTrace();
+            return null;
+        });
+
+        runningFutures.add(future);
+        return future;
     }
 
     private byte[] readFully(File file) {

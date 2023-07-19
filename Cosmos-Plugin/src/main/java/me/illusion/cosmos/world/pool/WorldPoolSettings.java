@@ -1,4 +1,4 @@
-package me.illusion.cosmos.pool.world;
+package me.illusion.cosmos.world.pool;
 
 import java.util.concurrent.TimeUnit;
 import lombok.Builder;

@@ -36,12 +36,6 @@ public class CosmosMigrateCommand extends AdvancedCommand {
         String source = context.getParameter("source");
         String destination = context.getParameter("destination");
 
-//        List<Placeholder<?>> placeholders = Arrays.asList(
-//                new Placeholder<>("%template%", templateName),
-//                new Placeholder<>("%source%", source),
-//                new Placeholder<>("%destination%", destination)
-//        );
-
         Placeholder<CommandSender> sourcePlaceholder = new Placeholder<>("%source%", source);
         Placeholder<CommandSender> destinationPlaceholder = new Placeholder<>("%destination%", destination);
         Placeholder<CommandSender> templatePlaceholder = new Placeholder<>("%template%", templateName);

@@ -65,8 +65,6 @@ public class Button implements MenuElement {
             rightClickTask.accept(event);
         }
 
-        // System.out.println("No click task set for button " + displayItem);
-
     }
 
     public void setDisplayItem(ItemStack displayItem) {

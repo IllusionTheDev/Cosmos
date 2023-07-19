@@ -38,7 +38,7 @@ public class MultiSwitch<T> implements MenuElement {
         buttons = new ArrayList<>();
 
         for (int index = 0; index < choices.length; index++) {
-            buttons.add(defaultButton);
+            buttons.add((Button) defaultButton.copy());
         }
     }
 
@@ -78,6 +78,7 @@ public class MultiSwitch<T> implements MenuElement {
     public void cycle() {
         index = (index + 1) % choices.size();
         System.out.println("Cycling to " + index);
+        System.out.println("Selected Choice: " + choices.get(index));
         runUpdate();
     }
 

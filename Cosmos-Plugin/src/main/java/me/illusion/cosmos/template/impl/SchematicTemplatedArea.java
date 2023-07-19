@@ -44,8 +44,6 @@ public class SchematicTemplatedArea implements TemplatedArea {
             return future;
         }
 
-        System.out.println("Pasting at " + location);
-
         World worldEditWorld = new BukkitWorld(location.getWorld());
 
         try (EditSession session = WorldEdit.getInstance().newEditSession(worldEditWorld)) {

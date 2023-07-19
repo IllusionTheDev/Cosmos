@@ -1,4 +1,4 @@
-package me.illusion.cosmos.pool.world;
+package me.illusion.cosmos.world.pool;
 
 public enum PooledWorldState implements Comparable<PooledWorldState> {
     IN_USE,

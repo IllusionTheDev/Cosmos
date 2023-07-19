@@ -1,13 +1,13 @@
-package me.illusion.cosmos.template.grid.impl;
+package me.illusion.cosmos.grid.impl;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import me.illusion.cosmos.CosmosPlugin;
-import me.illusion.cosmos.pool.world.WorldPool;
-import me.illusion.cosmos.pool.world.WorldPoolSettings;
+import me.illusion.cosmos.world.pool.WorldPool;
+import me.illusion.cosmos.world.pool.WorldPoolSettings;
 import me.illusion.cosmos.template.PastedArea;
 import me.illusion.cosmos.template.TemplatedArea;
-import me.illusion.cosmos.template.grid.CosmosGrid;
+import me.illusion.cosmos.grid.CosmosGrid;
 import me.illusion.cosmos.utilities.concurrency.MainThreadExecutor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -53,7 +53,7 @@ public class WorldPerAreaGrid implements CosmosGrid {
     }
 
     @Override
-    public CompletableFuture<Void> unloadAll() { // FIXME: This is not deleting worlds, maybe because the files are still in use?
+    public CompletableFuture<Void> unloadAll() {
         if (worldPool.isEmpty()) {
             return CompletableFuture.completedFuture(null);
         }
@@ -64,7 +64,8 @@ public class WorldPerAreaGrid implements CosmosGrid {
     @Override
     public void registerUnload(PastedArea area) {
         if (area == null) {
-            throw new IllegalArgumentException("Area cannot be null");
+            System.err.println("Area cannot be null");
+            return;
         }
 
         UUID worldId = area.getPasteLocation().getWorld().getUID();

@@ -1,8 +1,12 @@
 package me.illusion.cosmos.database;
 
 import com.google.common.collect.ImmutableCollection;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
+
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -109,6 +113,18 @@ public class CosmosContainerRegistry {
      */
     public ImmutableCollection<CosmosDataContainer> getContainersAsCollection() {
         return getContainers().values();
+    }
+
+    /**
+     * Obtains all Loaded containers, as an immutable collection.
+     * @return An immutable collection of all loaded containers
+     */
+    public ImmutableList<CosmosDataContainer> getLoadedContainers() {
+        List<CosmosDataContainer> containers = new ArrayList<>();
+        for (String loadedContainer : loadedContainers) {
+            containers.add(getContainer(loadedContainer));
+        }
+        return ImmutableList.copyOf(containers);
     }
 
     /**

@@ -48,7 +48,7 @@ public class GenericConfirmationMenu implements UpdatableMenu {
             runTask(confirmTask);
         });
 
-        applicator.registerButton(baseLayer, "deny", () -> {
+        applicator.registerButton(baseLayer, "cancel", () -> {
             runTask(denyTask);
         });
 

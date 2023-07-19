@@ -27,20 +27,18 @@ items:
 
   sort:
     type: "HOPPER"
-    name: "View Templates By:"
+    name: "&aView Templates By:"
     lore:
       - "&8Sorting %NUMBER_OF_TEMPLATES% templates!"
       - ""
-      - "%template_sorting_state% Template Name "
-      - " %SORT_BY_SERIALIZER_NAME% "
-      - " %SORT_BY_CONTAINER_NAME% "
+      - "&7Sorting by: %SORTING_STATE%"
       - ""
       - "&eClick to sort!"
   active-item:
     type: "PAPER"
     name: "&a%TEMPLATE_NAME%"
     lore:
-      - "&8%CREATION_DATE%"
+      # - "&8%CREATION_DATE%"
       #- ""
       #- " &7Owned By: %TEMPLATE_PLAYER%"
       - ""

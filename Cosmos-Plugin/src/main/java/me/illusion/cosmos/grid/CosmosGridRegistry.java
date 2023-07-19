@@ -1,4 +1,4 @@
-package me.illusion.cosmos.template.grid;
+package me.illusion.cosmos.grid;
 
 import com.google.common.collect.Sets;
 import java.util.ArrayList;

@@ -15,9 +15,9 @@ public class CosmosMetricsFile extends YMLBase {
     }
 
     /**
-     * Returns whether or not the metrics system is enabled.
+     * Returns whether the metrics system is enabled.
      *
-     * @return whether or not the metrics system is enabled.
+     * @return whether the metrics system is enabled.
      */
     public boolean isEnabled() {
         return getConfiguration().getBoolean("enabled");

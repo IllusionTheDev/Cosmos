@@ -2,9 +2,11 @@ package me.illusion.cosmos.command;
 
 import me.illusion.cosmos.CosmosPlugin;
 import me.illusion.cosmos.database.CosmosDataContainer;
+import me.illusion.cosmos.menu.generic.GenericConfirmationMenu;
 import me.illusion.cosmos.utilities.command.command.impl.AdvancedCommand;
 import me.illusion.cosmos.utilities.command.command.impl.ExecutionContext;
 import me.illusion.cosmos.utilities.storage.MessagesFile;
+import me.illusion.cosmos.utilities.text.Placeholder;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -31,7 +33,9 @@ public class CosmosTemplateDeleteCommand extends AdvancedCommand {
     @Override
     public void execute(CommandSender sender, ExecutionContext context) {
 
-        Player bukkitPlayer = (Player) sender;
+        if (!(sender instanceof Player player)) {
+            return;
+        }
         String container = context.getParameter("container");
         String template = context.getParameter("template");
 
@@ -41,23 +45,36 @@ public class CosmosTemplateDeleteCommand extends AdvancedCommand {
             dataContainer = plugin.getContainerRegistry().getContainer(container);
 
             if (dataContainer == null) {
-                bukkitPlayer.sendMessage("Invalid container!");
+                player.sendMessage("Invalid container!");
                 return;
             }
         } else {
             dataContainer = plugin.getContainerRegistry().getDefaultContainer();
         }
 
-        CosmosDataContainer finalDataContainer = dataContainer;
-        dataContainer.fetchTemplate(template).thenAccept(templateToDelete -> {
-            if (templateToDelete == null) {
-                bukkitPlayer.sendMessage("Invalid template!");
-                return;
-            }
-            finalDataContainer.deleteTemplate(template);
-        });
-        //TODO: ADD CONFIRMATION
+        Placeholder<Player> templatePlaceholder = new Placeholder<>("template", template);
 
+        CosmosDataContainer finalDataContainer = dataContainer;
+
+        GenericConfirmationMenu confirmationMenu = new GenericConfirmationMenu(plugin, "delete-template-confirm", player);
+
+        confirmationMenu.onConfirm(() -> {
+            finalDataContainer.fetchTemplate(template).thenAccept(templateToDelete -> {
+                if (templateToDelete == null) {
+                    messages.sendMessage(player, "template.delete-not-found", templatePlaceholder);
+                    return;
+                }
+                finalDataContainer.deleteTemplate(template).thenRun(() -> {
+                    messages.sendMessage(player, "template.delete-success", templatePlaceholder);
+                });
+
+            });
+        });
+
+        confirmationMenu.onDeny(() -> {
+            messages.sendMessage(player, "template.delete-cancelled");
+            confirmationMenu.close();
+        });
     }
 
 }

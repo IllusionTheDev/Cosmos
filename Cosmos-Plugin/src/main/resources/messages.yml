@@ -6,6 +6,16 @@ messages:
     cannot-use: "%prefix% &cYou are not allowed to use this command" # If the command is restricted to the console, for example
     no-permission: "%prefix% &cYou do not have permission to use this command!"
 
+  menu:
+    template:
+      set-name: "%prefix% Input the name of the template on chat!"
+  template:
+    created: "%prefix% &aSuccessfully created template %template%!"
+    set-no-selection: "%prefix% &cYou need to make a WorldEdit selection first!"
+    delete-not-found: "%prefix% &cTemplate %template% not found!"
+    delete-success: "%prefix% &aSuccessfully deleted template %template%!"
+    delete-cancelled: "%prefix% &cCancelled deleting template %template%!"
+
   import:
     invalid-serializer-arg: "%prefix% &cInvalid argument! Usage: /cosmos import <serializer> <filename>"
     invalid-file-arg: "%prefix% &cInvalid argument! Usage: /cosmos import <serializer> <filename>"

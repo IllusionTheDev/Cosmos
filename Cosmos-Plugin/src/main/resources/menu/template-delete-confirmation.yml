@@ -1,4 +1,4 @@
-title: "Deleting: %TEMPLATE_NAME%"
+title: "Template Deletion"
 layout:
   - '. . . . . . . . .'
   - '. . cancel . . . confirm . .'

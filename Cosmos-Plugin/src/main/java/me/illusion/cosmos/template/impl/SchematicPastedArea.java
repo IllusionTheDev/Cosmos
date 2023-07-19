@@ -41,10 +41,8 @@ public class SchematicPastedArea extends SchematicTemplatedArea implements Paste
     public CompletableFuture<Void> unload() {
         if (!Bukkit.isPrimaryThread() && !Bukkit.getPluginManager().isPluginEnabled("FastAsyncWorldEdit")) { // FAWE is allowed to unload async
             System.out.println("Detected async unload. Unloading sync.");
-            return CompletableFuture.runAsync(this::unload, MainThreadExecutor.INSTANCE).thenRun(() -> System.out.println("Unloaded async unload sync"));
+            return CompletableFuture.runAsync(this::unload, MainThreadExecutor.INSTANCE);
         }
-
-        System.out.println("Unloading at " + pasteLocation);
 
         World worldEditWorld = new BukkitWorld(pasteLocation.getWorld());
         CuboidRegion cuboidRegion = getCuboidRegion();
@@ -69,8 +67,6 @@ public class SchematicPastedArea extends SchematicTemplatedArea implements Paste
 
     @Override
     public Clipboard getClipboard() {
-        System.out.println("Re-creating clipboard for " + pasteLocation);
-
         CuboidRegion cuboidRegion = getCuboidRegion();
         // Given this is a pasted area, we'll need to re-make the clipboard, as the old one is no longer valid.
 
@@ -97,7 +93,6 @@ public class SchematicPastedArea extends SchematicTemplatedArea implements Paste
             throw new RuntimeException(e);
         }
 
-        System.out.println("Created clipboard for " + pasteLocation);
         return clipboard;
     }
 

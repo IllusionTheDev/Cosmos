@@ -33,16 +33,18 @@ public class CosmosTemplateSetCommand extends AdvancedCommand {
 
     @Override
     public void execute(CommandSender sender, ExecutionContext context) {
-        Player bukkitPlayer = (Player) sender;
+        if (!(sender instanceof Player player)) {
+            return;
+        }
 
         String templateName = context.getParameter("template");
         String container = context.getParameter("container");
 
-        Cuboid selection = WorldEditUtils.getPlayerSelection(bukkitPlayer);
+        Cuboid selection = WorldEditUtils.getPlayerSelection(player);
 
         if (selection == null) {
             //bukkitPlayer.sendMessage("You must make a WorldEdit selection first!");
-            plugin.getMessages().sendMessage(sender, "templates.set.no-selection");
+            plugin.getMessages().sendMessage(sender, "template.set-no-selection");
             return;
         }
 
@@ -53,7 +55,7 @@ public class CosmosTemplateSetCommand extends AdvancedCommand {
             dataContainer = plugin.getContainerRegistry().getContainer(container);
 
             if (dataContainer == null) {
-                bukkitPlayer.sendMessage("Invalid container!");
+                player.sendMessage("Invalid container!");
                 return;
             }
         } else {
@@ -61,15 +63,15 @@ public class CosmosTemplateSetCommand extends AdvancedCommand {
         }
 
         CosmosDataContainer finalDataContainer = dataContainer;
-        serializer.createArea(selection, bukkitPlayer.getLocation()).thenAccept(area -> {
+        serializer.createArea(selection, player.getLocation()).thenAccept(area -> {
 
             finalDataContainer.saveTemplate(templateName, area).thenRun(() -> {
-                bukkitPlayer.sendMessage("Template saved!");
+                player.sendMessage("Template saved!");
             });
 
             plugin.getTemplateCache().register(templateName, area);
         });
 
-        bukkitPlayer.sendMessage("Saving template...");
+        player.sendMessage("Saving template...");
     }
 }

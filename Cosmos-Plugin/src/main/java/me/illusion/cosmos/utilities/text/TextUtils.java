@@ -36,7 +36,23 @@ public class TextUtils {
      * @return The capitalized String
      */
     public static String capitalize(String toCapitalize) {
-        return toCapitalize.substring(0, 1).toUpperCase() + toCapitalize.substring(1);
+        return toCapitalize.substring(0, 1).toUpperCase() + toCapitalize.substring(1).toLowerCase();
+    }
+    /**
+     * Capitalizes all words on a string. (e.g. "hello world" -> "Hello World")
+     *
+     * @param toCapitalize The String to capitalize
+     * @return The capitalized String
+     */
+    public static String capitalizeAll(String toCapitalize) {
+
+        String[] split = toCapitalize.split(" ");
+        StringBuilder builder = new StringBuilder();
+        for (String string : split) {
+            builder.append(string.substring(0, 1).toUpperCase() + toCapitalize.substring(1).toLowerCase() + " ");
+        }
+
+        return builder.toString();
     }
 
     /**

@@ -2,10 +2,10 @@ package me.illusion.example.cosmosexampleplugin;
 
 import lombok.Getter;
 import me.illusion.cosmos.CosmosPlugin;
-import me.illusion.cosmos.pool.world.WorldPoolSettings;
+import me.illusion.cosmos.world.pool.WorldPoolSettings;
 import me.illusion.cosmos.session.CosmosSessionHolder;
-import me.illusion.cosmos.template.grid.CosmosGrid;
-import me.illusion.cosmos.template.grid.impl.WorldPerAreaGrid;
+import me.illusion.cosmos.grid.CosmosGrid;
+import me.illusion.cosmos.grid.impl.WorldPerAreaGrid;
 import me.illusion.example.cosmosexampleplugin.listener.PlayerJoinListener;
 import me.illusion.example.cosmosexampleplugin.listener.TemplateCacheListener;
 import org.bukkit.Bukkit;

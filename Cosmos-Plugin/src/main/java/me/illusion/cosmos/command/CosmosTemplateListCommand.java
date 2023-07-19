@@ -33,17 +33,19 @@ public class CosmosTemplateListCommand extends AdvancedCommand {
 
     @Override
     public void execute(CommandSender sender, ExecutionContext context) {
+        if (!(sender instanceof Player player)) {
+            return;
+        }
 
-        Player bukkitPlayer = (Player) sender;
         String container = context.getParameter("container");
 
-        CosmosDataContainer dataContainer = null;
+        CosmosDataContainer dataContainer;
 
         if (container != null) {
             dataContainer = plugin.getContainerRegistry().getContainer(container);
 
             if (dataContainer == null) {
-                bukkitPlayer.sendMessage("Invalid container!");
+                player.sendMessage("Invalid container!");
                 return;
             }
         } else {
@@ -52,15 +54,15 @@ public class CosmosTemplateListCommand extends AdvancedCommand {
 
         CompletableFuture<Collection<String>> templatesToPrint = dataContainer.fetchAllTemplates();
 
-        bukkitPlayer.sendMessage("Templates in " + dataContainer.getName() + ":");
+        player.sendMessage("Templates in " + dataContainer.getName() + ":");
         templatesToPrint.thenAccept(templates -> {
             if (templates.isEmpty()) {
-                bukkitPlayer.sendMessage("No templates found! :(");
+                player.sendMessage("No templates found! :(");
                 return;
             }
 
             for (String template : templates) {
-                bukkitPlayer.sendMessage(" - " + template + "\n");
+                player.sendMessage(" - " + template + "\n");
             }
         });
 
