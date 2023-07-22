@@ -78,18 +78,9 @@ public class TemplateViewMenu implements UpdatableMenu {
                 continue; // Let's not crash things, shall we?
             }
 
-            container.fetchAllTemplates().thenAccept(templateIds -> {
-                for (String templateId : templateIds) {
-                    container.fetchTemplateSerializer(templateId).thenAccept(serializer -> {
-                        if (serializer == null) {
-                            return;
-                        }
-
-                        TemplateData data = new TemplateData(templateId, serializer, container.getName());
-                        templates.add(data);
-                        refresh();
-                    });
-                }
+            container.fetchAllTemplateData().thenAccept(templateData -> {
+                templates.addAll(templateData);
+                refresh();
             });
         }
 
