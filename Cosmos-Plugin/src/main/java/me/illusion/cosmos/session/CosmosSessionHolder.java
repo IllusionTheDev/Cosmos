@@ -1,5 +1,13 @@
 package me.illusion.cosmos.session;
 
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import me.illusion.cosmos.database.CosmosDataContainer;
 import me.illusion.cosmos.event.session.CosmosCreateSessionEvent;
 import me.illusion.cosmos.grid.CosmosGrid;
@@ -10,15 +18,6 @@ import me.illusion.cosmos.utilities.time.Time;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 
 /**
  * A simple session holder implementation, that uses a UUID identifier to store and retrieve sessions. This class is thread-safe.
@@ -201,7 +200,9 @@ public class CosmosSessionHolder {
             return CompletableFuture.completedFuture(false);
         }
 
-        session.save(saveContainer);
+        if (save) {
+            session.save(saveContainer);
+        }
 
         long epoch = Instant.now().getEpochSecond() + time.as(TimeUnit.SECONDS);
 

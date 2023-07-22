@@ -1,7 +1,7 @@
 package me.illusion.cosmos.menu.sorting;
 
 import java.util.Comparator;
-import me.illusion.cosmos.menu.data.TemplateData;
+import me.illusion.cosmos.template.data.TemplateData;
 
 public enum SortingOption {
     TEMPLATE_NAME((one, two) -> one.getTemplateName().compareToIgnoreCase(two.getTemplateName())),

@@ -9,10 +9,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import me.illusion.cosmos.CosmosPlugin;
 import me.illusion.cosmos.database.CosmosDataContainer;
 import me.illusion.cosmos.serialization.CosmosSerializer;
 import me.illusion.cosmos.template.TemplatedArea;
+import me.illusion.cosmos.template.data.TemplateData;
 import org.bson.Document;
 import org.bson.types.Binary;
 import org.bukkit.configuration.ConfigurationSection;
@@ -64,12 +67,10 @@ public class MongoDataContainer implements CosmosDataContainer {
 
     @Override
     public CompletableFuture<TemplatedArea> fetchTemplate(String name) {
-        CompletableFuture<TemplatedArea> future = new CompletableFuture<>();
-        CompletableFuture<Void> task = CompletableFuture.runAsync(() -> {
+        return associateFuture(() -> {
             Document document = templatesCollection.find(new Document("name", name)).first();
             if (document == null) {
-                future.complete(null);
-                return;
+                return null;
             }
 
             byte[] data = document.get("data", Binary.class).getData();
@@ -79,28 +80,22 @@ public class MongoDataContainer implements CosmosDataContainer {
 
             if (cosmosSerializer == null) {
                 plugin.getLogger().warning("Could not find serializer " + serializer + " for template " + name);
-                future.complete(null);
-                return;
+                return null;
             }
 
-            cosmosSerializer.deserialize(data).thenAccept(future::complete);
+            return cosmosSerializer.deserialize(data);
         });
-
-        registerFuture(task);
-        return registerFuture(future);
     }
 
     @Override
     public CompletableFuture<Void> saveTemplate(String name, TemplatedArea area) {
-        CompletableFuture<Void> future = area.getSerializer().serialize(area).thenAccept(binary -> {
+        return associateRunnable(() -> area.getSerializer().serialize(area).thenAccept(binary -> {
             Document document = new Document("name", name)
                 .append("data", binary)
                 .append("serializer", area.getSerializer().getName());
 
             templatesCollection.replaceOne(new Document("name", name), document, new ReplaceOptions().upsert(true));
-        });
-
-        return registerFuture(future);
+        }));
     }
 
     @Override
@@ -125,31 +120,55 @@ public class MongoDataContainer implements CosmosDataContainer {
 
     @Override
     public CompletableFuture<Collection<String>> fetchAllTemplates() {
-        CompletableFuture<Collection<String>> future = CompletableFuture.supplyAsync(() -> {
+        return associateTask(() -> {
             List<String> templates = new ArrayList<>();
 
             templatesCollection.find().forEach(document -> templates.add(document.getString("name")));
 
             return templates;
         });
-
-        return registerFuture(future);
     }
 
     @Override
     public CompletableFuture<String> fetchTemplateSerializer(String name) {
-        CompletableFuture<String> future = new CompletableFuture<>();
-        CompletableFuture<Void> fetch = CompletableFuture.runAsync(() -> {
+        return associateTask(() -> {
             Document document = templatesCollection.find(new Document("name", name)).first();
             if (document == null) {
-                future.complete(null);
-                return;
+                return null;
             }
 
-            future.complete(document.getString("serializer"));
+            return document.getString("serializer");
         });
+    }
 
-        registerFuture(fetch);
+    @Override
+    public CompletableFuture<Collection<TemplateData>> fetchAllTemplateData() {
+        return associateTask(() -> {
+            List<TemplateData> templates = new ArrayList<>();
+
+            templatesCollection.find().forEach(document -> {
+                String name = document.getString("name");
+                String serializer = document.getString("serializer");
+
+                templates.add(new TemplateData(name, serializer, getName()));
+            });
+
+            return templates;
+        });
+    }
+
+    private <T> CompletableFuture<T> associateTask(Supplier<T> supplier) {
+        CompletableFuture<T> future = CompletableFuture.supplyAsync(supplier);
+        return registerFuture(future);
+    }
+
+    private <T> CompletableFuture<T> associateFuture(Supplier<CompletableFuture<T>> supplier) {
+        CompletableFuture<T> future = CompletableFuture.supplyAsync(supplier).thenCompose(Function.identity());
+        return registerFuture(future);
+    }
+
+    private CompletableFuture<Void> associateRunnable(Supplier<CompletableFuture<Void>> runnable) {
+        CompletableFuture<Void> future = CompletableFuture.supplyAsync(runnable).thenCompose(Function.identity());
         return registerFuture(future);
     }
 

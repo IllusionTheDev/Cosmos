@@ -1,11 +1,14 @@
 package me.illusion.cosmos.database.impl;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import me.illusion.cosmos.database.CosmosDataContainer;
 import me.illusion.cosmos.template.TemplatedArea;
+import me.illusion.cosmos.template.data.TemplateData;
 
 /**
  * No clue why someone would want to use this, but here it is.
@@ -52,6 +55,21 @@ public class MemoryDataContainer implements CosmosDataContainer {
     public CompletableFuture<String> fetchTemplateSerializer(String name) {
         return templates.containsKey(name) ? CompletableFuture.completedFuture(templates.get(name).getSerializer().getName())
             : CompletableFuture.completedFuture(null);
+    }
+
+    @Override
+    public CompletableFuture<Collection<TemplateData>> fetchAllTemplateData() {
+        List<TemplateData> list = new ArrayList<>();
+        String containerName = getName();
+
+        for (Map.Entry<String, TemplatedArea> entry : templates.entrySet()) {
+            String templateName = entry.getKey();
+            String serializerName = entry.getValue().getSerializer().getName();
+
+            list.add(new TemplateData(templateName, serializerName, containerName));
+        }
+
+        return CompletableFuture.completedFuture(list);
     }
 
     @Override

@@ -1,11 +1,5 @@
 package me.illusion.cosmos.database.impl;
 
-import me.illusion.cosmos.CosmosPlugin;
-import me.illusion.cosmos.database.CosmosDataContainer;
-import me.illusion.cosmos.serialization.CosmosSerializer;
-import me.illusion.cosmos.template.TemplatedArea;
-import org.bukkit.configuration.file.YamlConfiguration;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -15,8 +9,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import me.illusion.cosmos.CosmosPlugin;
+import me.illusion.cosmos.database.CosmosDataContainer;
+import me.illusion.cosmos.serialization.CosmosSerializer;
+import me.illusion.cosmos.template.TemplatedArea;
+import me.illusion.cosmos.template.data.TemplateData;
+import org.bukkit.configuration.file.YamlConfiguration;
 
-public class FileDataContainer implements CosmosDataContainer {
+public class FileDataContainer implements CosmosDataContainer { // TODO: Cleanup futures
 
     private final CosmosPlugin plugin;
     private final File worldContainer;
@@ -91,6 +91,43 @@ public class FileDataContainer implements CosmosDataContainer {
 
         registerFuture(task);
         return task;
+    }
+
+    @Override
+    public CompletableFuture<Collection<TemplateData>> fetchAllTemplateData() {
+        CompletableFuture<Collection<TemplateData>> future = new CompletableFuture<>();
+
+        CompletableFuture<Void> task = CompletableFuture.runAsync(() -> {
+            Collection<TemplateData> templates = new ArrayList<>();
+
+            File[] files = worldContainer.listFiles();
+
+            if (files == null) {
+                future.complete(templates);
+                return;
+            }
+
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    File metadataFile = new File(file, "metadata.yml");
+
+                    if (!metadataFile.exists()) {
+                        continue;
+                    }
+
+                    YamlConfiguration yaml = YamlConfiguration.loadConfiguration(metadataFile);
+                    String serializer = yaml.getString("serializer");
+
+                    templates.add(new TemplateData(file.getName(), serializer, getName()));
+                }
+            }
+
+            future.complete(templates);
+        });
+
+        registerFuture(task);
+        registerFuture(future);
+        return future;
     }
 
     @Override

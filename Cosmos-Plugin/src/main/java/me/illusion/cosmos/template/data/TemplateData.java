@@ -1,4 +1,4 @@
-package me.illusion.cosmos.menu.data;
+package me.illusion.cosmos.template.data;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

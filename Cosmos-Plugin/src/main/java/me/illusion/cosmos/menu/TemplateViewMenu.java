@@ -1,11 +1,15 @@
 package me.illusion.cosmos.menu;
 
 import com.google.common.collect.Sets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 import me.illusion.cosmos.CosmosPlugin;
 import me.illusion.cosmos.database.CosmosDataContainer;
-import me.illusion.cosmos.menu.data.TemplateData;
 import me.illusion.cosmos.menu.generic.GenericConfirmationMenu;
 import me.illusion.cosmos.menu.sorting.SortingOption;
+import me.illusion.cosmos.template.data.TemplateData;
 import me.illusion.cosmos.utilities.menu.base.BaseMenu;
 import me.illusion.cosmos.utilities.menu.base.ConfigurableMenu;
 import me.illusion.cosmos.utilities.menu.button.Button;
@@ -20,11 +24,6 @@ import me.illusion.cosmos.utilities.text.Placeholder;
 import me.illusion.cosmos.utilities.text.TextUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 
 public class TemplateViewMenu implements UpdatableMenu {
 

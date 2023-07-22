@@ -3,6 +3,7 @@ package me.illusion.cosmos.database;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import me.illusion.cosmos.template.TemplatedArea;
+import me.illusion.cosmos.template.data.TemplateData;
 import org.bukkit.configuration.ConfigurationSection;
 
 /**
@@ -66,6 +67,23 @@ public interface CosmosDataContainer {
      * @return A future which will be completed with the template serializer
      */
     CompletableFuture<String> fetchTemplateSerializer(String name);
+
+    /**
+     * Fetches the template data from the container. This is used in the menu to display the template.
+     *
+     * @param name The name of the template
+     * @return A future which will be completed with the template data
+     */
+    default CompletableFuture<TemplateData> fetchTemplateData(String name) {
+        return fetchTemplateSerializer(name).thenApply(serializer -> new TemplateData(name, serializer, getName()));
+    }
+
+    /**
+     * Fetches all template data from the container. This is used in the menu to display the template.
+     *
+     * @return A future which will be completed with a collection of all template data
+     */
+    CompletableFuture<Collection<TemplateData>> fetchAllTemplateData();
 
     /**
      * Enables the data container given the specified databases file Returns a future which resolves to true if the container was enabled successfully, or false

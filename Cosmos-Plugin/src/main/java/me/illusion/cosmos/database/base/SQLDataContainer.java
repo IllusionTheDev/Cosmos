@@ -5,11 +5,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.regex.Pattern;
 import me.illusion.cosmos.CosmosPlugin;
 import me.illusion.cosmos.database.CosmosDataContainer;
 import me.illusion.cosmos.serialization.CosmosSerializer;
 import me.illusion.cosmos.template.TemplatedArea;
+import me.illusion.cosmos.template.data.TemplateData;
 import me.illusion.cosmos.utilities.sql.ColumnData;
 import me.illusion.cosmos.utilities.sql.ColumnType;
 import me.illusion.cosmos.utilities.sql.SQLTable;
@@ -40,20 +43,18 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
 
     @Override
     public CompletableFuture<TemplatedArea> fetchTemplate(String name) {
-        CompletableFuture<TemplatedArea> future = new CompletableFuture<>();
-        CompletableFuture<Void> task = templatesTable.fetch(queries.get(CosmosSQLQuery.FETCH_TEMPLATE).formatted(tableName), name)
-            .thenAccept(results -> {
+        return composeFuture(() -> templatesTable.fetch(queries.get(CosmosSQLQuery.FETCH_TEMPLATE).formatted(tableName), name)
+            .thenApply(results -> {
                 if (results == null || results.isEmpty()) {
-                    future.complete(null);
-                    return;
+                    return null;
                 }
 
-                /* for (Map<String, Object> result : results) {
-                    System.out.println(result);
-                    for (String key : result.keySet()) {
-                        System.out.println(key + " : " + result.get(key) + "(" + result.get(key).getClass() + ")");
-                    }
-                } */
+            /* for (Map<String, Object> result : results) {
+                System.out.println(result);
+                for (String key : result.keySet()) {
+                    System.out.println(key + " : " + result.get(key) + "(" + result.get(key).getClass() + ")");
+                }
+            } */
 
                 String serializer = (String) results.get(0).get("template_serializer");
                 byte[] data = (byte[]) results.get(0).get("template_data");
@@ -62,18 +63,14 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
 
                 if (cosmosSerializer == null) {
                     plugin.getLogger().warning("Could not find serializer " + serializer + " for template " + name);
-                    future.complete(null);
-                    return;
+                    return null;
                 }
 
                 System.out.println("Loading template " + name + " with serializer " + serializer);
 
                 // merge these futures without joining
-                cosmosSerializer.deserialize(data).thenAccept(future::complete);
-            });
-
-        registerFuture(task);
-        return registerFuture(future);
+                return cosmosSerializer.deserialize(data);
+            }));
     }
 
     @Override
@@ -151,12 +148,9 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
 
     @Override
     public CompletableFuture<Collection<String>> fetchAllTemplates() {
-        CompletableFuture<Collection<String>> future = new CompletableFuture<>();
-
-        CompletableFuture<Void> task = templatesTable.fetch(queries.get(CosmosSQLQuery.FETCH_ALL).formatted(tableName)).thenAccept(results -> {
+        return associateFuture(() -> templatesTable.fetch(queries.get(CosmosSQLQuery.FETCH_ALL).formatted(tableName)).thenApply(results -> {
             if (results == null || results.isEmpty()) {
-                future.complete(null);
-                return;
+                return null;
             }
 
             List<String> names = new ArrayList<>();
@@ -165,29 +159,63 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
                 names.add((String) result.get("template_id"));
             }
 
-            future.complete(names);
-        });
-
-        registerFuture(task);
-        return registerFuture(future);
+            return names;
+        }));
     }
 
     @Override
     public CompletableFuture<String> fetchTemplateSerializer(String name) {
-        CompletableFuture<String> future = new CompletableFuture<>();
-
-        CompletableFuture<Void> task = templatesTable.fetch(queries.get(CosmosSQLQuery.FETCH_TEMPLATE_SERIALIZER).formatted(tableName), name)
-            .thenAccept(results -> {
+        return associateFuture(
+            () -> templatesTable.fetch(queries.get(CosmosSQLQuery.FETCH_TEMPLATE_SERIALIZER).formatted(tableName), name).thenApply(results -> {
                 if (results == null || results.isEmpty()) {
-                    future.complete(null);
-                    return;
+                    return null;
                 }
 
-                future.complete((String) results.get(0).get("template_serializer"));
-            });
+                return (String) results.get(0).get("template_serializer");
+            }));
+    }
 
-        registerFuture(task);
+    @Override
+    public CompletableFuture<Collection<TemplateData>> fetchAllTemplateData() {
+        return associateFuture(() -> templatesTable.fetch(queries.get(CosmosSQLQuery.FETCH_ALL_NO_DATA).formatted(tableName)).thenApply(results -> {
+
+            if (results == null || results.isEmpty()) {
+                return null;
+            }
+
+            List<TemplateData> data = new ArrayList<>();
+
+            for (Map<String, Object> result : results) {
+                String serializer = (String) result.get("template_serializer");
+                String id = (String) result.get("template_id");
+
+                data.add(new TemplateData(id, serializer, getName()));
+            }
+
+            return data;
+        }));
+    }
+
+
+    private <T> CompletableFuture<T> associateTask(Supplier<T> supplier) {
+        CompletableFuture<T> future = CompletableFuture.supplyAsync(supplier);
         return registerFuture(future);
+    }
+
+    private <T> CompletableFuture<T> associateFuture(Supplier<CompletableFuture<T>> supplier) {
+        CompletableFuture<T> future = CompletableFuture.supplyAsync(supplier).thenCompose(Function.identity());
+        return registerFuture(future);
+    }
+
+    private CompletableFuture<Void> associateRunnable(Supplier<CompletableFuture<Void>> runnable) {
+        CompletableFuture<Void> future = CompletableFuture.supplyAsync(runnable).thenCompose(Function.identity());
+        return registerFuture(future);
+    }
+
+    // I hate this
+    private <T> CompletableFuture<T> composeFuture(Supplier<CompletableFuture<CompletableFuture<T>>> future) {
+        CompletableFuture<T> f = CompletableFuture.supplyAsync(future).thenCompose(Function.identity()).thenCompose(Function.identity());
+        return registerFuture(f);
     }
 
     private <T> CompletableFuture<T> registerFuture(CompletableFuture<T> future) {
@@ -199,6 +227,7 @@ public abstract class SQLDataContainer implements CosmosDataContainer {
         });
 
         runningFutures.add(future);
+
         return future;
     }
 
