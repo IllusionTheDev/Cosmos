@@ -45,7 +45,7 @@ dependencies {
     implementation('org.mongodb:mongodb-driver-sync:4.9.1')
 
     // influx
-    implementation 'com.influxdb:influxdb-client-java:6.8.0'
+    implementation 'com.influxdb:influxdb-client-java:6.10.0'
 
     // authlib
     implementation 'com.mojang:authlib:1.5.25'
