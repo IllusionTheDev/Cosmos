@@ -1,4 +1,4 @@
-package me.illusion.cosmos.template.impl;
+package me.illusion.cosmos.template.impl.worldedit;
 
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEdit;

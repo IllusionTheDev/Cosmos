@@ -3,6 +3,7 @@ package me.illusion.cosmos.serialization;
 import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import me.illusion.cosmos.serialization.impl.BuiltinSerializer;
 import me.illusion.cosmos.serialization.impl.WorldEditSerializer;
 
 /**
@@ -20,6 +21,7 @@ public class CosmosSerializerRegistry {
      */
     public void registerDefaultSerializers() {
         register(new WorldEditSerializer());
+        register(new BuiltinSerializer());
     }
 
     /**

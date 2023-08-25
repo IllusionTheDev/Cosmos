@@ -24,7 +24,7 @@ import java.nio.file.Files;
 import java.util.concurrent.CompletableFuture;
 import me.illusion.cosmos.serialization.CosmosSerializer;
 import me.illusion.cosmos.template.TemplatedArea;
-import me.illusion.cosmos.template.impl.SchematicTemplatedArea;
+import me.illusion.cosmos.template.impl.worldedit.SchematicTemplatedArea;
 import me.illusion.cosmos.utilities.geometry.Cuboid;
 import org.bukkit.Location;
 

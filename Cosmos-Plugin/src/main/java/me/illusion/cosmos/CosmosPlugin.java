@@ -5,18 +5,26 @@ import java.util.concurrent.CompletableFuture;
 import lombok.AccessLevel;
 import lombok.Getter;
 import me.illusion.cosmos.cache.CosmosCache;
-import me.illusion.cosmos.command.*;
+import me.illusion.cosmos.command.CosmosImportCommand;
+import me.illusion.cosmos.command.CosmosMigrateCommand;
+import me.illusion.cosmos.command.CosmosTemplateCreateCommand;
+import me.illusion.cosmos.command.CosmosTemplateDeleteCommand;
+import me.illusion.cosmos.command.CosmosTemplateListCommand;
+import me.illusion.cosmos.command.CosmosTemplatePasteCommand;
+import me.illusion.cosmos.command.CosmosTemplateSetCommand;
+import me.illusion.cosmos.command.CosmosTemplateViewMenuCommand;
+import me.illusion.cosmos.command.CosmosTestLatencyCommand;
 import me.illusion.cosmos.database.CosmosContainerRegistry;
 import me.illusion.cosmos.database.CosmosDataContainer;
 import me.illusion.cosmos.file.CosmosDatabasesFile;
 import me.illusion.cosmos.file.CosmosMetricsFile;
+import me.illusion.cosmos.grid.CosmosGridRegistry;
 import me.illusion.cosmos.listener.CosmosUnloadAreaListener;
 import me.illusion.cosmos.metrics.CosmosMetricsRegistry;
 import me.illusion.cosmos.serialization.CosmosSerializerRegistry;
 import me.illusion.cosmos.session.CosmosSessionHolderRegistry;
 import me.illusion.cosmos.template.PastedArea;
 import me.illusion.cosmos.template.TemplatedArea;
-import me.illusion.cosmos.grid.CosmosGridRegistry;
 import me.illusion.cosmos.utilities.command.command.CommandManager;
 import me.illusion.cosmos.utilities.concurrency.MainThreadExecutor;
 import me.illusion.cosmos.utilities.io.FileUtils;
@@ -154,6 +162,7 @@ public abstract class CosmosPlugin extends JavaPlugin {
         commandManager.registerCommand(new CosmosTemplateCreateCommand(this));
         commandManager.registerCommand(new CosmosTemplatePasteCommand(this));
         commandManager.registerCommand(new CosmosTemplateViewMenuCommand(this));
+        commandManager.registerCommand(new CosmosTestLatencyCommand(this));
     }
 
     /**
