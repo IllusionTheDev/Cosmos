@@ -1,5 +1,8 @@
 package me.illusion.cosmos.menu;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import me.illusion.cosmos.CosmosPlugin;
 import me.illusion.cosmos.database.CosmosContainerRegistry;
 import me.illusion.cosmos.database.CosmosDataContainer;
@@ -19,10 +22,6 @@ import me.illusion.cosmos.utilities.text.Placeholder;
 import me.illusion.cosmos.utilities.text.TextUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
 
 public class TemplateCreationMenu implements UpdatableMenu {
 
@@ -79,12 +78,10 @@ public class TemplateCreationMenu implements UpdatableMenu {
         baseLayer = new BaseLayer(baseMenu);
         menu.addRenderable(baseLayer);
 
-        containerMultiSwitch = new MultiSwitch<>(applicator.createButton("c", (event) -> {
-        }), new ArrayList<>(containerRegistry.getLoadedContainers()));
+        containerMultiSwitch = new MultiSwitch<>(applicator.createButton("c"), new ArrayList<>(containerRegistry.getLoadedContainers()));
+
         containerMultiSwitch.setChoice(containerRegistry.getDefaultContainer());
-        containerMultiSwitch.onChoiceUpdate(irrelevant -> {
-            refresh();
-        });
+        containerMultiSwitch.onChoiceUpdate(irrelevant -> refresh());
 
         Selection containerSelection = baseMenu.getMask().selection("c");
         baseLayer.applyRawSelection(containerSelection, containerMultiSwitch);

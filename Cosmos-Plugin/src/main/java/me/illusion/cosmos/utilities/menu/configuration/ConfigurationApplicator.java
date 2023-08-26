@@ -112,6 +112,10 @@ public class ConfigurationApplicator {
         return new Button(getItem(key).clone(), defaultHandler);
     }
 
+    public Button createButton(String key) {
+        return new Button(getItem(key).clone());
+    }
+
     public PatternMask getMask() {
         return mask;
     }
