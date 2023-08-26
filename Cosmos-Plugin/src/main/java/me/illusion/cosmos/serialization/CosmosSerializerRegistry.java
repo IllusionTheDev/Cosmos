@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import me.illusion.cosmos.serialization.impl.BuiltinSerializer;
 import me.illusion.cosmos.serialization.impl.WorldEditSerializer;
+import org.bukkit.Bukkit;
 
 /**
  * This class is responsible for keeping track of all the serializers that are registered.
@@ -20,7 +21,7 @@ public class CosmosSerializerRegistry {
      * Registers the default serializers. It is recommended that you do not call this method, and instead register your own serializers.
      */
     public void registerDefaultSerializers() {
-        register(new WorldEditSerializer());
+        register(new WorldEditSerializer(), "WorldEdit", "FastAsyncWorldEdit");
         register(new BuiltinSerializer());
     }
 
@@ -29,7 +30,24 @@ public class CosmosSerializerRegistry {
      *
      * @param serializer The serializer to register
      */
-    public void register(CosmosSerializer serializer) {
+    public void register(CosmosSerializer serializer, String... pluginDependencies) {
+        if (serializers.containsKey(serializer.getName())) {
+            throw new IllegalArgumentException("A serializer with the name " + serializer.getName() + " is already registered!");
+        }
+
+        boolean found = pluginDependencies.length == 0;
+
+        for (String dependency : pluginDependencies) {
+            if (Bukkit.getPluginManager().isPluginEnabled(dependency)) {
+                found = true;
+                break;
+            }
+        }
+
+        if (!found) {
+            return; // TODO: Get the logger and log a warning
+        }
+
         serializers.put(serializer.getName(), serializer);
     }
 
