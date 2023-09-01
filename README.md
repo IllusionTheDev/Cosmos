@@ -9,7 +9,7 @@
 
 #### This project consists of a World Template Management System
 
-This project is in ALPHA, which means that there is some core functionality. Usage in a production environment is not recommended.
+This project is in BETA, which means it is production ready, but bugs should be expected.
 
 ------------
 
