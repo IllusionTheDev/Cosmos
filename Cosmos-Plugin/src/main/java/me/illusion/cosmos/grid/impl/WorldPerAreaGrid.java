@@ -3,12 +3,12 @@ package me.illusion.cosmos.grid.impl;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import me.illusion.cosmos.CosmosPlugin;
-import me.illusion.cosmos.world.pool.WorldPool;
-import me.illusion.cosmos.world.pool.WorldPoolSettings;
+import me.illusion.cosmos.grid.CosmosGrid;
 import me.illusion.cosmos.template.PastedArea;
 import me.illusion.cosmos.template.TemplatedArea;
-import me.illusion.cosmos.grid.CosmosGrid;
 import me.illusion.cosmos.utilities.concurrency.MainThreadExecutor;
+import me.illusion.cosmos.world.pool.WorldPool;
+import me.illusion.cosmos.world.pool.WorldPoolSettings;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.util.Vector;
@@ -42,6 +42,7 @@ public class WorldPerAreaGrid implements CosmosGrid {
 
         // sanity check
         if (!Bukkit.isPrimaryThread()) {
+            System.out.println("Pasting area on async thread");
             CompletableFuture<PastedArea> future = new CompletableFuture<>();
             CompletableFuture.runAsync(() -> paste(area).thenAccept(future::complete), MainThreadExecutor.INSTANCE);
             return future;

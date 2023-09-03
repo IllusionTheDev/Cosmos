@@ -16,7 +16,7 @@ import me.illusion.cosmos.template.TemplatedArea;
 import me.illusion.cosmos.template.data.TemplateData;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-public class FileDataContainer implements CosmosDataContainer { // TODO: Cleanup futures
+public class FileDataContainer implements CosmosDataContainer {
 
     private final CosmosPlugin plugin;
     private final File worldContainer;

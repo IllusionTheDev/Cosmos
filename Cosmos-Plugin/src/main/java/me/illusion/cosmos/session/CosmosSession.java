@@ -38,7 +38,10 @@ public class CosmosSession {
      * @return A future which will complete when the session is saved
      */
     public CompletableFuture<Void> save(CosmosDataContainer container, boolean async) {
-        CompletableFuture<Void> future = container.saveTemplate(uuid.toString(), pastedArea);
+        CompletableFuture<Void> future = container.saveTemplate(uuid.toString(), pastedArea).exceptionally(ex -> {
+            ex.printStackTrace();
+            return null;
+        });
 
         if (async) {
             return future;

@@ -1,7 +1,6 @@
 package me.illusion.cosmos.template.impl.worldedit;
 
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.MaxChangedBlocksException;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
@@ -51,8 +50,8 @@ public class SchematicPastedArea extends SchematicTemplatedArea implements Paste
 
         try (EditSession session = WorldEdit.getInstance().newEditSession(worldEditWorld)) {
             session.setBlocks(cuboidRegion, air);
-            session.commit();
-        } catch (MaxChangedBlocksException e) {
+            Operations.complete(session.commit());
+        } catch (WorldEditException e) {
             throw new RuntimeException(e);
         }
 
@@ -73,6 +72,9 @@ public class SchematicPastedArea extends SchematicTemplatedArea implements Paste
         World worldEditWorld = new BukkitWorld(pasteLocation.getWorld());
         BlockArrayClipboard clipboard = new BlockArrayClipboard(cuboidRegion);
         Location anchor = getPasteLocation().clone();
+
+        System.out.println("Getting clipboard between " + cuboidRegion.getMinimumPoint() + " and " + cuboidRegion.getMaximumPoint());
+        System.out.println("World: " + worldEditWorld.getName());
 
         try (EditSession session = WorldEdit.getInstance().newEditSession(worldEditWorld)) {
             clipboard.setOrigin(BlockVector3.at(anchor.getX(), anchor.getY(), anchor.getZ()));

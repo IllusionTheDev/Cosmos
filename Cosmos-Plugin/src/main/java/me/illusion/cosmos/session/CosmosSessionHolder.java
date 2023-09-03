@@ -30,6 +30,8 @@ public class CosmosSessionHolder {
     private final Map<UUID, CosmosSession> sessions = new ConcurrentHashMap<>();
     private final Map<UUID, UnloadTask> unloadTasks = new ConcurrentHashMap<>();
 
+    private final Map<UUID, CompletableFuture<?>> pendingUnloads = new ConcurrentHashMap<>();
+
     private final JavaPlugin plugin;
     private final CosmosGrid grid;
     private final CosmosDataContainer saveContainer;
@@ -57,6 +59,13 @@ public class CosmosSessionHolder {
     public CompletableFuture<CosmosSession> createSession(UUID sessionId, TemplatedArea template) {
         cancelUnload(sessionId);
 
+        CompletableFuture<?> pendingUnload = pendingUnloads.get(sessionId);
+
+        if (pendingUnload != null) {
+            System.out.println("Session " + sessionId + " is pending unload. Waiting...");
+            return pendingUnload.thenCompose((v) -> createSession(sessionId, template));
+        }
+
         CosmosSession existingSession = sessions.get(sessionId);
 
         if (existingSession != null) {
@@ -71,6 +80,9 @@ public class CosmosSessionHolder {
             Bukkit.getPluginManager().callEvent(new CosmosCreateSessionEvent(session));
             sessions.put(sessionId, session);
             return session;
+        }).exceptionally((e) -> {
+            e.printStackTrace();
+            return null;
         });
     }
 
@@ -82,6 +94,13 @@ public class CosmosSessionHolder {
      */
     public CompletableFuture<CosmosSession> loadSession(UUID sessionId) {
         cancelUnload(sessionId);
+
+        CompletableFuture<?> pendingUnload = pendingUnloads.get(sessionId);
+
+        if (pendingUnload != null) {
+            System.out.println("Session " + sessionId + " is pending unload. Waiting...");
+            return pendingUnload.thenCompose((v) -> loadSession(sessionId));
+        }
 
         CosmosSession existingSession = sessions.get(sessionId);
 
@@ -108,10 +127,16 @@ public class CosmosSessionHolder {
     public CompletableFuture<CosmosSession> loadOrCreateSession(UUID sessionId, TemplatedArea templatedArea) {
         cancelUnload(sessionId);
 
+        CompletableFuture<?> pendingUnload = pendingUnloads.get(sessionId);
+
+        if (pendingUnload != null) {
+            System.out.println("Session " + sessionId + " is pending unload. Waiting...");
+            return pendingUnload.thenCompose((v) -> loadOrCreateSession(sessionId, templatedArea));
+        }
+
         CosmosSession existingSession = sessions.get(sessionId);
 
         if (existingSession != null) {
-            System.out.println("Session " + sessionId + " already exists");
             return CompletableFuture.completedFuture(existingSession);
         }
 
@@ -121,9 +146,6 @@ public class CosmosSessionHolder {
             }
 
             return createSession(sessionId, templatedArea);
-        }).exceptionally((e) -> {
-            e.printStackTrace();
-            return null;
         });
     }
 
@@ -137,24 +159,25 @@ public class CosmosSessionHolder {
      */
     public CompletableFuture<Void> unloadSession(UUID sessionId, boolean save, boolean async) {
         CosmosSession session = sessions.get(sessionId);
-        System.out.println("Unloading session " + sessionId);
 
         if (session == null) {
-            System.out.println("Session " + sessionId + " is null");
             return CompletableFuture.completedFuture(null);
         }
 
-        System.out.println("Cancelling scheduled unloads for session " + sessionId);
         cancelUnload(sessionId);
 
         if (save) {
-            System.out.println("Saving session " + sessionId);
             // We unload after everything is saved to prevent any issues with servers stopping while data is being unloaded (if it stops, unloadAll will keep running)
-            return session.save(saveContainer, async).thenCompose((v) -> session.unload()).thenRun(() -> sessions.remove(sessionId));
+            return registerUnload(sessionId, session.save(saveContainer, async).thenCompose((v) -> session.unload()).thenRun(() -> sessions.remove(sessionId)));
         }
 
-        System.out.println("Completing session unload for session " + sessionId);
-        return session.unload().thenRun(() -> sessions.remove(sessionId));
+        return registerUnload(sessionId, session.unload().thenRun(() -> sessions.remove(sessionId)));
+    }
+
+    private CompletableFuture<Void> registerUnload(UUID sessionId, CompletableFuture<Void> future) {
+        pendingUnloads.put(sessionId, future);
+        future.thenRun(() -> pendingUnloads.remove(sessionId));
+        return future;
     }
 
     /**
@@ -191,12 +214,9 @@ public class CosmosSessionHolder {
      * @return A future which will complete when the session is unloaded, returns true if the session was unloaded, false if it was loaded
      */
     public CompletableFuture<Boolean> unloadAutomaticallyIn(Time time, UUID sessionId, boolean save) {
-        System.out.println("Requested unload in " + time);
-
         CosmosSession session = sessions.get(sessionId);
 
         if (session == null) {
-            System.out.println("Session " + sessionId + " is null");
             return CompletableFuture.completedFuture(false);
         }
 
@@ -214,16 +234,13 @@ public class CosmosSessionHolder {
         future = future.thenCompose(success -> {
             unloadTasks.remove(sessionId);
 
-            if (success) {
-                System.out.println("Unloading session request finished - " + sessionId);
+            if (Boolean.TRUE.equals(success)) {
                 return unloadSession(sessionId, save, true).thenApply(v -> true);
             }
 
-            System.out.println("Unloading session request cancelled - " + sessionId);
             return CompletableFuture.completedFuture(false);
         });
 
-        System.out.println("Scheduling unload request - " + sessionId);
         unloadTasks.put(sessionId, task);
         return future;
     }
@@ -236,7 +253,6 @@ public class CosmosSessionHolder {
         UnloadTask task = unloadTasks.remove(sessionId);
 
         if (task != null) {
-            System.out.println("Cancelling unload request - " + sessionId);
             task.cancel();
         }
     }
