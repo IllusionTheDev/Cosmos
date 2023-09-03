@@ -9,7 +9,7 @@
 
 #### This project consists of a World Template Management System
 
-This project is in ALPHA, which means that there is some core functionality. Usage in a production environment is not recommended.
+This project is in BETA, which means it is production ready, but bugs should be expected.
 
 ------------
 
@@ -35,7 +35,7 @@ Check the wiki.
 Cosmos is meant to be used as an API, with its design being intentionally modular so other plugins can register their own data containers (for storing worlds through any given database, such as Amazon S3) and serializers (for pasting worlds through any given format, such as SWM or .schem).
 The idea behind Cosmos is that most plugins handle things like Arena Regeneration manually, and struggle to expand into more advanced structures that may involve saving a world to a database and loading it in another server. Cosmos is here to standardize that, and provide a simple interface to load any given template from any given source at any given time. 
 
-Once the base of Cosmos is tested, a user management system will be implemented that allows admins to create templates in-game, through Cosmos directly, instead of relying on an external plugin.
+Cosmos is production-ready, and provides a GUI for creating and managing templates.
 
 If you'd like to help with the project, even as someone without any code experience, here are some things that would greatly help me out:
 
