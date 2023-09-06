@@ -219,6 +219,7 @@ public class WorldPool {
         created.setAutoSave(false);
         created.setKeepSpawnInMemory(false);
 
+        getOrCreateWorld(created.getUID()).setState(PooledWorldState.UNUSED);
         return created.getUID();
     }
 
@@ -298,5 +299,9 @@ public class WorldPool {
         }
 
         return count;
+    }
+
+    public void setState(UUID worldId, PooledWorldState state) {
+        getOrCreateWorld(worldId).setState(state);
     }
 }

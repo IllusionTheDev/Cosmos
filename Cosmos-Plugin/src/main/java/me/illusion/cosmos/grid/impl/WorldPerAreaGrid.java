@@ -7,6 +7,7 @@ import me.illusion.cosmos.grid.CosmosGrid;
 import me.illusion.cosmos.template.PastedArea;
 import me.illusion.cosmos.template.TemplatedArea;
 import me.illusion.cosmos.utilities.concurrency.MainThreadExecutor;
+import me.illusion.cosmos.world.pool.PooledWorldState;
 import me.illusion.cosmos.world.pool.WorldPool;
 import me.illusion.cosmos.world.pool.WorldPoolSettings;
 import org.bukkit.Bukkit;
@@ -49,6 +50,9 @@ public class WorldPerAreaGrid implements CosmosGrid {
         }
 
         UUID worldId = worldPool.createWorld(true);
+
+        worldPool.setState(worldId, PooledWorldState.IN_USE);
+
         Vector spawnLocation = worldPool.getSettings().getSpawnLocation();
         return area.paste(new Location(Bukkit.getWorld(worldId), spawnLocation.getBlockX(), spawnLocation.getBlockY(), spawnLocation.getBlockZ()));
     }
