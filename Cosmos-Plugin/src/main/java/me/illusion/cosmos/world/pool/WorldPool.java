@@ -1,6 +1,5 @@
 package me.illusion.cosmos.world.pool;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -8,33 +7,29 @@ import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executor;
-import java.util.concurrent.TimeUnit;
 import lombok.Getter;
-import me.illusion.cosmos.utilities.io.FileUtils;
+import me.illusion.cosmos.CosmosPlugin;
 import me.illusion.cosmos.utilities.time.Time;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.Vector;
 
 public class WorldPool {
 
     private final Map<UUID, PooledWorld> worldPool = new ConcurrentHashMap<>();
-    private final Executor delayedExecutor;
+    private final Time deletionDelay;
 
-    private final JavaPlugin plugin;
+    private final CosmosPlugin plugin;
 
     @Getter
     private final WorldPoolSettings settings;
 
-    public WorldPool(JavaPlugin plugin, WorldPoolSettings settings) {
+    public WorldPool(CosmosPlugin plugin, WorldPoolSettings settings) {
         this.plugin = plugin;
         this.settings = settings;
 
-        Time deletionDelay = settings.getDeletionDelay();
-        delayedExecutor = CompletableFuture.delayedExecutor(deletionDelay.as(TimeUnit.MILLISECONDS), TimeUnit.MILLISECONDS);
+        this.deletionDelay = settings.getDeletionDelay();
 
         createBatch(settings.getPreGeneratedWorlds());
     }
@@ -109,8 +104,10 @@ public class WorldPool {
         }
 
         for (Map.Entry<UUID, PooledWorld> entry : worldsToUnloadList) {
-            Bukkit.unloadWorld(entry.getValue().getWorldName(), false);
-            getOrCreateWorld(entry.getKey()).setState(PooledWorldState.UNLOADED);
+            UUID worldId = entry.getKey();
+            String name = getOrCreateWorld(worldId).getWorldName();
+
+            Bukkit.unloadWorld(name, false);
         }
 
         attemptDeleteExtraWorlds();
@@ -152,10 +149,10 @@ public class WorldPool {
 
         for (Map.Entry<UUID, PooledWorld> entry : List.copyOf(worldPool.entrySet())) {
             PooledWorld world = entry.getValue();
-            File worldFolder = new File(Bukkit.getWorldContainer(), world.getWorldName());
 
-            CompletableFuture.runAsync(() -> FileUtils.deleteDirectory(worldFolder), delayedExecutor);
-            worldPool.remove(entry.getKey());
+            plugin.getTemporaryWorldHandler().deleteWorld(world.getWorldName(), false).thenRun(() -> {
+                worldPool.remove(entry.getKey());
+            });
         }
     }
 
@@ -192,8 +189,10 @@ public class WorldPool {
             UUID worldId = entry.getKey();
 
             if (entry.getValue().getState() == PooledWorldState.UNLOADED) {
-                World world = Bukkit.createWorld(
-                    WorldCreator.name(getOrCreateWorld(worldId).getWorldName()).generator(settings.getChunkGenerator()).generateStructures(false));
+                WorldCreator creator = WorldCreator.name(getOrCreateWorld(worldId).getWorldName()).generator(settings.getChunkGenerator())
+                    .generateStructures(false);
+                World world = plugin.getTemporaryWorldHandler().createWorld(creator);
+
                 world.setSpawnLocation(spawnLocation.getBlockX(), spawnLocation.getBlockY(), spawnLocation.getBlockZ());
 
                 worldPool.remove(entry.getKey()); // the UID changes
@@ -209,7 +208,7 @@ public class WorldPool {
         creator.generator(settings.getChunkGenerator());
         creator.generateStructures(false);
 
-        World created = creator.createWorld();
+        World created = plugin.getTemporaryWorldHandler().createWorld(creator);
 
         if (created == null) {
             throw new IllegalStateException("Failed to create world for area paste");
@@ -219,7 +218,7 @@ public class WorldPool {
         created.setAutoSave(false);
         created.setKeepSpawnInMemory(false);
 
-        getOrCreateWorld(created.getUID()).setState(PooledWorldState.UNUSED);
+        setState(created.getUID(), PooledWorldState.UNUSED);
         return created.getUID();
     }
 
@@ -256,30 +255,19 @@ public class WorldPool {
     }
 
     public CompletableFuture<Void> unloadAll() {
-        List<CompletableFuture<Void>> futures = new ArrayList<>();
-
-        for (Map.Entry<UUID, PooledWorld> entry : worldPool.entrySet()) {
-            PooledWorld world = entry.getValue();
-
-            if (world.getState().isLoaded()) {
-                World bukkitWorld = Bukkit.getWorld(world.getWorldName());
-
-                if (bukkitWorld != null) {
-                    bukkitWorld.setAutoSave(false); // We don't want to save the world when we unload it
-                }
-
-                Bukkit.unloadWorld(world.getWorldName(), false);
-                getOrCreateWorld(entry.getKey()).setState(PooledWorldState.UNLOADED);
-
-                futures.add(CompletableFuture.runAsync(() -> {
-                    File dir = new File(Bukkit.getWorldContainer(), world.getWorldName());
-                    FileUtils.deleteDirectory(dir);
-                }, delayedExecutor)); // Unfortunately there is no guarantee that the world files are flushed to disk when we unload the world, so we have to
-                // wait a bit before deleting the files, and we can't guarantee that the bukkit scheduler will be available (on shutdown, for example, it's not)
+        for (PooledWorld world : worldPool.values()) {
+            if (world.getState() == PooledWorldState.UNLOADED) {
+                plugin.getTemporaryWorldHandler().deleteWorld(world.getWorldName(), true);
+                continue;
             }
+
+            Bukkit.unloadWorld(world.getWorldName(), false);
+            world.setState(PooledWorldState.UNLOADED);
         }
 
-        return CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]));
+        // We can delete unloaded worlds, this is fine
+
+        return CompletableFuture.completedFuture(null);
     }
 
     public int getWorldCount(PooledWorldState... stateWhitelist) {
@@ -304,4 +292,5 @@ public class WorldPool {
     public void setState(UUID worldId, PooledWorldState state) {
         getOrCreateWorld(worldId).setState(state);
     }
+
 }

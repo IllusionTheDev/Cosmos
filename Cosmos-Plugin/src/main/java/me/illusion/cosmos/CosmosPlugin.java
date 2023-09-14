@@ -30,6 +30,7 @@ import me.illusion.cosmos.utilities.concurrency.MainThreadExecutor;
 import me.illusion.cosmos.utilities.io.FileUtils;
 import me.illusion.cosmos.utilities.menu.registry.MenuRegistry;
 import me.illusion.cosmos.utilities.storage.MessagesFile;
+import me.illusion.cosmos.world.temporary.TemporaryWorldHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -52,6 +53,8 @@ public abstract class CosmosPlugin extends JavaPlugin {
     private MessagesFile messages;
     private CosmosDatabasesFile databasesFile;
     private CosmosMetricsFile metricsFile;
+
+    private TemporaryWorldHandler temporaryWorldHandler;
 
     @Getter(AccessLevel.NONE) // we don't want to expose this to the API
     private Runnable onceInitializedAction = () -> {
@@ -81,6 +84,8 @@ public abstract class CosmosPlugin extends JavaPlugin {
         messages = new MessagesFile(this);
         menuRegistry = new MenuRegistry(this);
         commandManager = new CommandManager(this, messages);
+
+        temporaryWorldHandler = new TemporaryWorldHandler();
 
         registerDefaults();
         registerListeners();
@@ -119,7 +124,8 @@ public abstract class CosmosPlugin extends JavaPlugin {
         List<CompletableFuture<?>> futures = List.of(
             // These are all the futures that need to be completed before we can finalize initialization (which lets other plugins know we're ready)
             containerFuture,
-            metricsFuture
+            metricsFuture,
+            temporaryWorldHandler.deleteAllTemporaryWorlds()
         );
 
         serializerRegistry.registerDefaultSerializers();
