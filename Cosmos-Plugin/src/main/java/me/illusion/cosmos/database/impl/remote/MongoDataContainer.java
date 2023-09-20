@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import me.illusion.cosmos.CosmosPlugin;
 import me.illusion.cosmos.database.CosmosDataContainer;
@@ -70,7 +69,7 @@ public class MongoDataContainer implements CosmosDataContainer {
         return associateFuture(() -> {
             Document document = templatesCollection.find(new Document("name", name)).first();
             if (document == null) {
-                return null;
+                return CompletableFuture.completedFuture(null);
             }
 
             byte[] data = document.get("data", Binary.class).getData();
@@ -80,7 +79,7 @@ public class MongoDataContainer implements CosmosDataContainer {
 
             if (cosmosSerializer == null) {
                 plugin.getLogger().warning("Could not find serializer " + serializer + " for template " + name);
-                return null;
+                return CompletableFuture.completedFuture(null);
             }
 
             return cosmosSerializer.deserialize(data);
@@ -163,12 +162,26 @@ public class MongoDataContainer implements CosmosDataContainer {
     }
 
     private <T> CompletableFuture<T> associateFuture(Supplier<CompletableFuture<T>> supplier) {
-        CompletableFuture<T> future = CompletableFuture.supplyAsync(supplier).thenCompose(Function.identity());
+        CompletableFuture<T> future = CompletableFuture.supplyAsync(supplier).thenCompose((result) -> {
+            if (result == null) {
+                return CompletableFuture.completedFuture(null);
+            }
+
+            return result;
+        });
+
         return registerFuture(future);
     }
 
     private CompletableFuture<Void> associateRunnable(Supplier<CompletableFuture<Void>> runnable) {
-        CompletableFuture<Void> future = CompletableFuture.supplyAsync(runnable).thenCompose(Function.identity());
+        CompletableFuture<Void> future = CompletableFuture.supplyAsync(runnable).thenCompose((result) -> {
+            if (result == null) {
+                return CompletableFuture.completedFuture(null);
+            }
+
+            return result;
+        });
+
         return registerFuture(future);
     }
 
