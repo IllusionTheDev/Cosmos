@@ -42,7 +42,7 @@ dependencies {
     implementation('com.sk89q.worldedit:worldedit-bukkit:7.2.14')
 
     // mongo
-    implementation('org.mongodb:mongodb-driver-sync:4.9.1')
+    implementation('org.mongodb:mongodb-driver-sync:4.10.2')
 
     // influx
     implementation 'com.influxdb:influxdb-client-java:6.8.0'
