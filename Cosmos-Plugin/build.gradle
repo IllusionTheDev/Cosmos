@@ -39,7 +39,7 @@ dependencies {
     annotationProcessor('org.projectlombok:lombok:1.18.26')
 
     // worldedit
-    implementation('com.sk89q.worldedit:worldedit-bukkit:7.2.14')
+    implementation('com.sk89q.worldedit:worldedit-bukkit:7.2.15')
 
     // mongo
     implementation('org.mongodb:mongodb-driver-sync:4.9.1')
